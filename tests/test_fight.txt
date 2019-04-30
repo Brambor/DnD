@@ -1,0 +1,30 @@
+c pes a
+c pes b
+
+fight a b
+
+fight a b 2 3
+
+fight a b 2 3 yep_Do_iT
+7
+
+fight a b 3 3 yep_Do_iT
+7
+
+c Thorbald t
+
+fight t a
+
+fight t a activate_it
+2
+
+fight t a activate_it
+8 5 4
+
+fight t a activate_it
+8
+
+fight t a activate_it
+2 8
+
+fight t a activate_it

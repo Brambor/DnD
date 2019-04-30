@@ -1,0 +1,2 @@
+class DnDException(Exception):
+	pass

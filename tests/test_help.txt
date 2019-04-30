@@ -1,0 +1,9 @@
+help
+create
+print
+info
+effect
+eval
+set
+fight
+spell

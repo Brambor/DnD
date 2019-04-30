@@ -1,0 +1,66 @@
+# prepare
+c pes a
+c pes b
+set a mana 100
+
+# get chill
+spell a ice_lance1 smdhgp
+b b
+1
+5
+
+# get wet
+spell a splash
+b b b
+spell a splash
+b
+
+# check
+i b
+
+# get frozen, not chill
+spell a ice_lance1 smdhgp
+b b b b
+1
+2
+3
+5
+
+
+i a
+
+# do not chill or wet
+
+spell a ice_lance1 smdhgp
+b
+6
+
+spell a splash smdhgp
+b
+
+# see if b is properly frozen, not wet, not chill
+i b
+
+spell a ice_lance1 smdhgp
+b
+6
+
+# see if b is properly frozen, not wet, not chill
+i b
+
+# turn passes
+t
+
+i b
+
+t
+# b should unfreeze now
+t
+
+# b shouldn't be frozen anymore
+i b
+
+# the program shouldn't crash
+t
+
+i b

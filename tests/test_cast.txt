@@ -1,0 +1,10 @@
+c pes a
+c pes b
+c pes c
+
+cast a fireball
+b
+cast b heal
+b
+cast c ice_lance1
+b

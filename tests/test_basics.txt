@@ -1,0 +1,24 @@
+# prepare
+c pes e1
+c pes e2
+
+# fight
+fight e1 e2
+
+i e2
+# add effects
+e e1 f 4
+e e1 f 6
+e e1 f 4
+
+# e1 should be burning (and maybe stop some)
+turn
+
+i e1
+
+turn
+
+# more creating and fighting
+c Thorbald t
+c pes e3
+fight t e3
