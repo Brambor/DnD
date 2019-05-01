@@ -230,27 +230,24 @@ class Entity():
 	def add_effect(self, effect, value):
 		# immunity:
 		# by effect
-		for under_effect in self.body["effects"]:
-			if "prevents" in under_effect:
-				if set(under_effect["prevents"]).intersection(set(effect["flags"])):
-					self.cPrint("%s is immune to %s because they are %s" % (
-						self,
-						effect["name"],
-						self.get_effect_string(under_effect)
-					))
-					return
+		immunity_by = self.immune_to_effect(effect)
+		if immunity_by:
+			self.cPrint("%s is immune to %s because they are %s" % (
+				self,
+				effect["name"],
+				self.get_effect_string(immunity_by)
+			))
+			return
 
+		# applies flags of effect that is being added
+		changes_has_been_made = False
+		for effect_flag in effect["flags"]:
+			ret_flag = self.apply_flag(effect_flag)  # does quite a lot!
+			changes_has_been_made = max(changes_has_been_made, ret_flag)
+		if changes_has_been_made:
+			return
 
-
-		# WET + CHILL -> FREEZE
-		if effect["name"] == "chill":
-			wet = self.get_effect("wet")
-			if wet:
-				# remove wettness, chill
-				self.remove_effects(("WET", "CHILL"))
-				self.add_effect(self.game.get_effect("freeze"), 3)
-				return
-
+		# Add/Refresh effect
 		result = ""
 		effect = copy(effect)
 		if effect["on stack"] == "add":
@@ -271,7 +268,11 @@ class Entity():
 			effect = old_effect
 			extra_comment = " (refreshed)"
 
-		self.cPrint("%s is %s now%s" % (self, self.get_effect_string(effect), extra_comment))  # DUPLICATE
+		self.cPrint("%s is %s now%s" % (self, self.get_effect_string(effect), extra_comment))
+
+		# Remove effects that entity is now immune to
+		if "prevents" in effect:
+			self.remove_effects(effect["prevents"])
 
 	def add_effects(self, effects):
 		for effect, value in effects:
@@ -287,8 +288,6 @@ class Entity():
 				del self.body["effects"][i]
 			else:
 				i += 1
-
-	#def del_effect(self, )
 
 	def apply_effects(self):
 		i = 0
@@ -315,3 +314,31 @@ class Entity():
 					del effects[i]
 
 			i += 1
+
+	def immune_to_effect(self, effect):
+		for under_effect in self.body["effects"]:
+			if "prevents" in under_effect:
+				if set(under_effect["prevents"]).intersection(set(effect["flags"])):
+					return under_effect  # imunity by
+		return None  # Nothing gives imunity
+
+	def apply_flag(self, flag):
+		# apply flag on current effects
+		changes_has_been_made = False
+		i = 0
+		max_i = len(self.body["effects"])
+		while i < max_i:
+			inc = True
+			under_effect = self.body["effects"][i]
+			if "turned_by_into" in under_effect:
+				for by_flag, into in under_effect["turned_by_into"]:
+					if by_flag == flag:
+						del self.body["effects"][i]
+						self.add_effects([into])
+						max_i -= 1
+						inc = False
+						changes_has_been_made = True
+						break
+			if inc:
+				i += 1
+		return changes_has_been_made

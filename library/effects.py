@@ -15,12 +15,15 @@ duration: 3 turns or until replaced by WET effect when hit by FIRE spell, or man
 break free: target tries to break free every turn - choose highest stat from: Constitution (Houževnatost), Strenght (Síla), Magie + its respective dice -> if sum is higher than 12, effect ends)
 """
 
+# prevents = imunity_to
+
 effects = {
 	"burn": {
 		"type": "dice",
 		"on stack": "add",
 		"flags": ("FIRE",),
 		# "dice": 0,  # rewriten on use
+		# removed by
 	},
 	"blead": {
 		"type": "dice",
@@ -41,16 +44,18 @@ effects = {
 		"on stack": "refresh",
 		"flags": ("WET",),
 		# "duration": 5  # rewriten on use
+		"turned_by_into" : ( ("CHILL", ("freeze", 3)), ),
 	},
 	"freeze": {
 		"type": "duration",
 		"on stack": "refresh",
 		"flags": ("FREEZE",),
-		"on_print": "frozen",  # entity is frozen (5 turns)
+		"on_print": "frozen",  # entity is frozen (3 turns)
 		"//": frozen_comment,
 		# "duration": 3  # rewriten on use
 		# prevents WET and CHILL
 		"prevents": ("WET", "CHILL"),
+		"turned_by_into" : ( ("FIRE", ("wet", 5)), ),
 		# by FIRE turned into WET
 	},
 }

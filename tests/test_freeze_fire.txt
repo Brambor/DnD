@@ -1,0 +1,26 @@
+# prepare
+c pes a
+c pes b
+set a mana 10
+
+# get wet
+spell a splash
+b
+
+# get frozen, not chill
+spell a ice_lance1 smdhgp
+b
+5
+
+
+i a
+
+# see if b is properly frozen
+i b
+
+# burn them
+cast a burn
+b
+
+# info
+i b
