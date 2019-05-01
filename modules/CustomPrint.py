@@ -1,3 +1,5 @@
+import os
+
 class CustomPrint():
 	"""auto is a bool deciding whether or not to print the input message
 	if auto=True, then """
@@ -10,5 +12,7 @@ class CustomPrint():
 			self.write_to_log(message)
 
 	def write_to_log(self, message):
+		if not os.path.exists("logs"):
+			os.mkdir("logs")
 		with open(("logs/%s.txt" % self.log_file).replace(":", "_"), "a") as log_file:
 			log_file.write("%s\n" % message)

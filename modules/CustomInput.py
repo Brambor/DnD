@@ -1,3 +1,5 @@
+import os
+
 class CustomInput():
 	"""auto == True: print what has been inputed"""
 	def __init__(self, log_file="", input_stream=False):
@@ -16,6 +18,8 @@ class CustomInput():
 		return res
 
 	def write_to_log(self, message, res):
+		if not os.path.exists("logs"):
+			os.mkdir("logs")
 		with open(("logs/%s.txt" % self.log_file).replace(":", "_"), "a") as log_file:
 			log_file.write("%s%s\n" % (message, res) )
 		with open(("logs/%s only input.txt" % self.log_file).replace(":", "_"), "a") as log_file:
