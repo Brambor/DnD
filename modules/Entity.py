@@ -1,6 +1,7 @@
 from copy import copy
 
 from modules.Dice import D, dice_crit, dice_stat
+from modules.DnDException import DnDException
 from modules.Misc import parse_sequence, yield_valid
 
 
@@ -38,18 +39,21 @@ class Entity():
 
 	# RAW STAT MANIPULATION
 	def printStats(self):
-		for key in list(self.body.keys()) + ["nickname"]:
+		for key in sorted(list(self.body.keys()) + ["nickname"]):
 			if key == "nickname":
 				value = self.nickname
 			else:
 				value = self.body[key]
 			if type(value) == str:
-				value = "%s%s%s" % ('"', value, '"')
+				value = "'%s'" % value
 			self.cPrint("%s = %s" % (key, value))
 
 	def setStat(self, stat, value):
 		if ( ( stat in self.body ) and ( type(self.body[stat]) == int ) ):
-			self.body[stat] = int(value)
+			if value.isdigit():
+				self.body[stat] = int(value)
+			else:
+				raise DnDException("%s's stat %s is integer, value '%s' is not." % (self, stat, value))
 		elif ( ( stat in self.body ) and ( type(self.body[stat]) == bool ) ):
 			# b = True if a == "False": False
 			if value == "True":
@@ -59,12 +63,32 @@ class Entity():
 			else:
 				self.cPrint("?")
 		elif stat == "nickname":
-			self.nickname = value
+			self.set_nickname(value)
 		#if stat == "weapon":
 		#	self.body["weapon = int(value)
 		# remove effect ?
 		else:
 			self.cPrint("?")
+
+	def set_nickname(self, nickname):
+		if nickname == "":
+			raise DnDException("Nickname cannot be empty string ''!")
+		elif nickname.isdigit():
+			raise DnDException("Nickname cannot be an integer!")
+		elif " " in nickname:
+			raise DnDException("Nickname cannot contain space ' '!")
+		elif nickname in (ent.nickname for ent in self.game.entities):
+			raise DnDException("Nickname is already in use by %s" % self.game.get_entity(nickname))
+		else:
+			self.nickname = nickname
+
+
+	def get_stat(self, stat, integer=False):
+		"integer True: returns integer stat; False: returns string in form '7 (5 + 4 - 2)' basic + bonus - penalty"
+		value = self.body[stat]
+		# lowered by effects
+		# TODO
+		return value  # 7 (5 + 4 - 2) basic + bonus - penalty
 
 	# ALIVE / DEATH
 	def alive(self):

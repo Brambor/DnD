@@ -15,15 +15,7 @@ class Game():
 	def create(self, entity, nickname=""):
 		e = Entity(self.library[entity], self.i, self)
 		if nickname != "":
-			if nickname.isdigit():
-				raise DnDException("Nickname cannot be an integer!")
-			elif " " in nickname:
-				raise DnDException("Nickname cannot contain space ' '!")
-			elif nickname in (ent.nickname for ent in self.entities):
-				ent = self.get_entity(nickname)
-				raise DnDException("Nickname is already in use by %s" % ent)
-			else:
-				e.nickname = nickname
+			e.set_nickname(nickname)
 		self.i += 1
 		self.entities.append(e)
 		return e
