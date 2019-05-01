@@ -28,10 +28,10 @@ class Entity():
 			dead = " (DEAD)"
 		else:
 			dead = ""
-		self.cPrint("hp: %d/%d %s" % (self.body["hp"], self.body["hp_max"], dead))
-		self.cPrint("mana: %d/%d" % (self.body["mana"], self.body["mana_max"]))
+		self.cPrint("hp: %d/%s %s" % (self.get_stat("hp"), self.get_stat("hp_max", False), dead))
+		self.cPrint("mana: %d/%s" % (self.get_stat("mana"), self.get_stat("mana_max", False)))
 		self.cPrint("weapon: %s" % self.body["weapon"])
-		self.cPrint("boj: %d" % self.body["boj"])
+		self.cPrint("boj: %s" % self.get_stat("boj", False))
 		# TURN effects and DICE effects
 		effects = ", ".join(self.get_effect_string(e) for e in self.body["effects"])  # wont work for turn based effects
 		if effects != "":
@@ -43,8 +43,8 @@ class Entity():
 			if key == "nickname":
 				value = self.nickname
 			else:
-				value = self.body[key]
-			if type(value) == str:
+				value = self.get_stat(key, False)
+			if type(self.body[key]) == str:
 				value = "'%s'" % value
 			self.cPrint("%s = %s" % (key, value))
 
@@ -83,24 +83,43 @@ class Entity():
 			self.nickname = nickname
 
 
-	def get_stat(self, stat, integer=False):
-		"integer True: returns integer stat; False: returns string in form '7 (5 + 4 - 2)' basic + bonus - penalty"
-		value = self.body[stat]
-		# lowered by effects
-		# TODO
-		return value  # 7 (5 + 4 - 2) basic + bonus - penalty
+	def get_stat(self, stat, return_as_integer=True):
+		"return_as_integer False: returns string in form '7 (5 + 4 - 2)' base + bonus - penalty"
+		if type(self.body[stat]) != int:
+			return self.body[stat]
+		else:
+			base = self.body[stat]
+			bonus = 0
+			penalty = 0
+			# lowered by effects
+			# TODO
+			if return_as_integer:
+				return base + bonus - penalty
+			else:
+				if bonus or penalty:
+					if bonus:
+						bonus_str = " + %d" % bonus
+					else:
+						bonus_str = ""
+					if penalty:
+						penalty_str = " - %d" % penalty
+					else:
+						penalty_str = ""
+					return "%d (%d%s%s)" % (base + bonus - penalty, base, bonus_str, penalty_str)  # 7 (5 + 4 - 2) base + bonus - penalty
+				else:
+					return str(base)
 
 	# ALIVE / DEATH
 	def alive(self):
-		return self.body["alive"]
+		return self.get_stat("alive")
 
 	def check_dead(self):  # not handeled at all
-		if self.body["hp"] <= 0:
+		if self.get_stat("hp") <= 0:
 			self.cPrint("%s IS DEAD!" % self)
 			self.body["alive"] = False
 
 	def check_revived(self):
-		if self.body["hp"] > 0:
+		if self.get_stat("hp") > 0:
 			if self.body["alive"] == False:
 				self.cPrint("%s IS ALIVE!" % self)
 			self.body["alive"] = True
@@ -114,16 +133,16 @@ class Entity():
 		cInput passed down if needed """
 		# determining fight skill (who wins)
 		if self_D == -1:
-			self_D = dice_stat(self.body["boj"])
+			self_D = dice_stat(self.get_stat("boj"))
 		if opponent_D == -1:
-			opponent_D = dice_stat(opponent.body["boj"])
+			opponent_D = dice_stat(opponent.get_stat("boj"))
 
-		self_power = self.body["boj"] + self_D
-		opponent_power = opponent.body["boj"] + opponent_D
+		self_power = self.get_stat("boj") + self_D
+		opponent_power = opponent.get_stat("boj") + opponent_D
 
 		for e, total_power in ((self, self_power), (opponent, opponent_power)):
 			self.cPrint("%s fights with power of %d (base %d + dice %d)" % (
-				e, total_power, e.body["boj"], total_power - e.body["boj"]
+				e, total_power, e.get_stat("boj"), total_power - e.get_stat("boj")
 			))
 
 		# knowing who won, counting damage
@@ -138,12 +157,12 @@ class Entity():
 
 	def cast_spell(self, targets, spell, self_D, cInput=False): #  so far only for healing
 		if self_D == -1:
-			self_D = dice_stat(self.body["magie"])
+			self_D = dice_stat(self.get_stat("magie"))
 
 		spell_cost = spell["mana_consumption"].get("base", 0) \
 					+spell["mana_consumption"].get("per_target", 0) * len(targets)
 
-		if self.body["mana"] >= spell_cost:
+		if self.get_stat("mana") >= spell_cost:
 			self.body["mana"] -= spell_cost
 		else:
 			self.cPrint("%s does not have enought mana for %s" % (self, spell["name"]))
@@ -185,20 +204,20 @@ class Entity():
 	# RECIVE DAMAGE, HEAL
 	def damaged(self, dmg, damage_type, statement=""):
 		if damage_type == "physical":
-			dmg = max(dmg - self.body["armor"], 0)
+			dmg = max(dmg - self.get_stat("armor"), 0)
 		elif damage_type == "magic":
-			dmg = max(dmg - self.body["magie"], 0)
+			dmg = max(dmg - self.get_stat("magie"), 0)
 		elif damage_type != "true":
 			raise
 		if statement == "":
 			statement = "recived"
-		if self.body["alive"]:
+		if self.get_stat("alive"):
 			self.cPrint("%s %s %d dmg" % (self, statement, dmg))
 		self.body["hp"] -= dmg
 		self.check_dead()
 
 	def healed(self, heal):
-		healed_for = min(self.body["hp"] + heal, self.body["hp_max"]) - self.body["hp"]
+		healed_for = min(self.get_stat("hp") + heal, self.get_stat("hp_max")) - self.get_stat("hp")
 		self.cPrint("%s healed for %d HladinPetroleje" % (self, healed_for))
 		self.body["hp"] += healed_for
 		self.check_revived()

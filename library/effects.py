@@ -36,7 +36,7 @@ effects = {
 		"on stack": "refresh",
 		"flags": ("CHILL",),
 		# "duration": 5  # rewriten on use
-		# on WET turns FREEZE
+		# removed by FIRE
 		"//": chill_comment,
 	},
 	"wet": {
@@ -53,10 +53,8 @@ effects = {
 		"on_print": "frozen",  # entity is frozen (3 turns)
 		"//": frozen_comment,
 		# "duration": 3  # rewriten on use
-		# prevents WET and CHILL
 		"prevents": ("WET", "CHILL"),
 		"turned_by_into" : ( ("FIRE", ("wet", 5)), ),
-		# by FIRE turned into WET
 	},
 }
 
