@@ -7,19 +7,22 @@ from modules.CustomPrint import CustomPrint
 
 from library.Main import library
 
-DEBUG = True  # True: The program crashes when something goes wrong; False: it prints "fcked up" and carries on
-AUTO_INPUT = True  # False: regular use; True: One of the tests (or all of them, this is based on setup/code) are run
-LOG = False  # AUTO_INPUT must be False for this to work. False: Nothing; True: As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything, inputs are not numbered, unlike with tests)
+try:
+	from settings import local_settings as settings
+except ImportError:
+	print("Did you forget to copy 'local_settings_default.py' to a file named 'local_settings_default.py'?")
+	input()
+	raise
 
 """
 class Effect():
 	def __init__(self):
 		pass
 """
-if not AUTO_INPUT:
+if not settings.AUTO_INPUT:
 	# REGULAR USE
 
-	if LOG:
+	if settings.LOG:
 		import datetime
 		current_time = str(datetime.datetime.today()).split(".")[0]
 	else:
@@ -29,7 +32,7 @@ if not AUTO_INPUT:
 	cPrint = CustomPrint(log_file=current_time)
 
 	G = Game(library, cPrint)
-	P = Parser(G, cInput, cPrint, DEBUG)
+	P = Parser(G, cInput, cPrint, settings.DEBUG)
 
 	"""
 	e = G.create("pes", "a")
@@ -54,7 +57,7 @@ else:
 		cPrint = CustomPrint(log_file=None)
 
 		G = Game(library, cPrint)
-		P = Parser(G, cInput, cPrint, DEBUG)
+		P = Parser(G, cInput, cPrint, settings.DEBUG)
 
 		sys.stdin = f
 		print("test name: %s" % test)
@@ -65,4 +68,4 @@ else:
 	f.close()
 
 	sys.stdin = f1
-	input("DONE (AUTO_INPUT was set to True)")
+	input("DONE (settings.AUTO_INPUT was set to True)")
