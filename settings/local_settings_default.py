@@ -1,4 +1,5 @@
-# Copy this file, make one named 'local_settings.py' that you edit
+# Copy this file, make one named 'local_settings.py'
+# in that file is your personal settings
 
 
 DEBUG = True  # True: The program crashes when something goes wrong; False: it prints "fcked up" and carries on
