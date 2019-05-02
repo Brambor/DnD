@@ -24,6 +24,7 @@ effects = {
 		"flags": ("FIRE",),
 		# "dice": 0,  # rewriten on use
 		# removed by
+		"turned_by_into" : ( ("WET", None), ("CHILL", None) ),
 	},
 	"blead": {
 		"type": "dice",
@@ -33,10 +34,11 @@ effects = {
 	},
 	"chill": {
 		"type": "duration",
-		"on stack": "refresh",
+		"on stack": "add",
 		"flags": ("CHILL",),
 		# "duration": 5  # rewriten on use
 		# removed by FIRE
+		"turned_by_into" : ( ("FIRE", None), ),
 		"//": chill_comment,
 	},
 	"wet": {
@@ -44,7 +46,7 @@ effects = {
 		"on stack": "refresh",
 		"flags": ("WET",),
 		# "duration": 5  # rewriten on use
-		"turned_by_into" : ( ("CHILL", ("freeze", 3)), ),
+		"turned_by_into" : ( ("CHILL", ("freeze", 3)), ("FIRE", None) ),
 	},
 	"freeze": {
 		"type": "duration",

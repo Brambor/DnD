@@ -5,9 +5,10 @@ set a mana 100
 
 # get chill
 spell a ice_lance1 smdhgp
-b b
+b b b
 1
 5
+6
 
 # get wet
 spell a splash

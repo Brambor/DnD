@@ -223,11 +223,16 @@ class Entity():
 		self.check_revived()
 
 	# EFFECTS
-	def get_effect_string(self, effect):
+	def get_effect_string(self, effect, sub_value=None):
+		if sub_value != None:
+			value = sub_value
+		else:
+			value = effect["value"]
+
 		if effect["type"] == "dice":
-			str_duration = "(D%d)" % effect["value"]
+			str_duration = "(D%d)" % value
 		elif effect["type"] == "duration":  # 
-			str_duration = "(for %d turns)" % effect["value"]
+			str_duration = "(for %d turns)" % value
 		else:
 			raise  # the programer screwed up!
 
@@ -258,12 +263,12 @@ class Entity():
 			))
 			return
 
-		# applies flags of effect that is being added
-		changes_has_been_made = False
-		for effect_flag in effect["flags"]:
-			ret_flag = self.apply_flag(effect_flag)  # does quite a lot!
-			changes_has_been_made = max(changes_has_been_made, ret_flag)
-		if changes_has_been_made:
+		# turned by into
+		something_has_been_turned = False
+		for effect_flag in effect["flags"]:  # probably just one, but I'm keeping it general!
+			ret_flag = self.turned_by_into(effect_flag)  # does quite a lot!
+			something_has_been_turned = max(something_has_been_turned, ret_flag)
+		if something_has_been_turned:
 			return
 
 		# Add/Refresh effect
@@ -341,23 +346,29 @@ class Entity():
 					return under_effect  # imunity by
 		return None  # Nothing gives imunity
 
-	def apply_flag(self, flag):
-		# apply flag on current effects
-		changes_has_been_made = False
-		i = 0
-		max_i = len(self.body["effects"])
-		while i < max_i:
-			inc = True
-			under_effect = self.body["effects"][i]
+	def turned_by_into(self, flag, once=False):
+		"apply flag on current effects (only the first one!) \
+		return True: something was turned; False: not"
+
+		i_x = len(self.body["effects"]) - 1
+		while i_x >= 0:
+			under_effect = self.body["effects"][i_x]
 			if "turned_by_into" in under_effect:
 				for by_flag, into in under_effect["turned_by_into"]:
 					if by_flag == flag:
-						del self.body["effects"][i]
-						self.add_effects([into])
-						max_i -= 1
-						inc = False
-						changes_has_been_made = True
-						break
-			if inc:
-				i += 1
-		return changes_has_been_made
+
+						original = self.get_effect_string(self.body["effects"][i_x])
+						del self.body["effects"][i_x]
+						if into:
+							effect, value = into
+							effect = self.game.get_effect(effect)
+							into_str = self.get_effect_string(effect, value)
+						else:
+							into_str = "nothing"
+
+						self.cPrint("%s turns into %s by %s" % ( original, into_str, by_flag ))
+						if into:
+							self.add_effect(effect, value)
+						return True
+			i_x -= 1
+		return False
