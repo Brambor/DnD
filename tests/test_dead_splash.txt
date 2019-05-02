@@ -1,0 +1,21 @@
+# prepare
+c pes a
+c pes b
+
+set a hp 1
+set b hp 1
+
+# fight
+fight a b 5 4
+
+# splash
+cast a spash
+b
+
+# info
+i b
+
+t
+
+# p e
+p e

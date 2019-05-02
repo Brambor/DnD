@@ -22,14 +22,8 @@ class Game():
 
 	def turn(self):
 		self.cPrint("Turn %d" % self.i_turn)
-		i = 0
-		while i < len(self.entities):
-			e = self.entities[i]
+		for e in self.entities:
 			e.apply_effects()
-			if not e.alive():
-				del self.entities[i]
-			else:
-				i += 1
 		self.i_turn += 1
 
 	def get_entity(self, nickname):
