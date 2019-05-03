@@ -24,10 +24,7 @@ class Entity():
 	def info(self):
 		self.cPrint("nickname_id: %s" % self)
 		self.cPrint("derived_from: %s" % self.body["derived_from"])
-		if not self.body["alive"]:
-			dead = " (DEAD)"
-		else:
-			dead = ""
+		dead = " (DEAD)" if not self.body["alive"] else ""
 		self.cPrint("hp: %d/%s %s" % (self.get_stat("hp"), self.get_stat("hp_max", False), dead))
 		self.cPrint("mana: %d/%s" % (self.get_stat("mana"), self.get_stat("mana_max", False)))
 		self.cPrint("weapon: %s" % self.body["weapon"])
@@ -101,14 +98,8 @@ class Entity():
 				return base + bp["stat_bonus"] - bp["stat_penalty"]
 			else:
 				if bp["stat_bonus"] or bp["stat_penalty"]:
-					if bp["stat_bonus"]:
-						bonus_str = " + %d" % bp["stat_bonus"]
-					else:
-						bonus_str = ""
-					if bp["stat_penalty"]:
-						penalty_str = " - %d" % bp["stat_penalty"]
-					else:
-						penalty_str = ""
+					bonus_str = " + %d" % bp["stat_bonus"] if bp["stat_bonus"] else ""
+					penalty_str = " - %d" % bp["stat_penalty"] if bp["stat_penalty"] else ""
 					return "%d (%d%s%s)" % (base + bp["stat_bonus"] - bp["stat_penalty"], base, bonus_str, penalty_str)  # 7 (5 + 4 - 2) base + bonus - penalty
 				else:
 					return str(base)
