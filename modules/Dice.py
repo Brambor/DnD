@@ -4,6 +4,8 @@ from random import randint
 def dice_stat(n):
 	if n >= 5:
 		return D(20)
+	elif n < 0:
+		return D(4)
 	return D([4, 6, 8, 10, 12][n])
 
 def D(n):

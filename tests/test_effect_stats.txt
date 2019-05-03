@@ -1,0 +1,14 @@
+c pes a
+c pes b
+
+cast a ice_lance1 THROW
+b
+5
+
+# check
+i b
+
+set b
+
+# fight
+fight a b

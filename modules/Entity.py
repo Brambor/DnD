@@ -7,7 +7,7 @@ from modules.Misc import parse_sequence, yield_valid
 
 class Entity():
 	def __init__(self, library_entity, i, game):
-		self.i = i
+		self.id = i
 		self.body = copy(library_entity)
 		del self.body["nickname"]
 		self.nickname = library_entity["nickname"]
@@ -19,7 +19,7 @@ class Entity():
 		self.cPrint = game.cPrint
 
 	def __str__(self):
-		return "%s_%d" % (self.nickname, self.i)
+		return "%s_%d" % (self.nickname, self.id)
 
 	def info(self):
 		self.cPrint("nickname_id: %s" % self)
@@ -39,11 +39,9 @@ class Entity():
 
 	# RAW STAT MANIPULATION
 	def printStats(self):
-		for key in sorted(list(self.body.keys()) + ["nickname"]):
-			if key == "nickname":
-				value = self.nickname
-			else:
-				value = self.get_stat(key, False)
+		self.cPrint("nickname = '%s'\nid = %d" % (self.nickname, self.id))
+		for key in sorted(self.body.keys()):
+			value = self.get_stat(key, False)
 			if type(self.body[key]) == str:
 				value = "'%s'" % value
 			self.cPrint("%s = %s" % (key, value))
@@ -89,23 +87,29 @@ class Entity():
 			return self.body[stat]
 		else:
 			base = self.body[stat]
-			bonus = 0
-			penalty = 0
+			bp = {
+				"stat_penalty": 0,
+				"stat_bonus": 0,
+			}
 			# lowered by effects
-			# TODO
+			for bonus_or_penalty in ("stat_penalty", "stat_bonus"):
+				for effect in self.body["effects"]:
+					if bonus_or_penalty in effect:
+						bp[bonus_or_penalty] += effect[bonus_or_penalty].get(stat, 0)
+
 			if return_as_integer:
-				return base + bonus - penalty
+				return base + bp["stat_bonus"] - bp["stat_penalty"]
 			else:
-				if bonus or penalty:
-					if bonus:
-						bonus_str = " + %d" % bonus
+				if bp["stat_bonus"] or bp["stat_penalty"]:
+					if bp["stat_bonus"]:
+						bonus_str = " + %d" % bp["stat_bonus"]
 					else:
 						bonus_str = ""
-					if penalty:
-						penalty_str = " - %d" % penalty
+					if bp["stat_penalty"]:
+						penalty_str = " - %d" % bp["stat_penalty"]
 					else:
 						penalty_str = ""
-					return "%d (%d%s%s)" % (base + bonus - penalty, base, bonus_str, penalty_str)  # 7 (5 + 4 - 2) base + bonus - penalty
+					return "%d (%d%s%s)" % (base + bp["stat_bonus"] - bp["stat_penalty"], base, bonus_str, penalty_str)  # 7 (5 + 4 - 2) base + bonus - penalty
 				else:
 					return str(base)
 
@@ -231,7 +235,7 @@ class Entity():
 
 		if effect["type"] == "dice":
 			str_duration = "(D%d)" % value
-		elif effect["type"] == "duration":  # 
+		elif effect["type"] == "duration":
 			str_duration = "(for %d turns)" % value
 		else:
 			raise  # the programer screwed up!
@@ -271,9 +275,21 @@ class Entity():
 		if something_has_been_turned:
 			return
 
+		effect = copy(effect)
+		# Effect stat bonuses / penalties (throwing the dice)
+		for bonus_or_penalty in ("stat_penalty", "stat_bonus"):
+			if bonus_or_penalty in effect:
+				effect[bonus_or_penalty] = copy(effect[bonus_or_penalty])
+				for stat in effect[bonus_or_penalty]:
+					stat_value = effect[bonus_or_penalty][stat]
+					if type(stat_value) == tuple:
+						# check format
+						if not ( (stat_value[0] == "dice") and (type(stat_value[1]) == int) ):
+							raise
+						effect[bonus_or_penalty][stat] = D(stat_value[1])
+
 		# Add/Refresh effect
 		result = ""
-		effect = copy(effect)
 		if effect["on stack"] == "add":
 			result = "add"
 		elif effect["on stack"] == "refresh":
@@ -287,10 +303,12 @@ class Entity():
 		if result == "add":
 			effect["value"] = value
 			self.body["effects"].append(effect)
-		elif result == "refresh":  # not very pretty, but meh...
+		elif result == "refresh":
 			old_effect["value"] = max(value, old_effect["value"])
 			effect = old_effect
 			extra_comment = " (refreshed)"
+		else:
+			raise
 
 		self.cPrint("%s is %s now%s" % (self, self.get_effect_string(effect), extra_comment))
 

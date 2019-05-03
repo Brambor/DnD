@@ -6,12 +6,6 @@ Else: the effect "type" is "dice". Effect's name+"ing" is used.
 see Entity.get_effect_string in file Entity.py
 """
 
-
-chill_comment = """
-(chilled = lowered DEXTERITY (obratnost) and Combat (Boj) by d6 (when effect is created, one d6 is thrown per every stat) for duration of effect,
-duration = 5 turns or until removed by FIRE spell, or manually - via console
-"""
-
 frozen_comment = """
 (frozen = target cannot move, attack, fight and cast spell; susceptible to PHYSICAL dmg (x2 multiplied incoming dmg);
 duration: 3 turns or until replaced by WET effect when hit by FIRE spell, or manually via console or until break free;
@@ -39,10 +33,11 @@ effects = {
 		"type": "duration",
 		"on stack": "add",
 		"flags": ("CHILL",),
+		#"stat_bonus":
+		"stat_penalty": { "obratnost": ("dice", 6), "boj": ("dice", 6) },  # ("dice", 6) Will be converted into specific throw on d6.
 		# "duration": 5  # rewriten on use
 		# removed by FIRE
 		"turned_by_into" : ( ("FIRE", None), ),
-		"//": chill_comment,
 	},
 	"wet": {
 		"type": "duration",

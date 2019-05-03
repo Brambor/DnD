@@ -48,7 +48,7 @@ else:
 	import sys
 	f1 = sys.stdin
 
-	for test in ("basics cast dead_splash fight freeze freeze_fire freeze_hard help").split():
+	for test in ("basics cast dead_splash effect_stats fight freeze freeze_fire freeze_hard help").split():
 		path = 'tests/test_%s.txt' % test
 		f = open(path,'r')
 		f_copy = open(path,'r').read().split("\n")
