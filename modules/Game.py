@@ -28,11 +28,15 @@ class Game():
 
 	def get_entity(self, nickname):
 		if nickname.isdigit():
-			return self.entities[int(nickname)]
-		for e in self.entities:
-			if e.nickname == nickname:
-				return e
-		raise DnDException("Entity '%s' does not exist." % nickname)
+			for e in self.entities:
+				if e.id == int(nickname):
+					return self.entities[int(nickname)]
+			raise DnDException("Entity with id '%d' does not exist." % nickname)
+		else:
+			for e in self.entities:
+				if e.nickname == nickname:
+					return e
+			raise DnDException("Entity '%s' does not exist." % nickname)
 
 	def get_spell(self, spell_name):
 		for spell in self.spells:
