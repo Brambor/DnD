@@ -1,7 +1,8 @@
 import os
 
 class CustomInput():
-	"""auto == True: print what has been inputed"""
+	"log_file is path to file where the output is saved\
+	input_stream True: given message is printed ('print', not 'CustomPrint')"
 	def __init__(self, log_file="", input_stream=False):
 		self.input_stream = input_stream
 		self.i = 0

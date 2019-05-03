@@ -42,7 +42,7 @@ spells = {
 			},
 			"adds": { "on_crit": ( ("burn", 4), ) },
 		},
-		"flags": ("FIRE",),  # NOT IMPLEMENTED, for unfreazing
+		"flags": ("FIRE",),
 	},
 
 	"ice_lance1": {

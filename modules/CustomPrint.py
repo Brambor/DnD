@@ -1,8 +1,7 @@
 import os
 
 class CustomPrint():
-	"""auto is a bool deciding whether or not to print the input message
-	if auto=True, then """
+	"log_file is path to the file where the output is saved"
 	def __init__(self, log_file=""):
 		self.log_file = log_file
 

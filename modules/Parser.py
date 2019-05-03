@@ -27,9 +27,7 @@ class Parser():
 			if (len(parts) == 0):
 				pass
 			elif (parts[0] in ("#", "//")):
-				pass
 				self.cPrint("\r# %s" % " ".join(parts[1:]))
-#				print("\r... %d is being factorized%s" % (n, " "*3), end="")
 
 			elif (parts[0] in ("help", "h")):
 				cmd = [

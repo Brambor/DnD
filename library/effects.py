@@ -7,7 +7,10 @@ see Entity.get_effect_string in file Entity.py
 """
 
 
-chill_comment = "(chilled = lowered DEXTERITY (obratnost) and Combat (Boj) by d6 (WHAT? who throwns? when? how many times?) for duration of effect, duration = 5 turns or until removed by FIRE spell, or manually - via console"
+chill_comment = """
+(chilled = lowered DEXTERITY (obratnost) and Combat (Boj) by d6 (when effect is created, one d6 is thrown per every stat) for duration of effect,
+duration = 5 turns or until removed by FIRE spell, or manually - via console
+"""
 
 frozen_comment = """
 (frozen = target cannot move, attack, fight and cast spell; susceptible to PHYSICAL dmg (x2 multiplied incoming dmg);
