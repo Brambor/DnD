@@ -233,19 +233,22 @@ class Entity():
 		else:
 			value = effect["value"]
 
-		if effect["type"] == "dice":
-			str_duration = "(D%d)" % value
-		elif effect["type"] == "duration":
-			str_duration = "(for %d turns)" % value
+		if value:
+			if effect["type"] == "dice":
+				str_duration = " (D%d)" % value
+			elif effect["type"] == "duration":
+				str_duration = " (for %d turns)" % value
+			else:
+				raise  # the programer screwed up!
 		else:
-			raise  # the programer screwed up!
+			str_duration = ""
 
 		if "on_print" in effect:
-			return "%s %s" % (effect["on_print"], str_duration)
+			return "%s%s" % (effect["on_print"], str_duration)
 		elif effect["type"] == "duration":
-			return "%s %s" % (effect["name"], str_duration)
+			return "%s%s" % (effect["name"], str_duration)
 		elif effect["type"] == "dice":
-			return "%sing %s" % (effect["name"], str_duration)
+			return "%sing%s" % (effect["name"], str_duration)
 		else:
 			raise
 
@@ -268,11 +271,7 @@ class Entity():
 			return
 
 		# turned by into
-		something_has_been_turned = False
-		for effect_flag in effect["flags"]:  # probably just one, but I'm keeping it general!
-			ret_flag = self.turned_by_into(effect_flag)  # does quite a lot!
-			something_has_been_turned = max(something_has_been_turned, ret_flag)
-		if something_has_been_turned:
+		if self.turned_by_into(effect["name"]):
 			return
 
 		effect = copy(effect)
@@ -290,9 +289,9 @@ class Entity():
 
 		# Add/Refresh effect
 		result = ""
-		if effect["on stack"] == "add":
+		if effect["on_stack"] == "add":
 			result = "add"
-		elif effect["on stack"] == "refresh":
+		elif effect["on_stack"] == "refresh":
 			old_effect = self.get_effect(effect["name"])
 			if old_effect:  # the refreshment
 				result = "refresh"
@@ -325,7 +324,7 @@ class Entity():
 		i = 0
 		while i < len(self.body["effects"]):
 			effect = self.body["effects"][i]
-			if set(flags).intersection(set(effect["flags"])):
+			if effect["name"] in flags:
 				self.cPrint("%s is no longer %s" % (self, self.get_effect_string(effect)))
 				del self.body["effects"][i]
 			else:
@@ -337,7 +336,7 @@ class Entity():
 		while i < len(effects):
 			effect = effects[i]
 
-			if ("FIRE" in effect["flags"]):
+			if effect["name"] == "FIRE":
 				threw = D(effect["value"])
 				self.damaged(threw, "true", "burns for")
 				if threw == 1:
@@ -345,7 +344,7 @@ class Entity():
 					del effects[i]
 					continue
 
-			if ("BLEADING" in effect["flags"]):
+			if effect["name"] == "BLEAD":
 				threw = D(effect["value"])
 				self.damaged(threw, "true", "bleads for")
 
@@ -360,7 +359,7 @@ class Entity():
 	def immune_to_effect(self, effect):
 		for under_effect in self.body["effects"]:
 			if "prevents" in under_effect:
-				if set(under_effect["prevents"]).intersection(set(effect["flags"])):
+				if effect["name"] in under_effect["prevents"]:
 					return under_effect  # imunity by
 		return None  # Nothing gives imunity
 
@@ -372,21 +371,21 @@ class Entity():
 		while i_x >= 0:
 			under_effect = self.body["effects"][i_x]
 			if "turned_by_into" in under_effect:
-				for by_flag, into in under_effect["turned_by_into"]:
-					if by_flag == flag:
+				if flag in under_effect["turned_by_into"]:
+					turns_into = under_effect["turned_by_into"][flag]
 
-						original = self.get_effect_string(self.body["effects"][i_x])
-						del self.body["effects"][i_x]
-						if into:
-							effect, value = into
-							effect = self.game.get_effect(effect)
-							into_str = self.get_effect_string(effect, value)
-						else:
-							into_str = "nothing"
+					original = self.get_effect_string(self.body["effects"][i_x])
+					del self.body["effects"][i_x]
+					if turns_into:
+						effect, value = turns_into
+						effect = self.game.get_effect(effect)
+						into_str = self.get_effect_string(effect, value)
+					else:
+						into_str = "nothing"
 
-						self.cPrint("%s turns into %s by %s" % ( original, into_str, by_flag ))
-						if into:
-							self.add_effect(effect, value)
-						return True
+					self.cPrint("%s's %s turns into %s by %s" % ( self, original, into_str, flag ))
+					if turns_into:
+						self.add_effect(effect, value)
+					return True
 			i_x -= 1
 		return False

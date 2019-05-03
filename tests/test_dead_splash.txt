@@ -9,7 +9,7 @@ set b hp 1
 fight a b 5 4
 
 # splash
-cast a spash
+cast a splash
 b
 
 # info
