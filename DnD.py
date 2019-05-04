@@ -28,8 +28,8 @@ if not settings.AUTO_INPUT:
 	else:
 		current_time = None
 
-	cInput = CustomInput(log_file=current_time, input_stream=False)
 	cPrint = CustomPrint(log_file=current_time)
+	cInput = CustomInput(cPrint, log_file=current_time, input_stream=False)
 
 	G = Game(library, cPrint)
 	P = Parser(G, cInput, cPrint, settings.DEBUG)
@@ -53,8 +53,8 @@ else:
 		f = open(path,'r')
 		f_copy = open(path,'r').read().split("\n")
 
-		cInput = CustomInput(log_file=None, input_stream=f_copy)
 		cPrint = CustomPrint(log_file=None)
+		cInput = CustomInput(cPrint, log_file=None, input_stream=f_copy)
 
 		G = Game(library, cPrint)
 		P = Parser(G, cInput, cPrint, settings.DEBUG)

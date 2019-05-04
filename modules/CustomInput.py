@@ -3,10 +3,11 @@ import os
 class CustomInput():
 	"log_file is path to file where the output is saved\
 	input_stream True: given message is printed ('print', not 'CustomPrint')"
-	def __init__(self, log_file="", input_stream=False):
+	def __init__(self, cPrint, log_file="", input_stream=False):
 		self.input_stream = input_stream
 		self.i = 0
 		self.log_file = log_file
+		self.cPrint = cPrint
 
 	def __call__(self, message):
 		res = input(message)
@@ -14,7 +15,7 @@ class CustomInput():
 			self.write_to_log(message, res)
 
 		if self.input_stream:
-			print(self.input_stream[self.i])
+			self.cPrint(self.input_stream[self.i])
 			self.i += 1
 		return res
 
