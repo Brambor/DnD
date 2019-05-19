@@ -41,6 +41,7 @@ class Parser():
 					("set",),
 					("fight", "f"),
 					("spell", "s", "cast"),
+					("attack", "a", "dmg", "d"),
 				]
 				self.cPrint("write command without any atributes for further help,")
 				self.cPrint("(except for turn)")
@@ -178,6 +179,43 @@ class Parser():
 				targets = [self.game.get_entity(target) for target in targets.split()]
 
 				caster.cast_spell(targets, spell, d, theInput)
+
+			elif (parts[0] in ("attack", "a", "dmg", "d")):
+				if len(parts) == 1:
+					self.cPrint("[a]ttack/[d]mg source_text")
+					self.cPrint("\tsource is string latter used in log message (it is NOT optional, thought it is vaguely saved)")
+
+					self.cPrint("type_of_dmg base_dmg dice(die)")
+					self.cPrint("\tdamage_type ([p]hysical/[m]agic/[t]rue)")
+					self.cPrint("\tdie are row integers representing used dice(die)")
+
+					self.cPrint("target(s)")
+					self.cPrint("\ttarget_entity_1 target_entity_2 ...")
+					return
+
+				source_text = " ".join(parts[1:])
+
+				damages = self.cInput("type base dice(die):\n>>>").split()
+				if len(damages) >= 2:
+					damage_type = damages[0]
+					if damage_type not in ("physical", "p", "magic", "m", "true", "t"):
+						raise DnDException("Damage type must be one of [p]hysical/[m]agic/[t]rue, '%s' is not either of them." % damage_type)
+
+					base_dmg = damages[1]
+					self.check(base_dmg, "dice")
+					base_dmg = int(base_dmg)
+
+					dice = damages[2:]
+					self.check(" ".join(dice), " ".join(["dice"]*len(dice)))  # cubersome...
+					dice = [int(d) for d in dice]
+
+				targets = self.cInput("targets:\n>>>")
+				targets = [self.game.get_entity(target) for target in targets.split()]
+
+				threw_crit = self.game.throw_dice(dice)
+				damage_sum = base_dmg + sum(t[0] for t in threw_crit)
+				for target in targets:
+					target.damaged(damage_sum, damage_type)
 
 			else:
 				self.cPrint("?")

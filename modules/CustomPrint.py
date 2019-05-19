@@ -13,5 +13,5 @@ class CustomPrint():
 	def write_to_log(self, message):
 		if not os.path.exists("logs"):
 			os.mkdir("logs")
-		with open(("logs/%s.txt" % self.log_file).replace(":", "_"), "a") as log_file:
-			log_file.write("%s\n" % message)
+		with open(("logs/%s.txt" % self.log_file).replace(":", "_"), "ab") as log_file:
+			log_file.write(("%s\n" % message).encode("utf8"))

@@ -198,11 +198,11 @@ class Entity():
 
 	# RECIVE DAMAGE, HEAL
 	def damaged(self, dmg, damage_type, statement=""):
-		if damage_type == "physical":
+		if damage_type in ("physical", "p"):
 			dmg = max(dmg - self.get_stat("armor"), 0)
-		elif damage_type == "magic":
+		elif damage_type in ("magic", "m"):
 			dmg = max(dmg - self.get_stat("magie"), 0)
-		elif damage_type != "true":
+		elif damage_type not in ("true", "t"):
 			raise
 		if statement == "":
 			statement = "recived"

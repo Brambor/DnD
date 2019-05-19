@@ -7,3 +7,4 @@ eval
 set
 fight
 spell
+dmg

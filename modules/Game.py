@@ -1,4 +1,5 @@
 from modules.Entity import Entity
+from modules.Dice import D, dice_crit, dice_stat
 from modules.DnDException import DnDException
 
 
@@ -50,3 +51,17 @@ class Game():
 		if effect:
 			return effect
 		raise DnDException("Effect '%s' is not in library." % effect_name)
+
+	def throw_dice(self, dice_list):
+		"throws die in list, prints results and returns list of sets (set)((int) threw, (bool)crit)"
+		threw_crit = []
+		for n in dice_list:
+			threw = D(n)
+			crit = dice_crit(n, threw, self.cPrint)
+			threw_crit.append((threw, crit))
+		self.cPrint("".join('D{0: <4}'.format(n) for n in dice_list))
+		self.cPrint(
+			"".join(
+				'{1}{0: <4}'.format(threw, "!" if crit else " ") for threw, crit in threw_crit)
+		)
+		return threw_crit
