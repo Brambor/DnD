@@ -1,7 +1,8 @@
 # DnD
 ## Instalation:
-1) Copy `settings/local_settings_default.py` to make new file: `settings/local_settings.py`.
-2) Open `settings/local_settings.py` and edit it to your preferences, you will probably want.
+1) Install libraries required. These are written in `requirements.txt`.
+2) Copy `settings/local_settings_default.py` to make new file: `settings/local_settings.py`.
+3) Open `settings/local_settings.py` and edit it to your preferences, you will probably want.
 ```
 DEBUG = False
 AUTO_INPUT = False
