@@ -22,26 +22,28 @@ class Entity():
 		return "%s_%d" % (self.nickname, self.id)
 
 	def info(self):
-		self.cPrint("nickname_id: %s" % self)
-		self.cPrint("derived_from: %s" % self.body["derived_from"])
+		complete_string = "nickname_id: %s\n" % self
+		complete_string += "derived_from: %s\n" % self.body["derived_from"]
 		dead = " (DEAD)" if not self.body["alive"] else ""
-		self.cPrint("hp: %d/%s %s" % (self.get_stat("hp"), self.get_stat("hp_max", False), dead))
-		self.cPrint("mana: %d/%s" % (self.get_stat("mana"), self.get_stat("mana_max", False)))
-		self.cPrint("weapon: %s" % self.body["weapon"])
-		self.cPrint("boj: %s" % self.get_stat("boj", False))
+		complete_string += "hp: %d/%s%s\n" % (self.get_stat("hp"), self.get_stat("hp_max", False), dead)
+		complete_string += "mana: %d/%s\n" % (self.get_stat("mana"), self.get_stat("mana_max", False))
+		complete_string += "weapon: %s\n" % self.body["weapon"]
+		complete_string += "boj: %s\n" % self.get_stat("boj", False)
 		# TURN effects and DICE effects
 		effects = ", ".join(self.get_effect_string(e) for e in self.body["effects"])  # wont work for turn based effects
 		if effects != "":
-			self.cPrint("effects: %s" % effects)
+			complete_string += "effects: %s\n" % effects
+		self.cPrint(complete_string)
 
 	# RAW STAT MANIPULATION
 	def printStats(self):
-		self.cPrint("nickname = '%s'\nid = %d" % (self.nickname, self.id))
+		complete_string = "nickname = '%s'\nid = %d" % (self.nickname, self.id)
 		for key in sorted(self.body.keys()):
 			value = self.get_stat(key, False)
 			if type(self.body[key]) == str:
 				value = "'%s'" % value
-			self.cPrint("%s = %s" % (key, value))
+			complete_string += "%s = %s" % (key, value)
+		self.cPrint(complete_string)
 
 	def setStat(self, stat, value):
 		if ( ( stat in self.body ) and ( type(self.body[stat]) == int ) ):

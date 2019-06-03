@@ -43,11 +43,14 @@ class Parser():
 					("spell", "s", "cast"),
 					("attack", "a", "dmg", "d"),
 				]
-				self.cPrint("write command without any atributes for further help,")
-				self.cPrint("(except for turn)")
-				self.cPrint("commands:")
+				complete_string = ("write command without any atributes for further help,\n"
+									"(except for turn)\n"
+									"commands:\n"
+				)
+				
 				for c in (", ".join(c) for c in cmd):
-					self.cPrint("\t%s" % c)
+					complete_string += "\t%s\n" % c
+				self.cPrint(complete_string)
 
 			elif (parts[0] in ("create", "c")):
 				if len(parts) == 1:
@@ -62,13 +65,12 @@ class Parser():
 
 			elif (parts[0] in ("print", "p")):
 				if len(parts) == 1:
-					self.cPrint("[p]rint what")
-					self.cPrint("\t[e]ntities - all entities")
+					self.cPrint("[p]rint what\n"
+								"\t[e]ntities - all entities\n")
 					return
 				if (parts[1] == "entities" or parts[1] == "e"):
 					if self.game.entities:
-						for entity in self.game.entities:
-							self.cPrint(entity)
+						self.cPrint("\n".join(str(entity) for entity in self.game.entities))
 					else:
 						self.cPrint("no entities")
 				else:
@@ -108,8 +110,8 @@ class Parser():
 
 			elif (parts[0] == "set"):
 				if len(parts) == 1:
-					self.cPrint("set entity stat to_value")
-					self.cPrint("\tset entity - prints all stats of entity")
+					self.cPrint("set entity stat to_value\n"
+								"\tset entity - prints all stats of entity\n")
 					return
 				entity = self.game.get_entity(parts[1])
 				if len(parts) == 2:
@@ -121,10 +123,11 @@ class Parser():
 
 			elif (parts[0] in ("fight", "f")):
 				if len(parts) == 1:
-					self.cPrint("[f]ight entity1 entity2 val1 val2 placeholder_input_sequence")
-					self.cPrint("\tval* is integer, 'a' for auto")
-					self.cPrint("\t%s" % texts["placeholder_input_sequence"])
-					self.cPrint("\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything")
+					complete_string = ( "[f]ight entity1 entity2 val1 val2 placeholder_input_sequence\n"
+										"\tval* is integer, 'a' for auto\n" )
+					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
+					complete_string +=  "\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
+					self.cPrint(complete_string)
 					return
 
 				e1 = self.game.get_entity(parts[1])
@@ -153,12 +156,13 @@ class Parser():
 
 			elif (parts[0] in ("spell", "s", "cast")):
 				if len(parts) == 1:
-					self.cPrint("[s]pell/cast caster_entity spell dice")
-					self.cPrint("\tspell must be from library.spells")
-					self.cPrint("\tdice is integer, 'a' for auto")
-					self.cPrint("\t%s" % texts["placeholder_input_sequence"])
+					complete_string = ( "[s]pell/cast caster_entity spell dice\n"
+										"\tspell must be from library.spells\n"
+										"\tdice is integer, 'a' for auto\n" )
+					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
 
-					self.cPrint("target_entity_1 target_entity_2 ...")
+					complete_string +=  "target_entity_1 target_entity_2 ...\n"
+					self.cPrint(complete_string)
 					return
 				caster = self.game.get_entity(parts[1])
 
@@ -182,15 +186,15 @@ class Parser():
 
 			elif (parts[0] in ("attack", "a", "dmg", "d")):
 				if len(parts) == 1:
-					self.cPrint("[a]ttack/[d]mg source_text")
-					self.cPrint("\tsource is string latter used in log message (it is NOT optional, thought it is vaguely saved)")
+					self.cPrint("[a]ttack/[d]mg source_text\n"
+							"\tsource is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
 
-					self.cPrint("type_of_dmg base_dmg dice(die)")
-					self.cPrint("\tdamage_type ([p]hysical/[m]agic/[t]rue)")
-					self.cPrint("\tdie are row integers representing used dice(die)")
+							"type_of_dmg base_dmg dice(die)\n"
+							"\tdamage_type ([p]hysical/[m]agic/[t]rue)\n"
+							"\tdie are row integers representing used dice(die)\n"
 
-					self.cPrint("target(s)")
-					self.cPrint("\ttarget_entity_1 target_entity_2 ...")
+							"target(s)\n"
+							"\ttarget_entity_1 target_entity_2 ...\n")
 					return
 
 				source_text = " ".join(parts[1:])

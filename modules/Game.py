@@ -59,9 +59,9 @@ class Game():
 			threw = D(n)
 			crit = dice_crit(n, threw, self.cPrint)
 			threw_crit.append((threw, crit))
-		self.cPrint("".join('D{0: <4}'.format(n) for n in dice_list))
-		self.cPrint(
-			"".join(
-				'{1}{0: <4}'.format(threw, "!" if crit else " ") for threw, crit in threw_crit)
+		complete_string = "".join('D{0: <4}'.format(n) for n in dice_list)
+		complete_string += "".join(
+				'{1}{0: <4}'.format(threw, "!" if crit else " ") for threw, crit in threw_crit
 		)
+		self.cPrint(complete_string)
 		return threw_crit
