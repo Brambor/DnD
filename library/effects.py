@@ -80,6 +80,6 @@ effects = {
 for effect in effects:
 	effects[effect]["name"] = effect
 
-
+# shortcuts
 effects["f"] = effects["FIRE"]
 effects["b"] = effects["BLEAD"]

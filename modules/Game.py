@@ -22,7 +22,7 @@ class Game():
 		return e
 
 	def turn(self):
-		self.cPrint("Turn %d" % self.i_turn)
+		self.cPrint("Turn %d\n" % self.i_turn)
 		for e in self.entities:
 			e.apply_effects()
 		self.i_turn += 1
@@ -59,9 +59,9 @@ class Game():
 			threw = D(n)
 			crit = dice_crit(n, threw, self.cPrint)
 			threw_crit.append((threw, crit))
-		complete_string = "".join('D{0: <4}'.format(n) for n in dice_list)
+		complete_string = "".join('D{0: <4}'.format(n) for n in dice_list) + "\n"
 		complete_string += "".join(
 				'{1}{0: <4}'.format(threw, "!" if crit else " ") for threw, crit in threw_crit
-		)
+		) + "\n"
 		self.cPrint(complete_string)
 		return threw_crit

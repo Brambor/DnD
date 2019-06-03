@@ -27,7 +27,7 @@ class Parser():
 			if (len(parts) == 0):
 				pass
 			elif (parts[0] in ("#", "//")):
-				self.cPrint("\r# %s" % " ".join(parts[1:]))
+				self.cPrint("\r# %s\n" % " ".join(parts[1:]))
 
 			elif (parts[0] in ("help", "h")):
 				cmd = [
@@ -54,7 +54,7 @@ class Parser():
 
 			elif (parts[0] in ("create", "c")):
 				if len(parts) == 1:
-					self.cPrint("[c]reate pes nickname_to_be_set")
+					self.cPrint("[c]reate pes nickname_to_be_set\n")
 					return
 				self.check(parts[1], "entity_library")
 
@@ -70,15 +70,15 @@ class Parser():
 					return
 				if (parts[1] == "entities" or parts[1] == "e"):
 					if self.game.entities:
-						self.cPrint("\n".join(str(entity) for entity in self.game.entities))
+						self.cPrint("\n".join(str(entity) for entity in self.game.entities) + "\n")
 					else:
-						self.cPrint("no entities")
+						self.cPrint("no entities\n")
 				else:
-					self.cPrint("?")
+					self.cPrint("?\n")
 
 			elif (parts[0] in ("info", "i")):
 				if len(parts) == 1:
-					self.cPrint("[i]nfo entity")
+					self.cPrint("[i]nfo entity\n")
 					return
 
 				e = self.game.get_entity(parts[1])
@@ -86,7 +86,7 @@ class Parser():
 
 			elif (parts[0] in ("effect", "e")):
 				if len(parts) == 1:
-					self.cPrint("[e]ffect entity effect dice")
+					self.cPrint("[e]ffect entity effect dice\n")
 					return
 				entity = self.game.get_entity(parts[1])
 				effect = self.game.get_effect(parts[2])
@@ -99,14 +99,14 @@ class Parser():
 
 			elif (parts[0] == "eval"):
 				if len(parts) == 1:
-					self.cPrint("eval command\n\tbetter not use that!")
+					self.cPrint("eval command\n\tbetter not use that!\n")
 					return
 				parts = " ".join(parts[1:])
 				try:
-					self.cPrint("eval:")
+					self.cPrint("eval:\n")
 					eval(parts)
 				except:
-					self.cPrint("eval done wrong")
+					self.cPrint("eval done wrong\n")
 
 			elif (parts[0] == "set"):
 				if len(parts) == 1:
@@ -222,11 +222,11 @@ class Parser():
 					target.damaged(damage_sum, damage_type)
 
 			else:
-				self.cPrint("?")
+				self.cPrint("?\n")
 
 		except DnDException as exception:
-			self.cPrint("?!: %s" % exception)
+			self.cPrint("?!: %s\n" % exception)
 		except:
 			if self.DEBUG:
 				raise
-			self.cPrint("fcked up")
+			self.cPrint("fcked up\n")

@@ -37,12 +37,12 @@ class Entity():
 
 	# RAW STAT MANIPULATION
 	def printStats(self):
-		complete_string = "nickname = '%s'\nid = %d" % (self.nickname, self.id)
+		complete_string = "nickname = '%s'\nid = %d\n" % (self.nickname, self.id)
 		for key in sorted(self.body.keys()):
 			value = self.get_stat(key, False)
 			if type(self.body[key]) == str:
 				value = "'%s'" % value
-			complete_string += "%s = %s" % (key, value)
+			complete_string += "%s = %s\n" % (key, value)
 		self.cPrint(complete_string)
 
 	def setStat(self, stat, value):
@@ -58,14 +58,14 @@ class Entity():
 			elif value == "False":
 				self.body[stat] = False
 			else:
-				self.cPrint("?")
+				self.cPrint("?\n")
 		elif stat == "nickname":
 			self.set_nickname(value)
 		#if stat == "weapon":
 		#	self.body["weapon = int(value)
 		# remove effect ?
 		else:
-			self.cPrint("?")
+			self.cPrint("?\n")
 
 	def set_nickname(self, nickname):
 		if nickname == "":
@@ -112,13 +112,13 @@ class Entity():
 
 	def check_dead(self):  # not handeled at all
 		if self.get_stat("hp") <= 0:
-			self.cPrint("%s IS DEAD!" % self)
+			self.cPrint("%s IS DEAD!\n" % self)
 			self.body["alive"] = False
 
 	def check_revived(self):
 		if self.get_stat("hp") > 0:
 			if self.body["alive"] == False:
-				self.cPrint("%s IS ALIVE!" % self)
+				self.cPrint("%s IS ALIVE!\n" % self)
 			self.body["alive"] = True
 
 	# FIGHT, CAST
@@ -138,7 +138,7 @@ class Entity():
 		opponent_power = opponent.get_stat("boj") + opponent_D
 
 		for e, total_power in ((self, self_power), (opponent, opponent_power)):
-			self.cPrint("%s fights with power of %d (base %d + dice %d)" % (
+			self.cPrint("%s fights with power of %d (base %d + dice %d)\n" % (
 				e, total_power, e.get_stat("boj"), total_power - e.get_stat("boj")
 			))
 
@@ -162,7 +162,7 @@ class Entity():
 		if self.get_stat("mana") >= spell_cost:
 			self.body["mana"] -= spell_cost
 		else:
-			self.cPrint("%s does not have enought mana for %s" % (self, spell["name"]))
+			self.cPrint("%s does not have enought mana for %s\n" % (self, spell["name"]))
 			return
 
 		for target in targets:
@@ -173,7 +173,7 @@ class Entity():
 				damage, crit = self.count_spell_hp(spell["effects"]["damages"], cInput)
 				target.damaged(damage, "magic")
 				if crit:
-					self.cPrint("Critical spell!!")
+					self.cPrint("Critical spell!!\n")
 			if "heals" in spell["effects"]:
 				heal = self.count_spell_hp(spell["effects"]["heals"], cInput)[0]
 				target.healed(heal)
@@ -209,13 +209,13 @@ class Entity():
 		if statement == "":
 			statement = "recived"
 		if self.get_stat("alive"):
-			self.cPrint("%s %s %d dmg" % (self, statement, dmg))
+			self.cPrint("%s %s %d dmg\n" % (self, statement, dmg))
 		self.body["hp"] -= dmg
 		self.check_dead()
 
 	def healed(self, heal):
 		healed_for = min(self.get_stat("hp") + heal, self.get_stat("hp_max")) - self.get_stat("hp")
-		self.cPrint("%s healed for %d HladinPetroleje" % (self, healed_for))
+		self.cPrint("%s healed for %d HladinPetroleje\n" % (self, healed_for))
 		self.body["hp"] += healed_for
 		self.check_revived()
 
@@ -256,7 +256,7 @@ class Entity():
 		# by effect
 		immunity_by = self.immune_to_effect(effect)
 		if immunity_by:
-			self.cPrint("%s is immune to %s because they are %s" % (
+			self.cPrint("%s is immune to %s because they are %s\n" % (
 				self,
 				effect["name"],
 				self.get_effect_string(immunity_by)
@@ -302,7 +302,7 @@ class Entity():
 		else:
 			raise
 
-		self.cPrint("%s is %s now%s" % (self, self.get_effect_string(effect), extra_comment))
+		self.cPrint("%s is %s now%s\n" % (self, self.get_effect_string(effect), extra_comment))
 
 		# Remove effects that entity is now immune to
 		if "prevents" in effect:
@@ -318,7 +318,7 @@ class Entity():
 		while i < len(self.body["effects"]):
 			effect = self.body["effects"][i]
 			if effect["name"] in flags:
-				self.cPrint("%s is no longer %s" % (self, self.get_effect_string(effect)))
+				self.cPrint("%s is no longer %s\n" % (self, self.get_effect_string(effect)))
 				del self.body["effects"][i]
 			else:
 				i += 1
@@ -333,7 +333,7 @@ class Entity():
 				threw = D(effect["value"])
 				self.damaged(threw, "true", "burns for")
 				if threw == 1:
-					self.cPrint("\t and stopped %s" % self.get_effect_string(effect))
+					self.cPrint("\t and stopped %s\n" % self.get_effect_string(effect))
 					del effects[i]
 					continue
 
@@ -344,7 +344,7 @@ class Entity():
 			if effect["type"] == "duration":
 				effect["value"] -= 1
 				if effect["value"] == 0:
-					self.cPrint("%s is no longer %s" % (self, self.get_effect_string(effect)))
+					self.cPrint("%s is no longer %s\n" % (self, self.get_effect_string(effect)))
 					del effects[i]
 
 			i += 1
@@ -376,7 +376,7 @@ class Entity():
 					else:
 						into_str = "nothing"
 
-					self.cPrint("%s's %s turns into %s by %s" % ( self, original, into_str, flag ))
+					self.cPrint("%s's %s turns into %s by %s\n" % ( self, original, into_str, flag ))
 					if turns_into:
 						self.add_effect(effect, value)
 					return True

@@ -1,6 +1,7 @@
 import curses
 from curses import textpad
 
+
 class CustomCurses():
 	def __init__(self):
 		input("Make this window however big and press ENTER.")
@@ -16,39 +17,49 @@ class CustomCurses():
 		stdscr.keypad(True)  # getting special keys such as curses.KEY_LEFT
 		#stdscr.nodelay(1)  # get_wch doesn't wait for char, returns -1 instead
 
-		width = curses.COLS - 1
-		height = curses.LINES - 1
+		self.width = curses.COLS - 1
+		self.height = curses.LINES - 1
 
 		#win = curses.newwin(height, width//3, begin_y, begin_x)
-		windows = []
+		windows = {}
 		self.windows = windows
 
-		#left
-		windows.append(curses.newwin(height-3, width//3, 0, 0))
-		#middle
-		windows.append(curses.newwin(height-3, width//3, 0, width//3))
-		#right
-		windows.append(curses.newwin(height-3, width//3, 0, 2*(width//3)))
-		#input
-		windows.append(curses.newwin(3, width, height-2, 0))
-		self.command_textbox = textpad.Textbox(windows[3])
+		for w in WINDOWS:
+			wi = self.calculate(WINDOWS[w]["width_height"][0])
+			he = self.calculate(WINDOWS[w]["width_height"][1])
+			left_top_wi = self.calculate(WINDOWS[w]["left_top"][0])
+			left_top_he = self.calculate(WINDOWS[w]["left_top"][1])
+			self.windows[w] = curses.newwin(he, wi, left_top_he, left_top_wi)
 
-		for w, t in zip(windows, ("<<left>>\n", "<<middle>>\n", "<<right>>\n")):
-			w.scrollok(True)
-			for i in range(height):
-				w.addstr("\n")
-			w.addstr(t)
-			w.refresh()
+			self.windows[w].scrollok(True)
+			for i in range(self.height):
+				self.windows[w].addstr("\n")
+			if w != "console_input":
+				self.windows[w].addstr("<<%s>>\n" % w)
+			self.windows[w].refresh()
+
+		self.command_textbox = textpad.Textbox(windows["console_input"])
+
+		# TODO: check if we have "console_input" window and "fight" window
+
+	def calculate(self, expresion):
+		"expresion is a string that can contain 'x' or 'y' and other mathematical "
+		return eval( expresion.replace("x", str(self.width)).replace("y", str(self.height)) )
+
 
 	def send(self, message):
 		input_command = ""
 		windows = self.windows
 
 		print("message yielded (send) %s" % message)
-		windows[3].addstr(0, 0, message)
-		message_s = message.split()
-		windows[3].move(len(message_s)-1, len(message_s[-1])+1)
-#		windows[3].leaveok(False)
+		windows["console_input"].addstr(0, 0, message)
+
+		message_s = message.split("\n")
+		print("message_s:", message_s)
+		print("will be moving to:", len(message_s)-1, len(message_s[-1])+1)
+
+		windows["console_input"].move(len(message_s)-1, len(message_s[-1])+1)  # TODO: crashes when len(message_s) > 3 or 4
+#		windows["console_input"].leaveok(False)
 
 		# INPUT
 		curses.curs_set(2)
@@ -56,19 +67,19 @@ class CustomCurses():
 		curses.curs_set(False)  # so that it doesn't blink in top left corner. >>> ocasionally blinks thought...
 
 		# removing >>>
-		input_command = input_command[len(message)+1 + message.count("\n"):]
+		input_command_stripped = input_command[len(message)+1 + message.count("\n"):]
 
-		windows[3].clear()
+		windows["console_input"].clear()
 
-		windows[0].addstr(input_command)  # fight, but s
+		windows["fight"].addstr(input_command)  # fight, but s
 
 		print("in generator: %s" % input_command)
 		#  yield input_command[:-2]  # removing ending \n
 		print("after yield")
 
 		for w in windows:
-			w.refresh()
-		return input_command[:-2]  # removing ending \n
+			windows[w].refresh()
+		return input_command_stripped[:-2]  # removing ending \n
 
 	def endCurses(self):
 		curses.nocbreak()
@@ -82,6 +93,25 @@ def enter_is_terminate(x):
 	if x in (10, 459):  # regular enter, enter on notepad
 		x = 7
 	return x
+
+WINDOWS = {
+	"fight": {
+		"left_top": ("0", "0"),
+		"width_height": ("x//3", "y-3"),
+	},
+	"help": {
+		"left_top": ("x//3", "0"),
+		"width_height": ("x//3", "y-3"),
+	},
+	"effect": {
+		"left_top": ("2*x//3", "0"),
+		"width_height": ("x//3", "y-3"),
+	},
+	"console_input": {
+		"left_top": ("0", "y-2"),
+		"width_height": ("x", "3"),
+	},
+}
 
 #curses.wrapper(input_curses)
 

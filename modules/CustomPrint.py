@@ -9,8 +9,8 @@ class CustomPrint():
 
 	def __call__(self, message="", info_type="fight"):
 		if info_type == "fight":
-			self.windows[0].addstr("\n" + message)  # fight window
-			self.windows[0].refresh()
+			self.windows["fight"].addstr(message)  # fight window
+			self.windows["fight"].refresh()
 		print(message)
 		if self.log_file:
 			self.write_to_log(message)
