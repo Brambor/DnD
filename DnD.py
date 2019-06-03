@@ -1,5 +1,4 @@
-from copy import copy
-
+from modules.CustomCurses import CustomCurses
 from modules.CustomInput import CustomInput
 from modules.Game import Game
 from modules.Parser import Parser
@@ -28,21 +27,34 @@ if not settings.AUTO_INPUT:
 	else:
 		current_time = None
 
-	cPrint = CustomPrint(log_file=current_time)
-	cInput = CustomInput(cPrint, log_file=current_time, input_stream=False)
+	cCurses = CustomCurses()
+	windows = cCurses.windows
+
+
+	cPrint = CustomPrint(windows, log_file=current_time)
+	cInput = CustomInput(cPrint, cCurses, log_file=current_time, input_stream=False)
 
 	G = Game(library, cPrint)
 	P = Parser(G, cInput, cPrint, settings.DEBUG)
+	try:
+		while True:
+			command = cInput(">>>")
+			if command == "&" and settings.DEBUG:
+				crash  # force crash
+			if command == "exit":
+				break  # force crash
 
-	"""
-	e = G.create("pes", "a")
-	e = G.create("pes", "b")
-	e = G.create("Thorbald", "t")
+			print ("in cycle: %s" % command)
+			P.process(command)
+	except Exception as e:
+		cCurses.endCurses()
+		print("\n\n")
+		print(e)
+		input("CRASHED, PRESS ENTER")
+		raise
+	cCurses.endCurses()
+	input("You are exiting")
 
-	print([str(e) for e in G.entities])
-	"""
-	while True:
-		P.input(">>>")
 else:
 	# TESTING
 	import sys

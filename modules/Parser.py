@@ -20,8 +20,8 @@ class Parser():
 				if not v.isdigit():
 					raise DnDException("'%s' is not a valid integer." % v)
 
-	def input(self, input_message):
-		cmd = self.cInput(input_message)
+
+	def process(self, cmd):
 		parts = cmd.split()
 		try:
 			if (len(parts) == 0):
