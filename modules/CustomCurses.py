@@ -68,6 +68,10 @@ class CustomCurses():
 
 		# removing >>>
 		input_command_stripped = input_command[len(message)+1 + message.count("\n"):]
+		# if only >>>, then print only \n
+		print("INPUT CMD: '%s'" % input_command)
+		if input_command == ">>> \n":
+			input_command = "\n"
 
 		windows["console_input"].clear()
 
