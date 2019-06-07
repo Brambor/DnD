@@ -58,14 +58,14 @@ class Entity():
 			elif value == "False":
 				self.body[stat] = False
 			else:
-				self.cPrint("?\n")
+				raise DnDException("Unacceptable value '%s' accepting only 'True' and 'False'." % value)
 		elif stat == "nickname":
 			self.set_nickname(value)
 		#if stat == "weapon":
 		#	self.body["weapon = int(value)
 		# remove effect ?
 		else:
-			self.cPrint("?\n")
+			raise DnDException("Unknown stat '%s'" % stat)
 
 	def set_nickname(self, nickname):
 		if nickname == "":
