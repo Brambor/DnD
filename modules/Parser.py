@@ -165,8 +165,11 @@ class Parser():
 					complete_string +=  "target_entity_1 target_entity_2 ...\n"
 					self.cPrint(complete_string)
 					return
-				caster = self.game.get_entity(parts[1])
 
+				if len(parts) == 2:
+					raise DnDException("Command 'spell' takes 1, 3 or 4 arguments, %d given." % len(parts))
+
+				caster = self.game.get_entity(parts[1])
 				spell = self.game.get_spell(parts[2])
 				if len(parts) >= 3:
 					d = -1
@@ -177,7 +180,6 @@ class Parser():
 					theInput = self.cInput
 				else:
 					theInput = False
-
 
 				# targets
 				targets = self.cInput("targets:\n>>>")
