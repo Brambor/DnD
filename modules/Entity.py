@@ -17,6 +17,7 @@ class Entity():
 		self.body["alive"] = True
 		self.game = game
 		self.cPrint = game.cPrint
+		self.played_this_turn = False
 
 	def __str__(self):
 		return "%s_%d" % (self.nickname, self.id)
@@ -43,6 +44,7 @@ class Entity():
 			if type(self.body[key]) == str:
 				value = "'%s'" % value
 			complete_string += "%s = %s\n" % (key, value)
+		complete_string += "played_this_turn = %s\n" % self.played_this_turn
 		self.cPrint(complete_string)
 
 	def setStat(self, stat, value):
@@ -50,17 +52,14 @@ class Entity():
 			if value.isdigit():
 				self.body[stat] = int(value)
 			else:
-				raise DnDException("%s's stat %s is integer, value '%s' is not." % (self, stat, value))
+				raise DnDException("Stat %s is integer, value '%s' is not." % (stat, value))
 		elif ( ( stat in self.body ) and ( type(self.body[stat]) == bool ) ):
 			# b = True if a == "False": False
-			if value == "True":
-				self.body[stat] = True
-			elif value == "False":
-				self.body[stat] = False
-			else:
-				raise DnDException("Unacceptable value '%s' accepting only 'True' and 'False'." % value)
+			self.body[stat] = convert_string_to_bool(value)
 		elif stat == "nickname":
 			self.set_nickname(value)
+		elif stat == "played_this_turn":
+			self.played_this_turn = convert_string_to_bool(value)
 		#if stat == "weapon":
 		#	self.body["weapon = int(value)
 		# remove effect ?
@@ -382,3 +381,11 @@ class Entity():
 					return True
 			i_x -= 1
 		return False
+
+def convert_string_to_bool(string):
+	if string == "True":
+		return True
+	elif string == "False":
+		return False
+	else:
+		raise DnDException("Unacceptable value '%s' accepting only 'True' and 'False'." % string)
