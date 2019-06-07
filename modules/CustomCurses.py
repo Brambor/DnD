@@ -7,6 +7,7 @@ class CustomCurses():
 		input("Make this window however big and press ENTER.")
 		stdscr = curses.initscr()
 		curses.start_color()
+		self.curses = curses
 
 		curses.noecho()  # doesn't print pressed keys
 		#curses.echo()
@@ -31,9 +32,10 @@ class CustomCurses():
 			left_top_he = self.calculate(WINDOWS[w]["left_top"][1])
 			self.windows[w] = curses.newwin(he, wi, left_top_he, left_top_wi)
 
-			self.windows[w].scrollok(True)
-			for i in range(self.height):
-				self.windows[w].addstr("\n")
+			if WINDOWS[w].get("scrollok", True):
+				self.windows[w].scrollok( True )  # on False it crashes
+				for i in range(self.height):
+					self.windows[w].addstr("\n")
 			if w != "console_input":
 				self.windows[w].addstr("<<%s>>\n" % w)
 			self.windows[w].refresh()
@@ -41,6 +43,11 @@ class CustomCurses():
 		self.command_textbox = textpad.Textbox(windows["console_input"])
 
 		# TODO: check if we have "console_input" window and "fight" window
+
+		# Colors
+		curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
+		curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+
 
 	def calculate(self, expresion):
 		"expresion is a string that can contain 'x' or 'y' and other mathematical "
@@ -101,6 +108,23 @@ def enter_is_terminate(x):
 WINDOWS = {
 	"fight": {
 		"left_top": ("0", "0"),
+		"width_height": ("2*x//3", "y-3"),
+	},
+	"entities": {
+		"left_top": ("2*x//3", "0"),
+		"width_height": ("x//3", "y-3"),
+		"scrollok": False,
+	},
+	"console_input": {
+		"left_top": ("0", "y-2"),
+		"width_height": ("x", "3"),
+	},
+}
+
+"""
+WINDOWS = { # fight, help, effect ; console_input
+	"fight": {
+		"left_top": ("0", "0"),
 		"width_height": ("x//3", "y-3"),
 	},
 	"help": {
@@ -116,6 +140,7 @@ WINDOWS = {
 		"width_height": ("x", "3"),
 	},
 }
+"""
 
 #curses.wrapper(input_curses)
 

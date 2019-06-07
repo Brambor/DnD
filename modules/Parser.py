@@ -254,3 +254,14 @@ class Parser():
 			if self.DEBUG:
 				raise
 			self.cPrint("fcked up\n")
+
+		# entities window refresh
+		try:
+			self.cPrint.refresh_entities(self.game.entities)
+		except DnDException as exception:
+			self.cPrint("?!: %s\n" % exception)
+		except:
+			if self.DEBUG:
+				raise
+			self.cPrint("fcked up\n")
+

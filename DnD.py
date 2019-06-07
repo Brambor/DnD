@@ -29,9 +29,10 @@ if not settings.AUTO_INPUT:
 
 	cCurses = CustomCurses()
 	windows = cCurses.windows
+	curses = cCurses.curses
 
 
-	cPrint = CustomPrint(windows, log_file=current_time)
+	cPrint = CustomPrint(windows, curses, log_file=current_time)
 	cInput = CustomInput(cPrint, cCurses, log_file=current_time, input_stream=False)
 
 	G = Game(library, cPrint)
