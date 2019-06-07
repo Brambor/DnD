@@ -42,6 +42,7 @@ class Parser():
 					("fight", "f"),
 					("spell", "s", "cast"),
 					("attack", "a", "dmg", "d"),
+					("library", "lib", "list", "l"),
 				]
 				complete_string = ("write command without any atributes for further help,\n"
 									"(except for turn)\n"
@@ -220,6 +221,29 @@ class Parser():
 				damage_sum = base_dmg + sum(t[0] for t in threw_crit)
 				for target in targets:
 					target.damaged(damage_sum, damage_type)
+
+			elif parts[0] in ("library", "lib", "list", "l"):
+				if len(parts) == 1:
+					self.cPrint("[l]ist WHAT\n"
+								"\tWHAT can be [en]tities/[ef]fects/[[s]p]ells\n")
+				elif len(parts) == 2:
+					lib = {
+						"entities": "en",
+						"effects": "ef",
+						"spells": "s",
+						"sp": "s",
+					}.get(parts[1], parts[1])
+					if lib == "en":
+						lib = self.game.library
+					elif lib == "ef":
+						lib = self.game.effects
+					elif lib == "s":
+						lib = self.game.spells
+					else:
+						raise DnDException("No library '%s'." % lib)
+					self.cPrint( str(list(lib)) + "\n" )
+				else:
+					raise DnDException("Command 'library' takes 1 or 2 arguments, %d given." % len(parts))
 
 			else:
 				self.cPrint("?\n")
