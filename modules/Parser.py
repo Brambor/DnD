@@ -24,12 +24,12 @@ class Parser():
 	def process(self, cmd):
 		parts = cmd.split()
 		try:
-			if (len(parts) == 0):
+			if len(parts) == 0:
 				pass
-			elif (parts[0] in ("#", "//")):
+			elif parts[0] in ("#", "//"):
 				self.cPrint("\r# %s\n" % " ".join(parts[1:]))
 
-			elif (parts[0] in ("help", "h")):
+			elif parts[0] in ("help", "h"):
 				cmd = [
 					("help", "h"),
 					("create", "c"),
@@ -52,7 +52,7 @@ class Parser():
 					complete_string += "\t%s\n" % c
 				self.cPrint(complete_string)
 
-			elif (parts[0] in ("create", "c")):
+			elif parts[0] in ("create", "c"):
 				if len(parts) == 1:
 					self.cPrint("[c]reate pes nickname_to_be_set\n")
 					return
@@ -63,12 +63,12 @@ class Parser():
 				else:
 					e = self.game.create(parts[1])
 
-			elif (parts[0] in ("print", "p")):
+			elif parts[0] in ("print", "p"):
 				if len(parts) == 1:
 					self.cPrint("[p]rint what\n"
 								"\t[e]ntities - all entities\n")
 					return
-				if (parts[1] == "entities" or parts[1] == "e"):
+				if parts[1] in ("entities", "e"):
 					if self.game.entities:
 						self.cPrint("\n".join(str(entity) for entity in self.game.entities) + "\n")
 					else:
@@ -76,7 +76,7 @@ class Parser():
 				else:
 					self.cPrint("?\n")
 
-			elif (parts[0] in ("info", "i")):
+			elif parts[0] in ("info", "i"):
 				if len(parts) == 1:
 					self.cPrint("[i]nfo entity\n")
 					return
@@ -84,7 +84,7 @@ class Parser():
 				e = self.game.get_entity(parts[1])
 				e.info()
 
-			elif (parts[0] in ("effect", "e")):
+			elif parts[0] in ("effect", "e"):
 				if len(parts) == 1:
 					self.cPrint("[e]ffect entity effect dice\n")
 					return
@@ -94,10 +94,10 @@ class Parser():
 				dice = int(parts[3])
 				entity.add_effect(effect, dice)
 
-			elif (parts[0] in ("turn", "t")):
+			elif parts[0] in ("turn", "t"):
 				self.game.turn()
 
-			elif (parts[0] == "eval"):
+			elif parts[0] == "eval":
 				if len(parts) == 1:
 					self.cPrint("eval command\n\tbetter not use that!\n")
 					return
@@ -108,7 +108,7 @@ class Parser():
 				except:
 					self.cPrint("eval done wrong\n")
 
-			elif (parts[0] == "set"):
+			elif parts[0] == "set":
 				if len(parts) == 1:
 					self.cPrint("set entity stat to_value\n"
 								"\tset entity - prints all stats of entity\n")
@@ -121,7 +121,7 @@ class Parser():
 				value = parts[3]
 				entity.setStat(stat, value)
 
-			elif (parts[0] in ("fight", "f")):
+			elif parts[0] in ("fight", "f"):
 				if len(parts) == 1:
 					complete_string = ( "[f]ight entity1 entity2 val1 val2 placeholder_input_sequence\n"
 										"\tval* is integer, 'a' for auto\n" )
@@ -154,7 +154,7 @@ class Parser():
 				else:
 					e1.fight(e2, d1, d2)
 
-			elif (parts[0] in ("spell", "s", "cast")):
+			elif parts[0] in ("spell", "s", "cast"):
 				if len(parts) == 1:
 					complete_string = ( "[s]pell/cast caster_entity spell dice\n"
 										"\tspell must be from library.spells\n"
@@ -184,7 +184,7 @@ class Parser():
 
 				caster.cast_spell(targets, spell, d, theInput)
 
-			elif (parts[0] in ("attack", "a", "dmg", "d")):
+			elif parts[0] in ("attack", "a", "dmg", "d"):
 				if len(parts) == 1:
 					self.cPrint("[a]ttack/[d]mg source_text\n"
 							"\tsource is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
