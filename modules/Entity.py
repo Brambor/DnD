@@ -47,6 +47,15 @@ class Entity():
 		complete_string += "played_this_turn = %s\n" % self.played_this_turn
 		self.cPrint(complete_string)
 
+	def get_stats_reduced(self):
+		"yields set(text to be printed, color_pair number)"
+		yield ("%s" % str(self), 0)
+		yield ("\t%s/%s\n" % (self.body["hp"], self.body["hp_max"]), 1)
+		if self.body["effects"]:
+			print(self.body["effects"])
+
+			yield ("%s\n" % ", ".join([i["name"] for i in self.body["effects"]]), 0)
+
 	def setStat(self, stat, value):
 		if ( ( stat in self.body ) and ( type(self.body[stat]) == int ) ):
 			if value.isdigit():

@@ -22,12 +22,9 @@ class CustomPrint():
 			# TODO CRASH WHEN TO MANY LINES IN TOTAL
 			i = 0  # colour mock-up
 			for e in entities:
-				self.windows["entities"].addstr(
-					"%s\n" % str(e),
-					self.curses.color_pair(i%3),)
-				self.windows["entities"].addstr(
-					"\tHP:%s\n" % e.body["hp"],
-					)
+				generator = e.get_stats_reduced()
+				for item in generator:
+					self.windows["entities"].addstr(item[0], self.curses.color_pair(item[1]))
 				i += 1
 		else:
 			self.windows["entities"].addstr("no entities")
