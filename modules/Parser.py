@@ -243,7 +243,28 @@ class Parser():
 						lib = self.game.spells
 					else:
 						raise DnDException("No library '%s'." % lib)
-					self.cPrint( str(list(lib)) + "\n" )
+
+					# print duplicates in 'a1/a2/a3, b1, c1/c2' form
+					unique = {}
+					for orig in lib:
+						is_unique = True
+						for u in unique:
+							if lib[orig] == lib[u]:
+								unique[u].append(orig)
+								is_unique = False
+						if is_unique:
+							unique[orig] = []
+
+					complete_string = ""
+					comma = ""
+					for u in unique:
+						complete_string += comma
+						comma = ", "
+						complete_string += u
+						if unique[u]:
+							complete_string += "/%s" % "/".join(unique[u])
+
+					self.cPrint(complete_string + "\n")
 				else:
 					raise DnDException("Command 'library' takes 1 or 2 arguments, %d given." % len(parts))
 
