@@ -30,4 +30,5 @@ COLOR_PALETTE = {
 COLOR_USAGE = {
 	"entity_played_this_turn": ("white", "grey300"),  # used for when entity played this turn already
 	"HP": ("green", "black"),  # used for hp/hp_max
+	"mana": ("cyan", "black"),  # used for mana/mana_max
 }

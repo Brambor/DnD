@@ -52,7 +52,8 @@ class Entity():
 		CU = self.game.cCurses.color_usage
 		played_this_turn = (0, CU["entity_played_this_turn"])[self.played_this_turn]
 		yield ("%s" % str(self), played_this_turn)
-		yield ("\t%s/%s\n" % (self.body["hp"], self.body["hp_max"]), CU["HP"])
+		yield ("\t%s/%s" % (self.body["hp"], self.body["hp_max"]), CU["HP"])
+		yield ("\t%s/%s\n" % (self.body["mana"], self.body["mana_max"]), CU["mana"])
 		if self.body["effects"]:
 			yield (" %s\n" % ", ".join([i["name"] for i in self.body["effects"]]), 0)
 
