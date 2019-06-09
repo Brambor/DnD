@@ -3,7 +3,7 @@ from curses import textpad
 
 
 class CustomCurses():
-	def __init__(self):
+	def __init__(self, COLOR_PALETTE, COLOR_USAGE):
 		input("Make this window however big and press ENTER.")
 		stdscr = curses.initscr()
 		curses.start_color()
@@ -45,8 +45,28 @@ class CustomCurses():
 		# TODO: check if we have "console_input" window and "fight" window
 
 		# Colors
-		curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
-		curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+		color_palette = {
+			"black": 0,
+			"blue": 1,
+			"green": 2,
+			"cyan": 3,
+			"red": 4,
+			"magenta": 5,
+			"yellow": 6,
+			"white": 7,
+		}
+		for i, key in enumerate(COLOR_PALETTE):
+			curses.init_color(i+8, *COLOR_PALETTE[key])
+			color_palette[key] = i+8
+
+		# Color pairs
+
+		self.color_usage = {}
+		for i, key in enumerate(COLOR_USAGE):
+			foreground, background = COLOR_USAGE[key]
+			foreground, background = color_palette[foreground], color_palette[background]
+			curses.init_pair(i+1, foreground, background)
+			self.color_usage[key] = i+1
 
 
 	def calculate(self, expresion):

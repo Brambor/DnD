@@ -27,7 +27,7 @@ if not settings.AUTO_INPUT:
 	else:
 		current_time = None
 
-	cCurses = CustomCurses()
+	cCurses = CustomCurses(settings.COLOR_PALETTE, settings.COLOR_USAGE)
 	windows = cCurses.windows
 	curses = cCurses.curses
 
@@ -35,7 +35,7 @@ if not settings.AUTO_INPUT:
 	cPrint = CustomPrint(windows, curses, log_file=current_time)
 	cInput = CustomInput(cPrint, cCurses, log_file=current_time, input_stream=False)
 
-	G = Game(library, cPrint)
+	G = Game(library, cPrint, cCurses)
 	P = Parser(G, cInput, cPrint, settings.DEBUG)
 	try:
 		while True:
