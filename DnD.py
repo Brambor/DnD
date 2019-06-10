@@ -45,7 +45,6 @@ if not settings.AUTO_INPUT:
 			if command == "exit":
 				break  # force crash
 
-			print ("in cycle: %s" % command)
 			P.process(command)
 	except Exception as e:
 		cCurses.endCurses()

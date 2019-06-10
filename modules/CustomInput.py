@@ -12,9 +12,8 @@ class CustomInput():
 		self.cPrint = cPrint
 
 	def __call__(self, message):
-		print("from cInput sending: %s" % message)
 		res = self.input_handlerer.send(message)
-		print("in cInput: %s" % res)
+
 		if self.log_file:
 			self.write_to_log(message, res)
 

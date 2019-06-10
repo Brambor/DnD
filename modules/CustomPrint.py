@@ -12,7 +12,7 @@ class CustomPrint():
 		if info_type == "fight":
 			self.windows["fight"].addstr(message)  # fight window
 			self.windows["fight"].refresh()
-		print(message)
+
 		if self.log_file:
 			self.write_to_log(message)
 

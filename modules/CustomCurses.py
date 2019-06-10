@@ -78,12 +78,9 @@ class CustomCurses():
 		input_command = ""
 		windows = self.windows
 
-		print("message yielded (send) %s" % message)
 		windows["console_input"].addstr(0, 0, message)
 
 		message_s = message.split("\n")
-		print("message_s:", message_s)
-		print("will be moving to:", len(message_s)-1, len(message_s[-1])+1)
 
 		windows["console_input"].move(len(message_s)-1, len(message_s[-1])+1)  # TODO: crashes when len(message_s) > 3 or 4
 #		windows["console_input"].leaveok(False)
@@ -96,17 +93,12 @@ class CustomCurses():
 		# removing >>>
 		input_command_stripped = input_command[len(message)+1 + message.count("\n"):]
 		# if only >>>, then print only \n
-		print("INPUT CMD: '%s'" % input_command)
 		if input_command == ">>> \n":
 			input_command = "\n"
 
 		windows["console_input"].clear()
 
 		windows["fight"].addstr(input_command)  # fight, but s
-
-		print("in generator: %s" % input_command)
-		#  yield input_command[:-2]  # removing ending \n
-		print("after yield")
 
 		for w in windows:
 			windows[w].refresh()
