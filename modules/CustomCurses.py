@@ -22,8 +22,7 @@ class CustomCurses():
 		self.height = curses.LINES - 1
 
 		#win = curses.newwin(height, width//3, begin_y, begin_x)
-		windows = {}
-		self.windows = windows
+		self.windows = {}
 
 		for w in WINDOWS:
 			wi = self.calculate(WINDOWS[w]["width_height"][0])
@@ -40,7 +39,7 @@ class CustomCurses():
 				self.windows[w].addstr("<<%s>>\n" % w)
 			self.windows[w].refresh()
 
-		self.command_textbox = textpad.Textbox(windows["console_input"])
+		self.command_textbox = textpad.Textbox(self.windows["console_input"])
 
 		# TODO: check if we have "console_input" window and "fight" window
 
@@ -76,13 +75,12 @@ class CustomCurses():
 
 	def send(self, message):
 		input_command = ""
-		windows = self.windows
 
-		windows["console_input"].addstr(0, 0, message)
+		self.windows["console_input"].addstr(0, 0, message)
 
 		message_s = message.split("\n")
 
-		windows["console_input"].move(len(message_s)-1, len(message_s[-1])+1)  # TODO: crashes when len(message_s) > 3 or 4
+		self.windows["console_input"].move(len(message_s)-1, len(message_s[-1])+1)  # TODO: crashes when len(message_s) > 3 or 4
 #		windows["console_input"].leaveok(False)
 
 		# INPUT
@@ -96,12 +94,12 @@ class CustomCurses():
 		if input_command == ">>> \n":
 			input_command = "\n"
 
-		windows["console_input"].clear()
+		self.windows["console_input"].clear()
 
-		windows["fight"].addstr(input_command)  # fight, but s
+		self.windows["fight"].addstr(input_command)  # fight, but s
 
-		for w in windows:
-			windows[w].refresh()
+		for w in self.windows:
+			self.windows[w].refresh()
 		return input_command_stripped[:-2]  # removing ending \n
 
 	def endCurses(self):

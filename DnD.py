@@ -31,7 +31,6 @@ if not settings.AUTO_INPUT:
 	windows = cCurses.windows
 	curses = cCurses.curses
 
-
 	cPrint = CustomPrint(windows, curses, log_file=current_time)
 	cInput = CustomInput(cPrint, cCurses, log_file=current_time, input_stream=False)
 
