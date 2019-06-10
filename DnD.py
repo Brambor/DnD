@@ -57,26 +57,48 @@ if not settings.AUTO_INPUT:
 else:
 	# TESTING
 	import sys
+	from time import sleep
 	f1 = sys.stdin
 
-	for test in ("basics cast dead_splash dmg effect_stats fight freeze freeze_fire freeze_hard help").split():
+	cCurses = CustomCurses(settings.COLOR_PALETTE, settings.COLOR_USAGE)
+	windows = cCurses.windows
+	curses = cCurses.curses
+
+	cPrint = CustomPrint(windows, curses)
+	cInput = CustomInput(cPrint, cCurses, input_stream=True, test_environment=True)  # input_stream latter changed 
+
+	for test in ("basics",): #("basics cast dead_splash dmg effect_stats fight freeze freeze_fire freeze_hard help").split():
 		path = 'tests/test_%s.txt' % test
 		f = open(path,'r')
 		f_copy = open(path,'r').read().split("\n")
+		cInput.input_stream = f_copy
 
-		cPrint = CustomPrint(log_file=None)
-		cInput = CustomInput(cPrint, log_file=None, input_stream=f_copy)
-
-		G = Game(library, cPrint)
+		G = Game(library, cPrint, cCurses)
 		P = Parser(G, cInput, cPrint, settings.DEBUG)
-
 		sys.stdin = f
-		print("test name: %s" % test)
-		while cInput.i+1 < len(f_copy):
-			P.input("%d>>>" % (cInput.i+1))
-		print("\n\n\n\n")
+
+		try:
+			windows["fight"].addstr("test name: %s" % test)
+			windows["fight"].refresh()
+			sleep(2)
+			while cInput.i+1 < len(f_copy):
+				command = cInput(">>>")
+				P.process(command)
+				sleep(0.25)
+			windows["fight"].addstr("\n\n\n\n")
+			windows["fight"].refresh()
+		except EOFError:
+			print("EOF happened")
+		except Exception as e:
+			cCurses.endCurses()
+			print("\n\n")
+			print(e)
+			sys.stdin = f1
+			input("CRASHED, PRESS ENTER")
+			raise
 
 	f.close()
 
 	sys.stdin = f1
+	cCurses.endCurses()
 	input("DONE (settings.AUTO_INPUT was set to True)")

@@ -59,7 +59,6 @@ class CustomCurses():
 			color_palette[key] = i+8
 
 		# Color pairs
-
 		self.color_usage = {}
 		for i, key in enumerate(COLOR_USAGE):
 			foreground, background = COLOR_USAGE[key]
@@ -67,11 +66,9 @@ class CustomCurses():
 			curses.init_pair(i+1, foreground, background)
 			self.color_usage[key] = i+1
 
-
 	def calculate(self, expresion):
 		"expresion is a string that can contain 'x' or 'y' and other mathematical "
 		return eval( expresion.replace("x", str(self.width)).replace("y", str(self.height)) )
-
 
 	def send(self, message):
 		input_command = ""
@@ -87,7 +84,14 @@ class CustomCurses():
 		curses.curs_set(2)
 		input_command = self.command_textbox.edit(enter_is_terminate)
 		curses.curs_set(False)  # so that it doesn't blink in top left corner. >>> ocasionally blinks thought...
+		return self.serialization(input_command, message)
 
+	def send_test(self, message):
+		input_command = " %s %s\n " % (message, input())  # some of this is needed, but the rest makes it FuNkY
+		return self.serialization(input_command, message)
+
+	def serialization(self, input_command, message):
+		"common parts of self.send and self.send_test"
 		# removing >>>
 		input_command_stripped = input_command[len(message)+1 + message.count("\n"):]
 		# if only >>>, then print only \n
