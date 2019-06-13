@@ -1,0 +1,17 @@
+c pes a
+c pes b
+
+move a b
+
+# all entities played, restart them
+turn
+
+move a
+
+turn
+
+# adding error at the end
+move a c b
+
+# not printing Togled
+move c

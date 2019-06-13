@@ -20,7 +20,6 @@ class Parser():
 				if not v.isdigit():
 					raise DnDException("'%s' is not a valid integer." % v)
 
-
 	def process(self, cmd):
 		parts = cmd.split()
 		try:
@@ -37,6 +36,7 @@ class Parser():
 					("info", "i"),
 					("effect", "e"),
 					("turn", "t"),
+					("move", "m"),
 					("eval",),
 					("set",),
 					("fight", "f"),
@@ -96,7 +96,31 @@ class Parser():
 				entity.add_effect(effect, dice)
 
 			elif parts[0] in ("turn", "t"):
+				if all(e.played_this_turn for e in self.game.entities):
+					for e in self.game.entities:
+						e.played_this_turn = False
+					self.cPrint("All entities played. New round!\n")
 				self.game.turn()
+
+			elif parts[0] in ("move", "m"):
+				if len(parts) == 1:
+					self.cPrint("[m]ove target_entity_1 target_entity_2 ...\n"
+							"\ttoggles all selected entities played_this_turn\n")
+					return
+				changes = ""
+				errors = ""
+				for p in parts[1:]:
+					try:
+						entity = self.game.get_entity(p)
+						entity.played_this_turn = not entity.played_this_turn
+						changes += ("\n\t%s->%s" % (entity, "played" if entity.played_this_turn else "didn't play"))
+					except DnDException as e:
+						errors += str(e) + "\n"
+
+				if changes == "":
+					self.cPrint(errors)
+				else:
+					self.cPrint("Toggled:%s\n%s" % (changes, errors))
 
 			elif parts[0] == "eval":
 				if len(parts) == 1:
