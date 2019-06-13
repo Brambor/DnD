@@ -58,7 +58,9 @@ class Entity():
 			yield (" %s\n" % ", ".join([i["name"] for i in self.body["effects"]]), 0)
 
 	def setStat(self, stat, value):
-		if ( ( stat in self.body ) and ( type(self.body[stat]) == int ) ):
+		if ( ( stat in self.body ) and ( type(self.body[stat]) == str ) ):
+			self.body[stat] = value	
+		elif ( ( stat in self.body ) and ( type(self.body[stat]) == int ) ):
 			if value.isdigit():
 				self.body[stat] = int(value)
 			else:
