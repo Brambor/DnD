@@ -142,6 +142,8 @@ class Parser():
 				if len(parts) == 2:
 					entity.printStats()
 					return
+				if len(parts) == 3:
+					raise DnDException("Command 'set' takes 1, 2 or 4 arguments, %d given." % len(parts))
 				stat = parts[2]
 				value = parts[3]
 				entity.setStat(stat, value)
