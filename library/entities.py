@@ -11,6 +11,10 @@ entities = {
 		"magie": 1,
 		"víra": 1,
 	},
+	"weaping_angel": {
+		"nickname": "weaping_angel",
+		"hp_max": 10000,
+	},
 	"Thorbald": {
 		"nickname": "Thorbald",
 		"hp_max": 100,
