@@ -5,3 +5,8 @@ c Thorbald t
 c Thorbald mimik
 c pes d
 c weaping_angel A
+
+set A group DEAD
+
+set a hp 1
+f a t

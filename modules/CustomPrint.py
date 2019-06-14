@@ -24,11 +24,16 @@ class CustomPrint():
 			return
 
 		# get groups
-		groups = {}
+		groups = {"DEAD": []}
 		for e in entities:
+			if not e.body["alive"]:
+				groups["DEAD"].append(e)
+				continue
 			if e.body["group"] not in groups:
 				groups[e.body["group"]] = []
 			groups[e.body["group"]].append(e)
+		if groups["DEAD"] == []:
+			del groups["DEAD"]
 
 		CU = self.cCurses.color_usage
 		for group in groups:
