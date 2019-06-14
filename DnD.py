@@ -31,7 +31,7 @@ if not settings.AUTO_INPUT:
 	windows = cCurses.windows
 	curses = cCurses.curses
 
-	cPrint = CustomPrint(windows, curses, log_file=current_time)
+	cPrint = CustomPrint(windows, cCurses, log_file=current_time)
 	cInput = CustomInput(cPrint, cCurses, log_file=current_time, input_stream=False)
 
 	G = Game(library, cPrint, cCurses)
@@ -64,10 +64,10 @@ else:
 	windows = cCurses.windows
 	curses = cCurses.curses
 
-	cPrint = CustomPrint(windows, curses)
+	cPrint = CustomPrint(windows, cCurses)
 	cInput = CustomInput(cPrint, cCurses, input_stream=True, test_environment=True)  # input_stream latter changed 
 
-	for test in ("basics cast dead_splash dmg effect_stats fight freeze freeze_fire freeze_hard help move").split():
+	for test in ("basics cast dead_splash dmg effect_stats fight freeze freeze_fire freeze_hard groups help move").split():
 		cInput.i = 0
 		path = 'tests/test_%s.txt' % test
 		f = open(path,'r')

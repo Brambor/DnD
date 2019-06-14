@@ -3,6 +3,7 @@ from modules.Weapons import Fist, Axe
 entities = {
 	"pes": {
 		"nickname": "psík",
+		"group": "enemies",
 		"hp_max": 100,
 		"mana_max": 1,
 		"weapon": Fist(2, 8),
@@ -17,6 +18,7 @@ entities = {
 	},
 	"Thorbald": {
 		"nickname": "Thorbald",
+		"group": "players",
 		"hp_max": 100,
 		"mana_max": 2,  # added, not Thorbald
 		"weapon": Axe(29, 8),
