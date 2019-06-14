@@ -12,7 +12,8 @@ class Entity():
 		del self.body["nickname"]
 		self.nickname = library_entity["nickname"]
 		self.body["hp"] = library_entity["hp_max"]
-		self.body["mana"] = library_entity["mana_max"]
+		if "mana_max" in library_entity:
+			self.body["mana"] = library_entity["mana_max"]
 		self.body["effects"] = []
 		self.body["alive"] = True
 		self.game = game
@@ -52,8 +53,13 @@ class Entity():
 		CU = self.game.cCurses.color_usage
 		played_this_turn = (0, CU["entity_played_this_turn"])[self.played_this_turn]
 		yield ("%s" % str(self), played_this_turn)
-		yield ("\t%s/%s" % (self.body["hp"], self.body["hp_max"]), CU["HP"])
-		yield ("\t%s/%s\n" % (self.body["mana"], self.body["mana_max"]), CU["mana"])
+		hp = ["\t%s/%s" % (self.body["hp"], self.body["hp_max"]), CU["HP"]]
+		if "mana" in self.body:
+			yield hp
+			yield ("\t%s/%s\n" % (self.body["mana"], self.body["mana_max"]), CU["mana"])
+		else:
+			hp[0] += "\n"
+			yield hp
 		if self.body["effects"]:
 			yield (" %s\n" % ", ".join([i["name"] for i in self.body["effects"]]), 0)
 
