@@ -44,18 +44,23 @@ class Parser():
 					("attack", "a", "dmg", "d"),
 					("library", "lib", "list", "l"),
 				]
-				complete_string = ("write command without any atributes for further help,\n"
-									"(except for turn)\n"
-									"commands:\n"
+				complete_string = ("COMMANDS:\n"
+									"\twrite command without any atributes for further help,\n"
+									"\t(except for turn)\n"
 				)
 				
 				for c in (", ".join(c) for c in cmd):
 					complete_string += "\t%s\n" % c
+				complete_string += ("'entity' can be referenced via entity nickname or entity id.\n"
+									"e.g. for entity 'a_0' either 'a' (entity nickname) or '0' (entity id) works.\n"
+									"Then commands 'move a' & 'move 0' are equivalent.\n"
+				)
 				self.cPrint(complete_string)
 
 			elif parts[0] in ("create", "c"):
 				if len(parts) == 1:
-					self.cPrint("[c]reate pes nickname_to_be_set\n")
+					self.cPrint("[c]reate entity_library nickname_to_be_set\n"
+								"\t'entity_library' can be listed via command 'library entities' 'l en' for short.\n")
 					return
 				self.check(parts[1], "entity_library")
 
