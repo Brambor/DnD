@@ -79,7 +79,7 @@ else:
 		sys.stdin = f
 
 		try:
-			windows["fight"].addstr("test name: %s" % test)
+			windows["fight"].addstr("test name: %s\n" % test)
 			windows["fight"].refresh()
 			sleep(1)
 			while cInput.i+1 < len(f_copy):
@@ -90,10 +90,10 @@ else:
 			windows["fight"].refresh()
 		except EOFError:
 			print("EOF happened")
-			windows["fight"].addstr("ERROR EOF happened")
+			windows["fight"].addstr("ERROR EOF happened\n")
 			windows["fight"].refresh()
 		except Exception as e:
-			windows["fight"].addstr("ERROR Exception happened")
+			windows["fight"].addstr("ERROR Exception happened\n")
 			windows["fight"].refresh()
 			cCurses.endCurses()
 			print("\n\n")
@@ -103,7 +103,7 @@ else:
 			raise
 
 	f.close()
-	windows["fight"].addstr("TESTS ARE DONE")
+	windows["fight"].addstr("TESTS ARE DONE\n")
 	windows["fight"].refresh()
 	sys.stdin = f1
 
