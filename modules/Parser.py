@@ -2,7 +2,41 @@ from modules.DnDException import DnDException
 
 texts = {
 	"placeholder_input_sequence": "placeholder_input_sequence activates inputing sequence latter down the chain; for now any value just means True",
+	"help": {},
 }
+
+cmd = (
+	("help", "h"),
+	("create", "c"),
+	("print", "p"),
+	("info", "i"),
+	("effect", "e"),
+	("turn", "t"),
+	("move", "m"),
+	("eval",),
+	("set",),
+	("fight", "f"),
+	("spell", "s", "cast"),
+	("attack", "a", "dmg", "d"),
+	("library", "lib", "list", "l"),
+	("save",),
+	("load",),
+)
+texts["help"]["commands"] = ("COMMANDS:\n"
+					"\twrite command without any atributes for further help,\n"
+					"\t(except for turn)\n"
+)
+
+for c in (", ".join(c) for c in cmd):
+	texts["help"]["commands"] += "\t%s\n" % c
+
+texts["help"]["entity_reference"] = ("'entity' can be referenced via entity nickname or entity id.\n"
+					"e.g. for entity 'a_0' either 'a' (entity nickname) or '0' (entity id) works.\n"
+					"Then commands 'move a' & 'move 0' are equivalent.\n"
+)
+
+texts["help_general"] = ("General help: use 'help WHAT' for more detailed help.\n"
+						"\tWHAT can be: %s\n" % ", ".join(texts["help"]))
 
 class Parser():
 	def __init__(self, game, cInput, cPrint, DEBUG):
@@ -29,33 +63,13 @@ class Parser():
 				self.cPrint("\r# %s\n" % " ".join(parts[1:]))
 
 			elif parts[0] in ("help", "h"):
-				cmd = [
-					("help", "h"),
-					("create", "c"),
-					("print", "p"),
-					("info", "i"),
-					("effect", "e"),
-					("turn", "t"),
-					("move", "m"),
-					("eval",),
-					("set",),
-					("fight", "f"),
-					("spell", "s", "cast"),
-					("attack", "a", "dmg", "d"),
-					("library", "lib", "list", "l"),
-				]
-				complete_string = ("COMMANDS:\n"
-									"\twrite command without any atributes for further help,\n"
-									"\t(except for turn)\n"
-				)
-				
-				for c in (", ".join(c) for c in cmd):
-					complete_string += "\t%s\n" % c
-				complete_string += ("'entity' can be referenced via entity nickname or entity id.\n"
-									"e.g. for entity 'a_0' either 'a' (entity nickname) or '0' (entity id) works.\n"
-									"Then commands 'move a' & 'move 0' are equivalent.\n"
-				)
-				self.cPrint(complete_string)
+				if len(parts) == 1:
+					self.cPrint(texts["help_general"])
+				elif len(parts) == 2:
+					if parts[1] in texts["help"]:
+						self.cPrint(texts["help"][parts[1]])
+					else:
+						raise DnDException("'%s' is not helped with. These are: %s." % (parts[1], ", ".join(texts["help"])))
 
 			elif parts[0] in ("create", "c"):
 				if len(parts) == 1:
