@@ -108,6 +108,9 @@ class Parser():
 				if len(parts) == 1:
 					self.cPrint("[e]ffect entity effect dice\n")
 					return
+				if len(parts) != 4:
+					raise DnDException("Command 'effect' takes 1 or 4 arguments, %d given." % len(parts))
+
 				entity = self.game.get_entity(parts[1])
 				effect = self.game.get_effect(parts[2])
 				self.check(parts[3], "dice")
