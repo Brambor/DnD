@@ -13,9 +13,6 @@ cast a splash
 b
 
 # info
-i b
+set b
 
 t
-
-# p e
-p e

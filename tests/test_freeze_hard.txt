@@ -17,7 +17,7 @@ spell a splash
 b
 
 # check
-i b
+set b
 
 # get frozen, not chill
 spell a ice_lance1 smdhgp
@@ -28,7 +28,7 @@ b b b b
 5
 
 
-i a
+set a
 
 # do not chill or wet
 
@@ -40,28 +40,28 @@ spell a splash smdhgp
 b
 
 # see if b is properly frozen, not wet, not chill
-i b
+set b
 
 spell a ice_lance1 smdhgp
 b
 6
 
 # see if b is properly frozen, not wet, not chill
-i b
+set b
 
 # turn passes
 t
 
-i b
+set b
 
 t
 # b should unfreeze now
 t
 
 # b shouldn't be frozen anymore
-i b
+set b
 
 # the program shouldn't crash
 t
 
-i b
+set b

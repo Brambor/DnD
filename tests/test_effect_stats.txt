@@ -6,7 +6,7 @@ b
 5
 
 # check
-i b
+set b
 
 set b
 

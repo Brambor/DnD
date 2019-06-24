@@ -13,23 +13,23 @@ b
 5
 
 
-i a
+set a
 
 # see if b is properly frozen
-i b
+set b
 
 t
 
-i b
+set b
 
 t
 # b should unfreeze now
 t
 
 # b shouldn't be frozen anymore
-i b
+set b
 
 # the program shouldn't crash
 t
 
-i b
+set b

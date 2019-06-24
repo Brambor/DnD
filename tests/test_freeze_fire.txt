@@ -13,17 +13,17 @@ b
 5
 
 
-i a
+set a
 
 # see if b is properly frozen
-i b
+set b
 
 # burn them
 cast a burn
 b b b b
 
 # info
-i b
+set b
 
 # splash and chill them
 cast a splash

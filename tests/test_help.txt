@@ -1,10 +1,10 @@
 help
 create
-print
-info
+dmg
 effect
 eval
-set
 fight
+library
+move
+set
 spell
-dmg
