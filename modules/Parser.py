@@ -14,7 +14,6 @@ cmd = (
 	("fight", "f"),
 	("library", "lib", "list", "l"),
 	("move", "m"),
-	("print", "p"),
 	("set",),
 	("spell", "s", "cast"),
 	("turn", "t"),
@@ -237,19 +236,6 @@ class Parser():
 					self.cPrint(errors)
 				else:
 					self.cPrint("Toggled:%s\n%s" % (changes, errors))
-
-			elif parts[0] in ("print", "p"):
-				if len(parts) == 1:
-					self.cPrint("[p]rint what\n"
-								"\t[e]ntities - all entities\n")
-					return
-				if parts[1] in ("entities", "e"):
-					if self.game.entities:
-						self.cPrint("\n".join(str(entity) for entity in self.game.entities) + "\n")
-					else:
-						self.cPrint("no entities\n")
-				else:
-					self.cPrint("?\n")
 
 			elif parts[0] == "set":
 				if len(parts) == 1:
