@@ -24,20 +24,6 @@ class Entity():
 	def __str__(self):
 		return "%s_%d" % (self.nickname, self.id)
 
-	def info(self):
-		complete_string = "nickname_id: %s\n" % self
-		complete_string += "derived_from: %s\n" % self.body["derived_from"]
-		dead = " (DEAD)" if not self.body["alive"] else ""
-		complete_string += "hp: %d/%s%s\n" % (self.get_stat("hp"), self.get_stat("hp_max", False), dead)
-		complete_string += "mana: %d/%s\n" % (self.get_stat("mana"), self.get_stat("mana_max", False))
-		complete_string += "weapon: %s\n" % self.body["weapon"]
-		complete_string += "boj: %s\n" % self.get_stat("boj", False)
-		# TURN effects and DICE effects
-		effects = ", ".join(self.get_effect_string(e) for e in self.body["effects"])  # wont work for turn based effects
-		if effects != "":
-			complete_string += "effects: %s\n" % effects
-		self.cPrint(complete_string)
-
 	# RAW STAT MANIPULATION
 	def printStats(self):
 		complete_string = "nickname = '%s'\nid = %d\n" % (self.nickname, self.id)

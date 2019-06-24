@@ -12,7 +12,6 @@ cmd = (
 	("effect", "e"),
 	("eval",),
 	("fight", "f"),
-	("info", "i"),
 	("library", "lib", "list", "l"),
 	("move", "m"),
 	("print", "p"),
@@ -174,14 +173,6 @@ class Parser():
 					e1.fight(e2, d1, d2, self.cInput)
 				else:
 					e1.fight(e2, d1, d2)
-
-			elif parts[0] in ("info", "i"):
-				if len(parts) == 1:
-					self.cPrint("[i]nfo entity\n")
-					return
-
-				e = self.game.get_entity(parts[1])
-				e.info()
 
 			elif parts[0] in ("library", "lib", "list", "l"):
 				if len(parts) == 1:
