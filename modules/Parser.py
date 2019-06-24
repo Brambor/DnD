@@ -17,7 +17,7 @@ cmd = (
 	("set",),
 	("fight", "f"),
 	("spell", "s", "cast"),
-	("attack", "a", "dmg", "d"),
+	("dmg", "d", "attack", "a"),
 	("library", "lib", "list", "l"),
 	("save",),
 	("load",),
@@ -235,9 +235,9 @@ class Parser():
 
 				caster.cast_spell(targets, spell, d, theInput)
 
-			elif parts[0] in ("attack", "a", "dmg", "d"):
+			elif parts[0] in ("dmg", "d", "attack", "a"):
 				if len(parts) == 1:
-					self.cPrint("[a]ttack/[d]mg source_text\n"
+					self.cPrint("[d]mg/[a]ttack source_text\n"
 							"\tsource is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
 
 							"type_of_dmg base_dmg dice(die)\n"
