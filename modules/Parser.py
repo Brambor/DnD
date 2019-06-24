@@ -8,19 +8,17 @@ texts = {
 cmd = (
 	("help", "h"),
 	("create", "c"),
-	("print", "p"),
-	("info", "i"),
-	("effect", "e"),
-	("turn", "t"),
-	("move", "m"),
-	("eval",),
-	("set",),
-	("fight", "f"),
-	("spell", "s", "cast"),
 	("dmg", "d", "attack", "a"),
+	("effect", "e"),
+	("eval",),
+	("fight", "f"),
+	("info", "i"),
 	("library", "lib", "list", "l"),
-	("save",),
-	("load",),
+	("move", "m"),
+	("print", "p"),
+	("set",),
+	("spell", "s", "cast"),
+	("turn", "t"),
 )
 texts["help"]["commands"] = ("COMMANDS:\n"
 					"\twrite command without any atributes for further help,\n"
@@ -83,158 +81,6 @@ class Parser():
 				else:
 					e = self.game.create(parts[1])
 
-			elif parts[0] in ("print", "p"):
-				if len(parts) == 1:
-					self.cPrint("[p]rint what\n"
-								"\t[e]ntities - all entities\n")
-					return
-				if parts[1] in ("entities", "e"):
-					if self.game.entities:
-						self.cPrint("\n".join(str(entity) for entity in self.game.entities) + "\n")
-					else:
-						self.cPrint("no entities\n")
-				else:
-					self.cPrint("?\n")
-
-			elif parts[0] in ("info", "i"):
-				if len(parts) == 1:
-					self.cPrint("[i]nfo entity\n")
-					return
-
-				e = self.game.get_entity(parts[1])
-				e.info()
-
-			elif parts[0] in ("effect", "e"):
-				if len(parts) == 1:
-					self.cPrint("[e]ffect entity effect dice\n")
-					return
-				if len(parts) != 4:
-					raise DnDException("Command 'effect' takes 1 or 4 arguments, %d given." % len(parts))
-
-				entity = self.game.get_entity(parts[1])
-				effect = self.game.get_effect(parts[2])
-				self.check(parts[3], "dice")
-				dice = int(parts[3])
-				entity.add_effect(effect, dice)
-
-			elif parts[0] in ("turn", "t"):
-				if all(e.played_this_turn for e in self.game.entities):
-					for e in self.game.entities:
-						e.played_this_turn = False
-					self.cPrint("All entities played. New round!\n")
-				self.game.turn()
-
-			elif parts[0] in ("move", "m"):
-				if len(parts) == 1:
-					self.cPrint("[m]ove target_entity_1 target_entity_2 ...\n"
-							"\ttoggles all selected entities played_this_turn\n")
-					return
-				changes = ""
-				errors = ""
-				for p in parts[1:]:
-					try:
-						entity = self.game.get_entity(p)
-						entity.played_this_turn = not entity.played_this_turn
-						changes += ("\n\t%s->%s" % (entity, "played" if entity.played_this_turn else "didn't play"))
-					except DnDException as e:
-						errors += str(e) + "\n"
-
-				if changes == "":
-					self.cPrint(errors)
-				else:
-					self.cPrint("Toggled:%s\n%s" % (changes, errors))
-
-			elif parts[0] == "eval":
-				if len(parts) == 1:
-					self.cPrint("eval command\n\tbetter not use that!\n")
-					return
-				parts = " ".join(parts[1:])
-				try:
-					self.cPrint("eval:\n")
-					eval(parts)
-				except:
-					self.cPrint("eval done wrong\n")
-
-			elif parts[0] == "set":
-				if len(parts) == 1:
-					self.cPrint("set entity stat to_value\n"
-								"\tset entity - prints all stats of entity\n")
-					return
-				entity = self.game.get_entity(parts[1])
-				if len(parts) == 2:
-					entity.printStats()
-					return
-				if len(parts) == 3:
-					raise DnDException("Command 'set' takes 1, 2 or 4 arguments, %d given." % len(parts))
-				stat = parts[2]
-				value = parts[3]
-				entity.setStat(stat, value)
-
-			elif parts[0] in ("fight", "f"):
-				if len(parts) == 1:
-					complete_string = ( "[f]ight entity1 entity2 val1 val2 placeholder_input_sequence\n"
-										"\tval* is integer, 'a' for auto\n" )
-					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
-					complete_string +=  "\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
-					self.cPrint(complete_string)
-					return
-
-				e1 = self.game.get_entity(parts[1])
-				e2 = self.game.get_entity(parts[2])
-
-				if len(parts) in (3, 4):  # fight + 2 entities ?+placeholder_input_sequence
-					d1 = -1
-					d2 = -1
-				elif len(parts) in (5, 6):  # fight + 2 entities + 2 dice rolls ?+placeholder_input_sequence
-					if parts[3] == "a":
-						d1 = -1
-					else:
-						self.check(parts[3], "dice")
-						d1 = int(parts[3])
-
-					if parts[4] == "a":
-						d2 = -1
-					else:
-						self.check(parts[4], "dice")
-						d2 = int(parts[4])
-
-				if len(parts) in (4, 6):  # placeholder_input_sequence
-					e1.fight(e2, d1, d2, self.cInput)
-				else:
-					e1.fight(e2, d1, d2)
-
-			elif parts[0] in ("spell", "s", "cast"):
-				if len(parts) == 1:
-					complete_string = ( "[s]pell/cast caster_entity spell dice\n"
-										"\tspell must be from library.spells\n"
-										"\tdice is integer, 'a' for auto\n" )
-					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
-
-					complete_string +=  "target_entity_1 target_entity_2 ...\n"
-					self.cPrint(complete_string)
-					return
-
-				if len(parts) == 2:
-					raise DnDException("Command 'spell' takes 1, 3 or 4 arguments, %d given." % len(parts))
-
-				caster = self.game.get_entity(parts[1])
-				spell = self.game.get_spell(parts[2])
-				if len(parts) >= 3:
-					d = -1
-				else:
-					self.check(parts[3], "dice")
-					d = int(parts[3])
-				if len(parts) >= 4:
-					theInput = self.cInput
-				else:
-					theInput = False
-
-				# targets
-				targets = self.cInput("targets:\n>>>")
-				targets = [self.game.get_entity(target) for target in targets.split()]
-
-				caster.cast_spell(targets, spell, d, theInput)
-
 			elif parts[0] in ("dmg", "d", "attack", "a"):
 				if len(parts) == 1:
 					self.cPrint("[d]mg/[a]ttack source_text\n"
@@ -271,6 +117,71 @@ class Parser():
 				damage_sum = base_dmg + sum(t[0] for t in threw_crit)
 				for target in targets:
 					target.damaged(damage_sum, damage_type)
+
+			elif parts[0] in ("effect", "e"):
+				if len(parts) == 1:
+					self.cPrint("[e]ffect entity effect dice\n")
+					return
+				if len(parts) != 4:
+					raise DnDException("Command 'effect' takes 1 or 4 arguments, %d given." % len(parts))
+
+				entity = self.game.get_entity(parts[1])
+				effect = self.game.get_effect(parts[2])
+				self.check(parts[3], "dice")
+				dice = int(parts[3])
+				entity.add_effect(effect, dice)
+
+			elif parts[0] == "eval":
+				if len(parts) == 1:
+					self.cPrint("eval command\n\tbetter not use that!\n")
+					return
+				parts = " ".join(parts[1:])
+				try:
+					self.cPrint("eval:\n")
+					eval(parts)
+				except:
+					self.cPrint("eval done wrong\n")
+
+			elif parts[0] in ("fight", "f"):
+				if len(parts) == 1:
+					complete_string = ( "[f]ight entity1 entity2 val1 val2 placeholder_input_sequence\n"
+										"\tval* is integer, 'a' for auto\n" )
+					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
+					complete_string +=  "\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
+					self.cPrint(complete_string)
+					return
+
+				e1 = self.game.get_entity(parts[1])
+				e2 = self.game.get_entity(parts[2])
+
+				if len(parts) in (3, 4):  # fight + 2 entities ?+placeholder_input_sequence
+					d1 = -1
+					d2 = -1
+				elif len(parts) in (5, 6):  # fight + 2 entities + 2 dice rolls ?+placeholder_input_sequence
+					if parts[3] == "a":
+						d1 = -1
+					else:
+						self.check(parts[3], "dice")
+						d1 = int(parts[3])
+
+					if parts[4] == "a":
+						d2 = -1
+					else:
+						self.check(parts[4], "dice")
+						d2 = int(parts[4])
+
+				if len(parts) in (4, 6):  # placeholder_input_sequence
+					e1.fight(e2, d1, d2, self.cInput)
+				else:
+					e1.fight(e2, d1, d2)
+
+			elif parts[0] in ("info", "i"):
+				if len(parts) == 1:
+					self.cPrint("[i]nfo entity\n")
+					return
+
+				e = self.game.get_entity(parts[1])
+				e.info()
 
 			elif parts[0] in ("library", "lib", "list", "l"):
 				if len(parts) == 1:
@@ -315,6 +226,93 @@ class Parser():
 					self.cPrint(complete_string + "\n")
 				else:
 					raise DnDException("Command 'library' takes 1 or 2 arguments, %d given." % len(parts))
+
+			elif parts[0] in ("move", "m"):
+				if len(parts) == 1:
+					self.cPrint("[m]ove target_entity_1 target_entity_2 ...\n"
+							"\ttoggles all selected entities played_this_turn\n")
+					return
+				changes = ""
+				errors = ""
+				for p in parts[1:]:
+					try:
+						entity = self.game.get_entity(p)
+						entity.played_this_turn = not entity.played_this_turn
+						changes += ("\n\t%s->%s" % (entity, "played" if entity.played_this_turn else "didn't play"))
+					except DnDException as e:
+						errors += str(e) + "\n"
+
+				if changes == "":
+					self.cPrint(errors)
+				else:
+					self.cPrint("Toggled:%s\n%s" % (changes, errors))
+
+			elif parts[0] in ("print", "p"):
+				if len(parts) == 1:
+					self.cPrint("[p]rint what\n"
+								"\t[e]ntities - all entities\n")
+					return
+				if parts[1] in ("entities", "e"):
+					if self.game.entities:
+						self.cPrint("\n".join(str(entity) for entity in self.game.entities) + "\n")
+					else:
+						self.cPrint("no entities\n")
+				else:
+					self.cPrint("?\n")
+
+			elif parts[0] == "set":
+				if len(parts) == 1:
+					self.cPrint("set entity stat to_value\n"
+								"\tset entity - prints all stats of entity\n")
+					return
+				entity = self.game.get_entity(parts[1])
+				if len(parts) == 2:
+					entity.printStats()
+					return
+				if len(parts) == 3:
+					raise DnDException("Command 'set' takes 1, 2 or 4 arguments, %d given." % len(parts))
+				stat = parts[2]
+				value = parts[3]
+				entity.setStat(stat, value)
+
+			elif parts[0] in ("spell", "s", "cast"):
+				if len(parts) == 1:
+					complete_string = ( "[s]pell/cast caster_entity spell dice\n"
+										"\tspell must be from library.spells\n"
+										"\tdice is integer, 'a' for auto\n" )
+					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
+
+					complete_string +=  "target_entity_1 target_entity_2 ...\n"
+					self.cPrint(complete_string)
+					return
+
+				if len(parts) == 2:
+					raise DnDException("Command 'spell' takes 1, 3 or 4 arguments, %d given." % len(parts))
+
+				caster = self.game.get_entity(parts[1])
+				spell = self.game.get_spell(parts[2])
+				if len(parts) >= 3:
+					d = -1
+				else:
+					self.check(parts[3], "dice")
+					d = int(parts[3])
+				if len(parts) >= 4:
+					theInput = self.cInput
+				else:
+					theInput = False
+
+				# targets
+				targets = self.cInput("targets:\n>>>")
+				targets = [self.game.get_entity(target) for target in targets.split()]
+
+				caster.cast_spell(targets, spell, d, theInput)
+
+			elif parts[0] in ("turn", "t"):
+				if all(e.played_this_turn for e in self.game.entities):
+					for e in self.game.entities:
+						e.played_this_turn = False
+					self.cPrint("All entities played. New round!\n")
+				self.game.turn()
 
 			else:
 				self.cPrint("?\n")
