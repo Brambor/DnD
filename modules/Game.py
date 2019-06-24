@@ -7,15 +7,13 @@ class Game():
 	def __init__(self, library, cPrint, cCurses):
 		self.i = 0
 		self.i_turn = 0
-		self.library = library["entities"]
-		self.effects = library["effects"]
-		self.spells = library["spells"]
+		self.library = library
 		self.entities = []
 		self.cPrint = cPrint
 		self.cCurses = cCurses  # only for library of color usage used in Entity
 
 	def create(self, entity, nickname=""):
-		e = Entity(self.library[entity], self.i, self)
+		e = Entity(self.library["entities"][entity], self.i, self)
 		if nickname != "":
 			e.set_nickname(nickname)
 		self.i += 1
@@ -41,14 +39,14 @@ class Game():
 			raise DnDException("Entity '%s' does not exist." % nickname)
 
 	def get_spell(self, spell_name):
-		for spell in self.spells:
+		for spell in self.library["spells"]:
 			if spell == spell_name:
-				return self.spells[spell]
+				return self.library["spells"][spell]
 		raise DnDException("Spell '%s' is not in library." % spell_name)
 
 
 	def get_effect(self, effect_name):
-		effect = self.effects.get(effect_name, None)
+		effect = self.library["effects"].get(effect_name, None)
 		if effect:
 			return effect
 		raise DnDException("Effect '%s' is not in library." % effect_name)

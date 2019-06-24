@@ -48,7 +48,7 @@ class Parser():
 	def check(self, values, types):
 		for v, t in zip(values.split(), types.split()):
 			if t == "entity_library":
-				if not (v in self.game.library):
+				if not (v in self.game.library["entities"]):
 					raise DnDException("Entity '%s' not found in library." % v)
 			if t == "dice":
 				if not v.isdigit():
@@ -284,11 +284,11 @@ class Parser():
 						"sp": "s",
 					}.get(parts[1], parts[1])
 					if lib == "en":
-						lib = self.game.library
+						lib = self.game.library["entities"]
 					elif lib == "ef":
-						lib = self.game.effects
+						lib = self.game.library["effects"]
 					elif lib == "s":
-						lib = self.game.spells
+						lib = self.game.library["spells"]
 					else:
 						raise DnDException("No library '%s'." % lib)
 
