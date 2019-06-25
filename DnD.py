@@ -67,7 +67,7 @@ else:
 	cPrint = CustomPrint(windows, cCurses)
 	cInput = CustomInput(cPrint, cCurses, input_stream=True, test_environment=True)  # input_stream latter changed 
 
-	for test in ("basics cast dead_splash dmg effect_stats fight freeze freeze_fire freeze_hard groups help inventory move").split():
+	for test in ("basics cast dead_splash dmg effect_stats erase fight freeze freeze_fire freeze_hard groups help inventory move").split():
 		cInput.i = 0
 		path = 'tests/test_%s.txt' % test
 		f = open(path,'r')

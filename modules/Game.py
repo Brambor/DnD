@@ -20,6 +20,11 @@ class Game():
 		self.entities.append(e)
 		return e
 
+	def erase(self, cmd):
+		entity_i, entity = self.get_entity(cmd)
+		self.cPrint("Entity %s has been deleted.\n" % entity)
+		del self.entities[entity_i]
+
 	def turn(self):
 		self.cPrint("Turn %d\n" % self.i_turn)
 		for e in self.entities:
@@ -42,7 +47,7 @@ class Game():
 			for i, e in enumerate(self.entities):
 				if e.id == int(nickname):
 					return (i, e)
-			raise DnDException("Entity with id '%d' does not exist." % nickname)
+			raise DnDException("Entity with id '%d' does not exist." % int(nickname))
 		else:
 			for i, e in enumerate(self.entities):
 				if e.nickname == nickname:

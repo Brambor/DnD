@@ -1,0 +1,14 @@
+
+c pes a
+
+# 2 DnDExceptions
+erase 1
+erase b
+
+# successful
+erase 0
+c pes a
+erase 1
+c pes a
+erase a
+c pes a

@@ -10,6 +10,7 @@ cmd = (
 	("create", "c"),
 	("dmg", "d", "attack", "a"),
 	("effect", "e"),
+	("erase",),
 	("eval",),
 	("fight", "f"),
 	("inventory", "i"),
@@ -129,6 +130,14 @@ class Parser():
 				self.check(parts[3], "dice")
 				dice = int(parts[3])
 				entity.add_effect(effect, dice)
+
+			elif parts[0] == "erase":
+				if len(parts) == 1:
+					self.cPrint("erase entity\n")
+				elif len(parts) == 2:
+					self.game.erase(parts[1])
+				else:
+					raise DnDException("Command 'erase' takes 1 or 2 arguments, %d given." % len(parts))
 
 			elif parts[0] == "eval":
 				if len(parts) == 1:
