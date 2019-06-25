@@ -26,6 +26,12 @@ class Game():
 			e.apply_effects()
 		self.i_turn += 1
 
+	def get_effect(self, effect_name):
+		effect = self.library["effects"].get(effect_name, None)
+		if effect:
+			return effect
+		raise DnDException("Effect '%s' is not in library." % effect_name)
+
 	def get_entity(self, nickname):
 		if nickname.isdigit():
 			for e in self.entities:
@@ -43,13 +49,6 @@ class Game():
 			if spell == spell_name:
 				return self.library["spells"][spell]
 		raise DnDException("Spell '%s' is not in library." % spell_name)
-
-
-	def get_effect(self, effect_name):
-		effect = self.library["effects"].get(effect_name, None)
-		if effect:
-			return effect
-		raise DnDException("Effect '%s' is not in library." % effect_name)
 
 	def throw_dice(self, dice_list):
 		"throws die in list, prints results and returns list of sets (set)((int) threw, (bool)crit)"
