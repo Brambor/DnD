@@ -21,4 +21,6 @@ i a
 
 # modyfiing item
 i a mod 0 mana_restore 75
+# negative integers
+i a mod 0 mana_restore -8
 i a mod 0 history Atracts_dragons!

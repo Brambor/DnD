@@ -201,7 +201,7 @@ class Parser():
 							raise DnDException("On 4 arguments, command's 'inventory' third argument should be add/del, %s given." % parts[2])
 					elif len(parts) == 6:
 						item, key, value = parts[3], parts[4], parts[5]
-						if value.isdigit():
+						if value.replace("-", "", 1).isdigit():
 							value = int(value)
 						entity.set_inventory_item(item, key, value)
 				else:

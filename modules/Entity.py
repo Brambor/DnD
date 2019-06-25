@@ -11,6 +11,7 @@ class Entity():
 		self.body = copy(library_entity)
 		del self.body["nickname"]
 		self.nickname = library_entity["nickname"]
+		# setStat (and many others) counts with "hp"
 		self.body["hp"] = library_entity["hp_max"]
 		if "mana_max" in library_entity:
 			self.body["mana"] = library_entity["mana_max"]
@@ -55,8 +56,15 @@ class Entity():
 		if ( ( stat in self.body ) and ( type(self.body[stat]) == str ) ):
 			self.body[stat] = value	
 		elif ( ( stat in self.body ) and ( type(self.body[stat]) == int ) ):
-			if value.isdigit():
-				self.body[stat] = int(value)
+			if value.replace("-", "", 1).isdigit():
+				value = int(value)
+				before = self.body[stat]
+				self.body[stat] = value
+				if stat == "hp":  # if entity died or rose from dead
+					if before <= 0 and value > 0:
+						self.check_revived()
+					elif before > 0 and value <= 0:
+						self.check_dead()
 			else:
 				raise DnDException("Stat %s is integer, value '%s' is not." % (stat, value))
 		elif ( ( stat in self.body ) and ( type(self.body[stat]) == bool ) ):
@@ -116,7 +124,7 @@ class Entity():
 		return self.get_stat("alive")
 
 	def check_dead(self):  # not handeled at all
-		if self.get_stat("hp") <= 0:
+		if self.get_stat("hp") <= 0:  # get_stat might result in wierd bug
 			self.cPrint("%s IS DEAD!\n" % self)
 			self.body["alive"] = False
 
