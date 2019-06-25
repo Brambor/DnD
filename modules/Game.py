@@ -37,16 +37,16 @@ class Game():
 			raise DnDException("'%s' is not in '%s' library." % (thing, library))
 
 	def get_entity(self, nickname):
-		"getting entities from self.entities"
+		"returns pair (i, entity) from self.entities; i is index in self.entities != id"
 		if nickname.isdigit():
-			for e in self.entities:
+			for i, e in enumerate(self.entities):
 				if e.id == int(nickname):
-					return self.entities[int(nickname)]
+					return (i, e)
 			raise DnDException("Entity with id '%d' does not exist." % nickname)
 		else:
-			for e in self.entities:
+			for i, e in enumerate(self.entities):
 				if e.nickname == nickname:
-					return e
+					return (i, e)
 			raise DnDException("Entity '%s' does not exist." % nickname)
 
 	def throw_dice(self, dice_list):

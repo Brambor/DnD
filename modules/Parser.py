@@ -110,7 +110,7 @@ class Parser():
 					dice = [int(d) for d in dice]
 
 				targets = self.cInput("targets:\n>>>")
-				targets = [self.game.get_entity(target) for target in targets.split()]
+				targets = [self.game.get_entity(target)[1] for target in targets.split()]
 
 				threw_crit = self.game.throw_dice(dice)
 				damage_sum = base_dmg + sum(t[0] for t in threw_crit)
@@ -124,7 +124,7 @@ class Parser():
 				if len(parts) != 4:
 					raise DnDException("Command 'effect' takes 1 or 4 arguments, %d given." % len(parts))
 
-				entity = self.game.get_entity(parts[1])
+				entity = self.game.get_entity(parts[1])[1]
 				effect = self.game.get("effects", parts[2])
 				self.check(parts[3], "dice")
 				dice = int(parts[3])
@@ -150,8 +150,8 @@ class Parser():
 					self.cPrint(complete_string)
 					return
 
-				e1 = self.game.get_entity(parts[1])
-				e2 = self.game.get_entity(parts[2])
+				e1 = self.game.get_entity(parts[1])[1]
+				e2 = self.game.get_entity(parts[2])[1]
 
 				if len(parts) in (3, 4):  # fight + 2 entities ?+placeholder_input_sequence
 					d1 = -1
@@ -185,7 +185,7 @@ class Parser():
 								"\tkey & value are it's key & value respectively\n"
 								"\tvalue is transformed into int if possible\n")
 				elif len(parts) in (2, 4, 6):
-					entity = self.game.get_entity(parts[1])
+					entity = self.game.get_entity(parts[1])[1]
 					if len(parts) == 2:
 						if entity.body["inventory"]:
 							self.cPrint("\n".join("%d: %s" % (i, str(item)) for i, item in enumerate(entity.body["inventory"])) + "\n")
@@ -257,7 +257,7 @@ class Parser():
 				errors = ""
 				for p in parts[1:]:
 					try:
-						entity = self.game.get_entity(p)
+						entity = self.game.get_entity(p)[1]
 						entity.played_this_turn = not entity.played_this_turn
 						changes += ("\n\t%s->%s" % (entity, "played" if entity.played_this_turn else "didn't play"))
 					except DnDException as e:
@@ -273,7 +273,7 @@ class Parser():
 					self.cPrint("set entity stat to_value\n"
 								"\tset entity - prints all stats of entity\n")
 					return
-				entity = self.game.get_entity(parts[1])
+				entity = self.game.get_entity(parts[1])[1]
 				if len(parts) == 2:
 					entity.printStats()
 					return
@@ -297,7 +297,7 @@ class Parser():
 				if len(parts) == 2:
 					raise DnDException("Command 'spell' takes 1, 3 or 4 arguments, %d given." % len(parts))
 
-				caster = self.game.get_entity(parts[1])
+				caster = self.game.get_entity(parts[1])[1]
 				spell = self.game.get("spells", parts[2])
 				if len(parts) >= 3:
 					d = -1
@@ -311,7 +311,7 @@ class Parser():
 
 				# targets
 				targets = self.cInput("targets:\n>>>")
-				targets = [self.game.get_entity(target) for target in targets.split()]
+				targets = [self.game.get_entity(target)[1] for target in targets.split()]
 
 				caster.cast_spell(targets, spell, d, theInput)
 

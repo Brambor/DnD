@@ -88,7 +88,7 @@ class Entity():
 		elif " " in nickname:
 			raise DnDException("Nickname cannot contain space ' '!")
 		elif nickname in (ent.nickname for ent in self.game.entities):
-			raise DnDException("Nickname is already in use by %s" % self.game.get_entity(nickname))
+			raise DnDException("Nickname is already in use by %s" % self.game.get_entity(nickname)[1])
 		else:
 			self.nickname = nickname
 
