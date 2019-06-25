@@ -179,17 +179,13 @@ class Parser():
 								"\tWHAT can be [en]tities/[ef]fects/[[s]p]ells\n")
 				elif len(parts) == 2:
 					lib = {
-						"entities": "en",
-						"effects": "ef",
-						"spells": "s",
-						"sp": "s",
+						"ef": "effects",
+						"en": "entities",
+						"s": "spells",
+						"sp": "spells",
 					}.get(parts[1], parts[1])
-					if lib == "en":
-						lib = self.game.library["entities"]
-					elif lib == "ef":
-						lib = self.game.library["effects"]
-					elif lib == "s":
-						lib = self.game.library["spells"]
+					if lib in self.game.library:
+						lib = self.game.library[lib]
 					else:
 						raise DnDException("No library '%s'." % lib)
 
