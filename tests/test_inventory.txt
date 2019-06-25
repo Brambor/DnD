@@ -1,0 +1,24 @@
+c pes a
+
+# empty inventory
+i a
+
+# throw DnDException on del if inventory is empty
+i a del smth
+
+i a add mana_potion
+i a del mana_potion
+
+i a add mana_potion
+i a add mana_potion
+# not deleting, DnDException
+i a del mana_potion
+i a del 0
+
+i a add mana_potion
+# non-emtpy inventory
+i a
+
+# modyfiing item
+i a mod 0 mana_restore 75
+i a mod 0 history Atracts_dragons!

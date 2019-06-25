@@ -12,6 +12,7 @@ cmd = (
 	("effect", "e"),
 	("eval",),
 	("fight", "f"),
+	("inventory", "i"),
 	("library", "lib", "list", "l"),
 	("move", "m"),
 	("set",),
@@ -173,14 +174,48 @@ class Parser():
 				else:
 					e1.fight(e2, d1, d2)
 
+			elif parts[0] in ("inventory", "i"):
+				if len(parts) == 1:
+					self.cPrint("[i]nventory entity\n"
+								"\tlists items in inventory\n"
+								"[i]nventory entity add/del item\n"
+								"\titem is from item_library\n"
+								"[i]nventory entity mod item key value\n"
+								"\titem is from entity's inventory\n"
+								"\tkey & value are it's key & value respectively\n"
+								"\tvalue is transformed into int if possible\n")
+				elif len(parts) in (2, 4, 6):
+					entity = self.game.get_entity(parts[1])
+					if len(parts) == 2:
+						if entity.body["inventory"]:
+							self.cPrint("\n".join("%d: %s" % (i, str(item)) for i, item in enumerate(entity.body["inventory"])) + "\n")
+						else:
+							self.cPrint("%s's inventory is empty.\n" % entity)
+					elif len(parts) == 4:
+						if parts[2] == "add":
+							item = self.game.get("items", parts[3])
+							entity.put_item_into_inventory(item)
+						elif parts[2] == "del":
+							entity.remove_item_from_inventory(parts[3])
+						else:
+							raise DnDException("On 4 arguments, command's 'inventory' third argument should be add/del, %s given." % parts[2])
+					elif len(parts) == 6:
+						item, key, value = parts[3], parts[4], parts[5]
+						if value.isdigit():
+							value = int(value)
+						entity.set_inventory_item(item, key, value)
+				else:
+					raise DnDException("Command 'inventory' takes 1, 2, 4 or 6 arguments, %d given." % len(parts))
+
 			elif parts[0] in ("library", "lib", "list", "l"):
 				if len(parts) == 1:
-					self.cPrint("[l]ist WHAT\n"
-								"\tWHAT can be [en]tities/[ef]fects/[[s]p]ells\n")
+					self.cPrint("[[l]ib]rary/list WHAT\n"
+								"\tWHAT can be [en]tities, [ef]fects, [[s]p]ells, [i]tems\n")
 				elif len(parts) == 2:
 					lib = {
 						"ef": "effects",
 						"en": "entities",
+						"i": "items",
 						"s": "spells",
 						"sp": "spells",
 					}.get(parts[1], parts[1])

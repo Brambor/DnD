@@ -14,7 +14,8 @@ class Entity():
 		self.body["hp"] = library_entity["hp_max"]
 		if "mana_max" in library_entity:
 			self.body["mana"] = library_entity["mana_max"]
-		self.body["group"] = library_entity.get("group", "")  #
+		self.body["group"] = library_entity.get("group", "")
+		self.body["inventory"] = library_entity.get("inventory", [])
 		self.body["effects"] = []
 		self.body["alive"] = True
 		self.game = game
@@ -386,6 +387,49 @@ class Entity():
 					return True
 			i_x -= 1
 		return False
+
+	# INVENTORY
+	def get_item(self, cmd):
+		"Returns pair (i, item) from inventory firstly by index, secondly by derived_from (name)."
+		"Note that item names SHOULD NOT be integers or .isdigit() strings."
+		if not self.body["inventory"]:
+			raise DnDException("Inventory is empty.")
+		if cmd.isdigit():
+			cmd = int(cmd)
+			if cmd < len(self.body["inventory"]):
+				chosen_i = cmd
+			else:
+				raise DnDException(
+					"There are only %d (indexes from 0 to %d) items in inventory. Invalid index %d." % (
+						len(self.body["inventory"]), len(self.body["inventory"])-1, cmd
+				))
+		else:
+			chosen_item = None
+			for i, item in enumerate(self.body["inventory"]):
+				if item["derived_from"] == cmd:
+					if chosen_item == None:
+						chosen_item = item
+						chosen_i = i
+					else:
+						raise DnDException("There are more items derived_from %s, please use index notation." % cmd)
+			if chosen_item == None:
+				raise DnDException("Item %s not found in %s's inventory." % (cmd, self))
+		return (chosen_i, self.body["inventory"][chosen_i])
+
+	def put_item_into_inventory(self, item):
+		self.body["inventory"].append(item)
+		self.cPrint("%s is now in %s's inventory.\n" % (item, self))
+
+	def remove_item_from_inventory(self, cmd):
+		item_i, item = self.get_item(cmd)
+		self.cPrint("%s vanished from %s's inventory.\n" % (item, self))
+		del self.body["inventory"][item_i]
+
+	def set_inventory_item(self, cmd, key, value):
+		item_i, item = self.get_item(cmd)
+		self.body["inventory"][item_i][key] = value
+		self.cPrint("%s's item now reads: %s.\n" % (self, item))
+
 
 def convert_string_to_bool(string):
 	if string == "True":
