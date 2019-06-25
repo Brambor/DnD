@@ -21,7 +21,7 @@ cmd = (
 	("turn", "t"),
 )
 texts["help"]["commands"] = ("COMMANDS:\n"
-					"\twrite command without any atributes for further help,\n"
+					"\twrite command without any more arguments for further help,\n"
 					"\t(except for turn)\n"
 )
 
@@ -141,7 +141,8 @@ class Parser():
 
 			elif parts[0] == "eval":
 				if len(parts) == 1:
-					self.cPrint("eval command\n\tbetter not use that!\n")
+					self.cPrint("eval command\n"
+								"\tbetter not use that!\n")
 					return
 				parts = " ".join(parts[1:])
 				try:
@@ -260,7 +261,7 @@ class Parser():
 			elif parts[0] in ("move", "m"):
 				if len(parts) == 1:
 					self.cPrint("[m]ove target_entity_1 target_entity_2 ...\n"
-							"\ttoggles all selected entities played_this_turn\n")
+								"\ttoggles all selected entities played_this_turn\n")
 					return
 				changes = ""
 				errors = ""
@@ -279,8 +280,9 @@ class Parser():
 
 			elif parts[0] == "set":
 				if len(parts) == 1:
-					self.cPrint("set entity stat to_value\n"
-								"\tset entity - prints all stats of entity\n")
+					self.cPrint("set entity\n"
+								"\tprints all stats of entity\n"
+								"set entity stat to_value\n")
 					return
 				entity = self.game.get_entity(parts[1])[1]
 				if len(parts) == 2:
