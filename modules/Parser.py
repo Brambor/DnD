@@ -124,7 +124,7 @@ class Parser():
 					raise DnDException("Command 'effect' takes 1 or 4 arguments, %d given." % len(parts))
 
 				entity = self.game.get_entity(parts[1])
-				effect = self.game.get_effect(parts[2])
+				effect = self.game.get("effects", parts[2])
 				self.check(parts[3], "dice")
 				dice = int(parts[3])
 				entity.add_effect(effect, dice)
@@ -263,7 +263,7 @@ class Parser():
 					raise DnDException("Command 'spell' takes 1, 3 or 4 arguments, %d given." % len(parts))
 
 				caster = self.game.get_entity(parts[1])
-				spell = self.game.get_spell(parts[2])
+				spell = self.game.get("spells", parts[2])
 				if len(parts) >= 3:
 					d = -1
 				else:

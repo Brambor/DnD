@@ -314,7 +314,7 @@ class Entity():
 
 	def add_effects(self, effects):
 		for effect, value in effects:
-			effect = self.game.get_effect(effect)
+			effect = self.game.get("effects", effect)
 			self.add_effect(effect, value)
 
 	def remove_effects(self, flags):
@@ -375,7 +375,7 @@ class Entity():
 					del self.body["effects"][i_x]
 					if turns_into:
 						effect, value = turns_into
-						effect = self.game.get_effect(effect)
+						effect = self.game.get("effects", effect)
 						into_str = self.get_effect_string(effect, value)
 					else:
 						into_str = "nothing"
