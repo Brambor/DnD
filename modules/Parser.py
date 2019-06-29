@@ -19,6 +19,7 @@ cmd = (
 	("set",),
 	("spell", "s", "cast"),
 	("turn", "t"),
+	("window", "w"),
 )
 texts["help"]["commands"] = ("COMMANDS:\n"
 					"\twrite command without any more arguments for further help,\n"
@@ -332,6 +333,57 @@ class Parser():
 						e.played_this_turn = False
 					self.cPrint("All entities played. New round!\n")
 				self.game.turn()
+
+			elif parts[0] in ("window", "w"):
+				if len(parts) == 1:
+					self.cPrint("w <==> window; ([w]indow)\n"
+								"w show sleep_for\n"
+								"\tdisplays windows (what + size) for sleep_for secs\n\n"  # TODO until enter is pressed
+								
+								"w get_size/gs what_window\n"
+								"\tprints (height, width) of window\n"
+								"w get_top_left/gtl what_window\n"
+								"\tprints (y, x) of top left corner\n\n"
+
+								"w set_size/ss what_window ncols nlines\n"
+								"\tset window size to (ncols, nlines)\n"
+								"w set_top_left/stl what_window y x\n"
+								"\tset window top left corner to (y, x)\n")
+				elif len(parts) >= 2:
+					if parts[1] in ("show", "s"):
+						if len(parts) == 3:
+							if parts[2].isdigit():
+								self.cPrint.cCurses.window_show(int(parts[2]))
+							else:
+								raise DnDException("Argument 'sleep_for' of command 'window show' must be integer, '%s' given." % parts[2])
+						else:
+							raise DnDException("Command 'window show' takes 3 arguments, %d given." % len(parts))
+					elif parts[1] in ("get_size", "gs"):
+						if len(parts) == 3:
+								self.cPrint.cCurses.window_get_size(parts[2])
+						else:
+							raise DnDException("Command 'window get_size' takes 3 arguments, %d given." % len(parts))
+					elif parts[1] in ("get_top_left", "gtl"):
+						if len(parts) == 3:
+								self.cPrint.cCurses.window_get_top_left(parts[2])
+						else:
+							raise DnDException("Command 'window get_top_left' takes 3 arguments, %d given." % len(parts))
+					elif parts[1] in ("set_size", "ss"):
+						if len(parts) == 5:
+							if (parts[3].isdigit() and parts[4].isdigit()):
+								self.cPrint.cCurses.window_set_size(parts[2], int(parts[3]), int(parts[4]))
+							else:
+								raise DnDException("ncols & nlines must be ints, %s, %s given." % (parts[3], parts[4]))
+						else:
+							raise DnDException("Command 'window set_size' takes 5 arguments, %d given." % len(parts))
+					elif parts[1] in ("set_top_left", "stl"):
+						if len(parts) == 5:
+							if (parts[3].isdigit() and parts[4].isdigit()):
+								self.cPrint.cCurses.window_set_top_left(parts[2], int(parts[3]), int(parts[4]))
+							else:
+								raise DnDException("y & x must be ints, %s, %s given." % (parts[3], parts[4]))
+						else:
+							raise DnDException("Command 'window set_top_left' takes 5 arguments, %d given." % len(parts))
 
 			else:
 				self.cPrint("?\n")

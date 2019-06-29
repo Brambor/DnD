@@ -1,6 +1,10 @@
 import curses
 from curses import textpad
 
+from time import sleep
+
+from modules.DnDException import DnDException
+
 
 class CustomCurses():
 	def __init__(self, COLOR_PALETTE, COLOR_USAGE):
@@ -70,6 +74,12 @@ class CustomCurses():
 		"expresion is a string that can contain 'x' or 'y' and other mathematical "
 		return eval( expresion.replace("x", str(self.width)).replace("y", str(self.height)) )
 
+	def get_window(self, window_name):
+		if window_name in self.windows:
+			return self.windows[window_name]
+		else:
+			raise DnDException("Window '%s' doesn't exist. These do: %s." % (window_name, ", ".join(key for key in self.windows)))
+
 	def send(self, message):
 		input_command = ""
 
@@ -113,6 +123,60 @@ class CustomCurses():
 
 		curses.endwin()
 
+	def window_get_size(self, window_name):
+		window = self.get_window(window_name)
+		ret_str = "%s is (height, width): %d, %d\n" % (window_name, *window.getmaxyx())
+		self.windows["fight"].addstr(ret_str)
+		self.windows["fight"].refresh()
+
+	def window_get_top_left(self, window_name):
+		window = self.get_window(window_name)
+		ret_str = "%s is at (y, x): %d, %d\n" % (window_name, *window.getbegyx())
+		self.windows["fight"].addstr(ret_str)
+		self.windows["fight"].refresh()
+
+	def window_set_size(self, window, ncols, nlines):
+		"set window size to (ncols, nlines)"
+		window = self.get_window(window)
+
+		bgchar = window.getbkgd()
+		window.bkgdset(" ")
+		window.clear()
+		window.refresh()
+
+		window.bkgdset(bgchar)
+		window.resize(ncols, nlines)
+		window.refresh()
+
+	def window_set_top_left(self, window, y, x):
+		"set window top left corner to (y, x)"
+		window = self.get_window(window)
+
+		bgchar = window.getbkgd()
+		window.bkgdset(" ")
+		window.clear()
+		window.refresh()
+
+		window.bkgdset(bgchar)
+		window.mvwin(y, x)
+		window.refresh()
+
+	def window_show(self, sleep_for):
+		"displays where are the windows, which are which and their size"
+		"TODO clears window. that should not happen"
+		for i, w in enumerate(self.windows):
+			window = self.windows[w]
+			bgchar = window.getbkgd()
+			window.bkgdset(str(i))
+			window.clear()
+			window.addstr("<<%s>>" % w)
+			window.refresh()
+			window.bkgdset(bgchar)
+			window.refresh()
+		sleep(sleep_for)
+		for w in self.windows:
+			self.windows[w].clear()
+			self.windows[w].refresh()
 
 def enter_is_terminate(x):
 	if x in (10, 459):  # regular enter, enter on notepad
