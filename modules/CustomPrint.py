@@ -37,7 +37,7 @@ class CustomPrint():
 
 		CU = self.cCurses.color_usage
 		for group in groups:
-			spaces = " "*((self.windows["entities"].getmaxyx()[0] - len(group))//2)
+			spaces = " "*(max(0, self.windows["entities"].getmaxyx()[1] - len(group))//2)
 			self.windows["entities"].addstr(spaces + group + "\n", self.cCurses.curses.color_pair(CU["mana"]))
 			# TODO CRASH WHEN TO MANY LINES IN TOTAL
 			for e in groups[group]:
