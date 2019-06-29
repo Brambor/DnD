@@ -186,11 +186,11 @@ def enter_is_terminate(x):
 WINDOWS = {
 	"fight": {
 		"left_top": ("0", "0"),
-		"width_height": ("2*x//3", "y-3"),
+		"width_height": ("2*x//3", "y-2"),
 	},
 	"entities": {
 		"left_top": ("2*x//3", "0"),
-		"width_height": ("x//3", "y-3"),
+		"width_height": ("x//3", "y-2"),
 		"scrollok": False,
 	},
 	"console_input": {
