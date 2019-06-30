@@ -16,6 +16,9 @@ class CustomPrint():
 		if self.log_file:
 			self.write_to_log(message)
 
+	def spaces_to_center(self, window_name, word):
+		return " "*(max(0, self.windows[window_name].getmaxyx()[1] - len(word))//2)
+
 	def refresh_entities(self, entities):
 		self.windows["entities"].clear()
 		if not entities:
@@ -37,7 +40,7 @@ class CustomPrint():
 
 		CU = self.cCurses.color_usage
 		for group in groups:
-			spaces = " "*(max(0, self.windows["entities"].getmaxyx()[1] - len(group))//2)
+			spaces = self.spaces_to_center("entities", group)
 			self.windows["entities"].addstr(spaces + group + "\n", self.cCurses.curses.color_pair(CU["mana"]))
 			# TODO CRASH WHEN TO MANY LINES IN TOTAL
 			for e in groups[group]:
