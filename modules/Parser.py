@@ -189,7 +189,6 @@ class Parser():
 			elif parts[0] in ("inventory", "i"):
 				if len(parts) == 1:
 					self.cPrint("[i]nventory entity\n"
-								"\tlists items in inventory\n"
 								"\tchoose entity's inventory to be listed in inventory window; lists items in inventory\n"
 								"[i]nventory entity add/del item\n"
 								"\titem is from item_library\n"
