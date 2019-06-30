@@ -50,6 +50,26 @@ class CustomPrint():
 
 		self.windows["entities"].refresh()
 
+	def refresh_inventory(self, entity):
+		self.windows["inventory"].clear()
+		if entity == None:
+			header = "%sinventory\n" % self.spaces_to_center("inventory", "inventory")
+			self.windows["inventory"].addstr(header)
+			self.windows["inventory"].addstr("None entity selected! Note: select with command 'inventory entity'.\n")
+		else:
+			header = "%s's inventory" % entity.nickname
+			header = "%s%s\n" % (self.spaces_to_center("inventory", header), header)
+			self.windows["inventory"].addstr(header)
+			if entity.body["inventory"]:
+				for item in entity.body["inventory"]:
+					self.windows["inventory"].addstr("%s: %s\n" % (
+						item["derived_from"],
+						{key:item[key] for key in item if key != "derived_from"},  # remove derived_from
+					))
+			else:
+				self.windows["inventory"].addstr("empty inventory!")
+		self.windows["inventory"].refresh()
+
 	def write_to_log(self, message):
 		if not os.path.exists("logs"):
 			os.mkdir("logs")

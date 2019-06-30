@@ -43,6 +43,7 @@ class Parser():
 		self.DEBUG = DEBUG
 		self.cInput = cInput
 		self.cPrint = cPrint
+		self.inventory_of_entity = None
 
 	def check(self, values, types):
 		for v, t in zip(values.split(), types.split()):
@@ -189,6 +190,7 @@ class Parser():
 				if len(parts) == 1:
 					self.cPrint("[i]nventory entity\n"
 								"\tlists items in inventory\n"
+								"\tchoose entity's inventory to be listed in inventory window; lists items in inventory\n"
 								"[i]nventory entity add/del item\n"
 								"\titem is from item_library\n"
 								"[i]nventory entity mod item key value\n"
@@ -197,6 +199,7 @@ class Parser():
 								"\tvalue is transformed into int if possible\n")
 				elif len(parts) in (2, 4, 6):
 					entity = self.game.get_entity(parts[1])[1]
+					self.inventory_of_entity = entity
 					if len(parts) == 2:
 						if entity.body["inventory"]:
 							self.cPrint("\n".join("%d: %s" % (i, str(item)) for i, item in enumerate(entity.body["inventory"])) + "\n")
@@ -398,6 +401,7 @@ class Parser():
 		# entities window refresh
 		try:
 			self.cPrint.refresh_entities(self.game.entities)
+			self.cPrint.refresh_inventory(self.inventory_of_entity)
 		except DnDException as exception:
 			self.cPrint("?!: %s\n" % exception)
 		except:
