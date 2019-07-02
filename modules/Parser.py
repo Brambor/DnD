@@ -299,35 +299,29 @@ class Parser():
 
 			elif parts[0] in ("spell", "s", "cast"):
 				if len(parts) == 1:
-					complete_string = ( "[s]pell/cast caster_entity spell dice\n"
+					complete_string = ( "1) [s]pell/cast caster_entity spell manual_dice\n"
 										"\tspell must be from library.spells\n"
-										"\tdice is integer, 'a' for auto\n" )
+										"\tif manual_dice, dice are not thrown automatically\n" )
 					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
 
-					complete_string +=  "target_entity_1 target_entity_2 ...\n"
+					complete_string +=  "2) target_entity_1 target_entity_2 ...\n"
 					self.cPrint(complete_string)
 					return
-
-				if len(parts) == 2:
+				elif len(parts) == 3:
+					theInput = False
+				elif len(parts) >= 4:
+					theInput = self.cInput
+				else:
 					raise DnDException("Command 'spell' takes 1, 3 or 4 arguments, %d given." % len(parts))
 
 				caster = self.game.get_entity(parts[1])[1]
 				spell = self.game.get("spells", parts[2])
-				if len(parts) >= 3:
-					d = -1
-				else:
-					self.check(parts[3], "dice")
-					d = int(parts[3])
-				if len(parts) >= 4:
-					theInput = self.cInput
-				else:
-					theInput = False
 
 				# targets
 				targets = self.cInput("targets:\n>>>")
 				targets = [self.game.get_entity(target)[1] for target in targets.split()]
 
-				caster.cast_spell(targets, spell, d, theInput)
+				caster.cast_spell(targets, spell, theInput)
 
 			elif parts[0] in ("turn", "t"):
 				if all(e.played_this_turn for e in self.game.entities):

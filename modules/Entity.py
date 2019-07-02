@@ -92,7 +92,6 @@ class Entity():
 		else:
 			self.nickname = nickname
 
-
 	def get_stat(self, stat, return_as_integer=True):
 		"return_as_integer False: returns string in form '7 (5 + 4 - 2)' base + bonus - penalty"
 		if type(self.body[stat]) != int:
@@ -165,10 +164,7 @@ class Entity():
 			self.attack(opponent, self.body["weapon"].dmg)
 			opponent.attack(self, opponent.body["weapon"].dmg)
 
-	def cast_spell(self, targets, spell, self_D, cInput=False): #  so far only for healing
-		if self_D == -1:
-			self_D = dice_stat(self.get_stat("magie"))
-
+	def cast_spell(self, targets, spell, cInput=False):
 		spell_cost = spell["mana_consumption"].get("base", 0) \
 					+spell["mana_consumption"].get("per_target", 0) * len(targets)
 
@@ -198,7 +194,7 @@ class Entity():
 	def count_spell_hp(self, spell, cInput):
 		total_hp = spell.get("base", 0)
 		for bonus in spell.get("bonuses", set()):
-			total_hp += self.body.get(bonus, 0) * spell["bonuses"][bonus]
+			total_hp += self.body.get(bonus, 0) * spell["bonuses"][bonus]  # TODO: if stat is missing, we would like to have QUANTUM_STAT?
 		crit = False
 		# make seq
 		dice = spell.get("dice")
