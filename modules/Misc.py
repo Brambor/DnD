@@ -2,6 +2,7 @@ from modules.DnDException import DnDException
 
 
 def parse_sequence(sequence, carry_when_crit=False):
+	"does not process negative integers as integers"
 	sequence = sequence.split()
 	if len(sequence) == 0:  # or 'not sequence'
 		raise DnDException("The sequence contains nothing! WtF?")
