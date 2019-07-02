@@ -324,10 +324,6 @@ class Parser():
 				caster.cast_spell(targets, spell, theInput)
 
 			elif parts[0] in ("turn", "t"):
-				if all(e.played_this_turn for e in self.game.entities):
-					for e in self.game.entities:
-						e.played_this_turn = False
-					self.cPrint("All entities played. New round!\n")
 				self.game.turn()
 
 			elif parts[0] in ("window", "w"):

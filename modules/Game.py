@@ -26,9 +26,13 @@ class Game():
 		del self.entities[entity_i]
 
 	def turn(self):
-		self.cPrint("Turn %d\n" % self.i_turn)
 		for e in self.entities:
 			e.apply_effects()
+		self.cPrint("Turn %d\n" % self.i_turn)
+		if all(e.played_this_turn for e in self.entities):
+			for e in self.entities:
+				e.played_this_turn = False
+			self.cPrint("All entities played. New round!\n")
 		self.i_turn += 1
 
 	def get(self, library, thing):
