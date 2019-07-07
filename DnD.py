@@ -79,22 +79,18 @@ else:
 		sys.stdin = f
 
 		try:
-			windows["fight"].addstr("test name: %s\n" % test)
-			windows["fight"].refresh()
+			cPrint("test name: %s\n" % test)
 			sleep(1)
 			while cInput.i+1 < len(f_copy):
 				command = cInput(">>>")
 				P.process(command)
 				sleep(0.1)
-			windows["fight"].addstr("\n\n\n\n")
-			windows["fight"].refresh()
+			cPrint("\n\n\n\n")
 		except EOFError:
 			print("EOF happened")
-			windows["fight"].addstr("ERROR EOF happened\n")
-			windows["fight"].refresh()
+			cPrint("ERROR EOF happened\n")
 		except Exception as e:
-			windows["fight"].addstr("ERROR Exception happened\n")
-			windows["fight"].refresh()
+			cPrint("ERROR Exception happened\n")
 			cCurses.endCurses()
 			print("\n\n")
 			print(e)
@@ -103,8 +99,7 @@ else:
 			raise
 
 	f.close()
-	windows["fight"].addstr("TESTS ARE DONE\n")
-	windows["fight"].refresh()
+	cPrint("TESTS ARE DONE\n")
 	sys.stdin = f1
 
 	cInput.test_environment = False
