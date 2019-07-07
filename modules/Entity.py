@@ -421,7 +421,7 @@ class Entity():
 		return (chosen_i, self.body["inventory"][chosen_i])
 
 	def put_item_into_inventory(self, item):
-		self.body["inventory"].append(item)
+		self.body["inventory"].append(copy(item))
 		self.cPrint("%s is now in %s's inventory.\n" % (item, self))
 
 	def remove_item_from_inventory(self, cmd):
