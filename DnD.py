@@ -37,14 +37,8 @@ if not settings.AUTO_INPUT:
 	G = Game(library, cPrint, cCurses)
 	P = Parser(G, cInput, cPrint, settings.DEBUG)
 	try:
-		while True:
-			command = cInput(">>>")
-			if command == "&" and settings.DEBUG:
-				crash  # force crash
-			if command == "exit":
-				break  # force crash
-
-			P.process(command)
+		while P.input_command():
+			pass
 	except Exception as e:
 		cCurses.endCurses()
 		print("\n\n")
@@ -81,9 +75,7 @@ else:
 		try:
 			cPrint("test name: %s\n" % test)
 			sleep(1)
-			while cInput.i+1 < len(f_copy):
-				command = cInput(">>>")
-				P.process(command)
+			while (cInput.i+1 < len(f_copy)) and P.input_command():
 				sleep(0.1)
 			cPrint("\n\n\n\n")
 		except EOFError:
@@ -106,21 +98,14 @@ else:
 	cInput.input_stream = False
 
 	try:
-		while True:
-			command = cInput(">>>")
-			if command == "&" and settings.DEBUG:
-				crash  # force crash
-			if command == "exit":
-				break  # force crash
-
-			P.process(command)
+		while P.input_command():
+			pass
 	except Exception as e:
 		cCurses.endCurses()
 		print("\n\n")
 		print(e)
 		input("CRASHED, PRESS ENTER")
 		raise
-
 
 	cCurses.endCurses()
 	input("DONE (settings.AUTO_INPUT was set to True)")

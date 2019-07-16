@@ -54,6 +54,14 @@ class Parser():
 				if not v.isdigit():
 					raise DnDException("'%s' is not a valid integer." % v)
 
+	def input_command(self):
+		"Handles one line of input. Returns True if game while loop should continue. False otherwise."
+		command = self.cInput(">>>")
+		if command == "exit":
+			return False # force break
+		self.process(command)
+		return True
+
 	def process(self, cmd):
 		parts = cmd.split()
 		try:
