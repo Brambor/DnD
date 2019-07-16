@@ -9,7 +9,6 @@ fight a b 2 3 yep_Do_iT
 7
 
 fight a b 3 3 yep_Do_iT
-7
 
 c Thorbald t
 
@@ -21,11 +20,14 @@ fight t a activate_it
 fight t a activate_it
 8 5 4
 
+# ?!: Sequence was too short!
 fight t a activate_it
 8
 
+# ?!: Sequence was too long!
 fight t a activate_it
 2 8
 
+# ?!: The sequence contains nothing! WtF?
 fight t a activate_it
 
