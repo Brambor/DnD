@@ -81,8 +81,6 @@ class CustomCurses():
 			raise DnDException("Window '%s' doesn't exist. These do: %s." % (window_name, ", ".join(key for key in self.windows)))
 
 	def send(self, message):
-		input_command = ""
-
 		self.windows["console_input"].addstr(0, 0, message)
 
 		message_s = message.split("\n")
@@ -93,19 +91,22 @@ class CustomCurses():
 		# INPUT
 		curses.curs_set(2)
 		input_command = self.command_textbox.edit(enter_is_terminate)
+		# each line in regular input is " \n" instead of "\n" (for some reason)
+		input_command = input_command.replace(" \n", "\n")
 		curses.curs_set(False)  # so that it doesn't blink in top left corner. >>> ocasionally blinks thought...
 		return self.serialization(input_command, message)
 
 	def send_test(self, message):
-		input_command = " %s %s\n " % (message, input())  # some of this is needed, but the rest makes it FuNkY
+		input_command = "%s %s\n" % (message, input())
+		input_command = input_command.replace(" \n", "\n")  # for the one special case when input_command == ">>> \n"
 		return self.serialization(input_command, message)
 
 	def serialization(self, input_command, message):
 		"common parts of self.send and self.send_test"
 		# removing >>>
-		input_command_stripped = input_command[len(message)+1 + message.count("\n"):]
+		input_command_stripped = input_command[len(message)+1:]
 		# if only >>>, then print only \n
-		if input_command == ">>> \n":
+		if input_command == ">>>\n":
 			input_command = "\n"
 
 		self.windows["console_input"].clear()
@@ -114,7 +115,7 @@ class CustomCurses():
 
 		for w in self.windows:
 			self.windows[w].refresh()
-		return input_command_stripped[:-2]  # removing ending \n
+		return input_command_stripped[:-1]  # removing ending \n
 
 	def endCurses(self):
 		curses.nocbreak()

@@ -22,7 +22,6 @@ class CustomInput():
 			self.write_to_log(message, res)
 
 		if self.input_stream:
-			self.cPrint(self.input_stream[self.i])  # TODO "\n"
 			self.i += 1
 		return res
 
