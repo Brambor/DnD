@@ -1,4 +1,13 @@
+import re
+
 from modules.DnDException import DnDException
+
+try:
+	from settings import local_settings as settings
+except ImportError:
+	print("Did you forget to copy 'settings/local_settings_default.py' to a file named 'settings/local_settings.py'?")
+	input()
+	raise
 
 texts = {
 	"placeholder_input_sequence": "placeholder_input_sequence activates inputing sequence latter down the chain; for now any value just means True",
@@ -21,9 +30,10 @@ cmd = (
 	("turn", "t"),
 	("window", "w"),
 )
-texts["help"]["commands"] = ("COMMANDS:\n"
-					"\twrite command without any more arguments for further help,\n"
-					"\t(except for turn)\n"
+texts["help"]["commands"] = (
+	"COMMANDS:\n"
+		"\twrite command without any more arguments for further help,\n"
+		"\t(except for turn)\n"
 )
 
 for c in (", ".join(c) for c in cmd):
@@ -34,8 +44,19 @@ texts["help"]["entity_reference"] = ("'entity' can be referenced via entity nick
 					"Then commands 'move a' & 'move 0' are equivalent.\n"
 )
 
+texts["help"]["symbol"] = {
+	"+": "Symbol '+' means at least one, as many as you want.\n",
+	"*": "Symbol '*' means optional (at least zero), as many as you want.\n",
+	"|": "Symbol '|' is separator, required when there are more arguments with '+' or '*'."
+	" Separators are %s set in 'settings.SEPARATORS.'\n" % ", ".join("'%s'" % s for s in settings.SEPARATORS),
+}
+
 texts["help_general"] = ("General help: use 'help WHAT' for more detailed help.\n"
 						"\tWHAT can be: %s\n" % ", ".join(texts["help"]))
+
+def separate(splitted_parts):
+	splitted_parts = [part.strip() for part in re.split("|".join("\\%s" % s for s in settings.SEPARATORS), " ".join(splitted_parts))]
+	return splitted_parts
 
 class Parser():
 	def __init__(self, game, cInput, cPrint, DEBUG):
@@ -75,7 +96,16 @@ class Parser():
 					self.cPrint(texts["help_general"])
 				elif len(parts) == 2:
 					if parts[1] in texts["help"]:
-						self.cPrint(texts["help"][parts[1]])
+						d = texts["help"][parts[1]]
+						text = ""
+						if type(d) == dict:
+							for key in d:
+								text += "%s" % (d[key])
+						elif type(d) == str:
+							text = d
+						else:
+							raise
+						self.cPrint(text)
 					else:
 						raise DnDException("'%s' is not helped with. These are: %s." % (parts[1], ", ".join(texts["help"])))
 
@@ -93,35 +123,34 @@ class Parser():
 
 			elif parts[0] in ("dmg", "d", "attack", "a"):
 				if len(parts) == 1:
-					self.cPrint("[d]mg/[a]ttack source_text\n"
-							"\tsource is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
-
-							"type_of_dmg base_dmg dice(die)\n"
+					self.cPrint("[d]mg/[a]ttack source_text | type_of_dmg base_dmg dice(die)+ | target(s)+\n"
+							"\tsource_text is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
 							"\tdamage_type ([p]hysical/[m]agic/[t]rue)\n"
 							"\tdie are row integers representing used dice(die)\n"
-
-							"target(s)\n"
-							"\ttarget_entity_1 target_entity_2 ...\n")
+							"\ttarget_entity_1 target_entity_2 ...\n"
+							"\t"+texts["help"]["symbol"]["+"]
+							+"\t"+texts["help"]["symbol"]["|"]
+							)
 					return
+				parts = separate(parts[1:])
+				source_text = parts[1:]
 
-				source_text = " ".join(parts[1:])
+				damages = parts[1].split()
 
-				damages = self.cInput("type base dice(die):\n>>>").split()
-				if len(damages) >= 2:
-					damage_type = damages[0]
-					if damage_type not in ("physical", "p", "magic", "m", "true", "t"):
-						raise DnDException("Damage type must be one of [p]hysical/[m]agic/[t]rue, '%s' is not either of them." % damage_type)
+				damage_type = damages[0]
+				if damage_type not in ("physical", "p", "magic", "m", "true", "t"):
+					raise DnDException("Damage type must be one of [p]hysical/[m]agic/[t]rue, '%s' is not either of them." % damage_type)
 
-					base_dmg = damages[1]
-					self.check(base_dmg, "dice")
-					base_dmg = int(base_dmg)
+				base_dmg = damages[1]
+				self.check(base_dmg, "dice")
+				base_dmg = int(base_dmg)
 
-					dice = damages[2:]
-					self.check(" ".join(dice), " ".join(["dice"]*len(dice)))  # cubersome...
-					dice = [int(d) for d in dice]
+				dice = damages[2:]
+				self.check(" ".join(dice), " ".join(["dice"]*len(dice)))  # cubersome...
+				dice = [int(d) for d in dice]
 
-				targets = self.cInput("targets:\n>>>")
-				targets = [self.game.get_entity(target)[1] for target in targets.split()]
+				targets = parts[2].split()
+				targets = [self.game.get_entity(target)[1] for target in targets]
 
 				threw_crit = self.game.throw_dice(dice)
 				damage_sum = base_dmg + sum(t[0] for t in threw_crit)

@@ -6,6 +6,8 @@ DEBUG = True  # True: The program crashes when something goes wrong; False: it p
 AUTO_INPUT = True  # True: when DnD is run, ask whether run tests
 LOG = False  # AUTO_INPUT must be False for this to work. False: Nothing; True: As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything, inputs are not numbered, unlike with tests)
 
+SEPARATORS = ["|", ";", "&"]
+
 # COLORS
 """
 predefined:
