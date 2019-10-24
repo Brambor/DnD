@@ -18,7 +18,20 @@ class Effect():
 	def __init__(self):
 		pass
 """
-if not settings.AUTO_INPUT:
+
+while settings.AUTO_INPUT:
+	the_input = input("Press enter if you wish to proceed.\nWrite 'test' if you wish to make tests.")
+	if the_input == "":
+		do_tests = False
+		break
+	elif the_input.lower() == "test":
+		do_tests = True
+		break
+	else:
+		print("What was '%s'?" % the_input)
+
+
+if not do_tests:
 	# REGULAR USE
 
 	if settings.LOG:
