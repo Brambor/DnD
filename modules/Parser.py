@@ -1,6 +1,7 @@
 import re
 
 from modules.DnDException import DnDException
+from modules.Dice import D, dice_stat
 
 try:
 	from settings import local_settings as settings
@@ -17,6 +18,7 @@ texts = {
 cmd = (
 	("help", "h"),
 	("create", "c"),
+	("compare", "cmp"),
 	("dmg", "d", "attack", "a"),
 	("effect", "e"),
 	("erase",),
@@ -62,6 +64,13 @@ texts["help_general"] = (
 def separate(splitted_parts):
 	splitted_parts = [part.strip() for part in re.split("|".join("\\%s" % s for s in settings.SEPARATORS), " ".join(splitted_parts))]
 	return splitted_parts
+
+def get_int_from_dice(n_str):
+	if n_str.replace("-", "", 1).isdigit():
+		return int(n_str)
+	elif n_str.startswith("d") and n_str[1:].isdigit():
+		return D(int(n_str[1:]))
+	raise DnDException("'%s' is not an integer nor in format 'dx'." % n_str)
 
 class Parser():
 	def __init__(self, game, cInput, cPrint, DEBUG):
@@ -125,6 +134,45 @@ class Parser():
 					e = self.game.create(parts[1], parts[2])
 				else:
 					e = self.game.create(parts[1])
+
+			elif parts[0] in ("compare", "cmp"):
+				if len(parts) == 1:
+					self.cPrint(
+						"compare/cmp entity1 skill1 val1 entity2 skill2 val2\n"
+						"\tprobably throws a die to see who won\n"
+						"\tskill determines which skill is entity using\n"
+						"\tval is integer, 'a' for auto based on skill\n"
+						"compare/cmp val1 val2\n"
+						"\tprobably throws a die to see what is more\n"
+						"\tval is either integer or dice in format 'dx' where x is integer\n"
+						)
+					return
+				if len(parts) == 3:
+					val1 = get_int_from_dice(parts[1])
+					val2 = get_int_from_dice(parts[2])
+					self.cPrint("%d %s %d\n" % (val1, ("<" if val1 < val2 else ">" if val1 > val2 else "="), val2))
+				elif len(parts) == 7:
+					e1 = self.game.get_entity(parts[1])[1]
+					e2 = self.game.get_entity(parts[4])[1]
+					if parts[3] == "a":
+						val1 = dice_stat(e1.get_stat(parts[2], return_as_integer=True))
+					else:
+						val1 = get_int_from_dice(parts[3])
+					if parts[6] == "a":
+						val2 = dice_stat(e2.get_stat(parts[5], return_as_integer=True))
+					else:
+						val2 = get_int_from_dice(parts[6])
+					
+
+					self.cPrint("%s's %s: %d %s %s's %s: %d\n" % (
+						e1, parts[2], val1,
+						("<" if val1 < val2 else ">" if val1 > val2 else "="),
+						e2, parts[5], val2,
+						))
+					pass
+				else:
+					raise DnDException("Command 'compare' takes 3 or 7 arguments, %d given." % len(parts))
+
 
 			elif parts[0] in ("dmg", "d", "attack", "a"):
 				if len(parts) == 1:
@@ -200,7 +248,7 @@ class Parser():
 			elif parts[0] in ("fight", "f"):
 				if len(parts) == 1:
 					complete_string = ( "[f]ight entity1 entity2 val1 val2 placeholder_input_sequence\n"
-										"\tval* is integer, 'a' for auto\n" )
+										"\tval is integer, 'a' for auto\n" )
 					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
 					complete_string +=  "\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
 					self.cPrint(complete_string)

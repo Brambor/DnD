@@ -1,0 +1,16 @@
+cmp 7 11
+
+cmp -11 7
+
+cmp 11 11
+
+cmp d12 7
+
+c pes a
+c pes b
+
+cmp a int a b int a
+
+cmp a boj a b boj a
+
+cmp a boj 16 b boj a
