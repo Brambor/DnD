@@ -340,12 +340,7 @@ class Parser():
 					)
 				effects_to_remove = self.cInput("effects to remove:\n>>>").split()
 				
-				indexes = []
-				for i in effects_to_remove:
-					if i.isdigit():
-						indexes.append(int(i))
-					else:
-						raise DnDException("%s is not a number." % i) 
+				indexes = [int(i) if i.isdigit() else DnDException("%s is not a non-negative integer." % i) for i in effects_to_remove]
 
 				entity.remove_effects_by_index(indexes)
 

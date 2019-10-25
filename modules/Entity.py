@@ -335,8 +335,11 @@ class Entity():
 	def remove_effects_by_index(self, indexes):
 		self.cPrint("%s is no longer:\n" % self)
 		for index in sorted(indexes, reverse=True):
-			self.cPrint("\t%s\n" % self.get_effect_string(self.body["effects"][index]))
-			del self.body["effects"][index]
+			if index < len(self.body["effects"]):
+				self.cPrint("\t%s\n" % self.get_effect_string(self.body["effects"][index]))
+				del self.body["effects"][index]
+			else:
+				raise DnDException("%d is too much!" % index)
 
 	def apply_effects(self):
 		i = 0

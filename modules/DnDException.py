@@ -1,2 +1,4 @@
 class DnDException(Exception):
-	pass
+    def __init__(self, *args):
+        super(DnDException, self).__init__(*args)
+        raise self
