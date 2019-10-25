@@ -1,3 +1,5 @@
+import os
+
 from modules.CustomCurses import CustomCurses
 from modules.CustomInput import CustomInput
 from modules.Game import Game
@@ -19,17 +21,28 @@ class Effect():
 		pass
 """
 
+tests = [f[5:-4] for f in os.listdir("tests")]
+print("Avaiable tests: %s" % ", ".join(tests))
 while settings.AUTO_INPUT:
-	the_input = input("Press enter if you wish to proceed.\nWrite 'test' if you wish to make tests.")
+	the_input = input("Press enter if you wish to proceed.\nWrite '[t]est' to run all tests. Write 'test_name*' to select which tests to run.\n'*' is a symbol\n>>>")
+	do_tests = False
 	if the_input == "":
-		do_tests = False
 		break
-	elif the_input.lower() == "test":
+	elif the_input in ("test", "t"):
 		do_tests = True
 		break
 	else:
-		print("What was '%s'?" % the_input)
-
+		do_tests = True
+		tests_selected = the_input.split()
+		good = True
+		for t in tests_selected:
+			if t not in tests:
+				print("'%s' is not a valid test." % t)
+				good = False
+		if not good:
+			continue
+		tests = tests_selected
+		break
 
 if not do_tests:
 	# REGULAR USE
@@ -74,7 +87,7 @@ else:
 	cPrint = CustomPrint(windows, cCurses)
 	cInput = CustomInput(cPrint, cCurses, input_stream=True, test_environment=True)  # input_stream latter changed 
 
-	for test in ("basics cast dead_splash dmg effect_stats erase fight freeze freeze_fire freeze_hard groups help inventory move").split():
+	for test in tests:
 		cInput.i = 0
 		path = 'tests/test_%s.txt' % test
 		f = open(path,'r')
