@@ -50,7 +50,7 @@ class Entity():
 			hp[0] += "\n"
 			yield hp
 		if self.body["effects"]:
-			yield (" %s\n" % ", ".join([i["name"] for i in self.body["effects"]]), 0)
+			yield (" %s\n" % ", ".join("%sϟ%d" % (i["name"], i["value"]) if i["type"] == "duration" else i["name"] for i in self.body["effects"]), 0)
 
 	def setStat(self, stat, value):
 		if ( ( stat in self.body ) and ( type(self.body[stat]) == str ) ):
