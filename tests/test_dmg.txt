@@ -2,16 +2,10 @@ c pes a
 c Thorbald t
 
 # true dmg
-dmg spear to hart
-true 7 4 8 12
-a t
+dmg spear to hart | true 7 4 8 12| a t
 
 # physical dmg
-dmg stepped on mine
-p 7 20 20 12 12
-a t
+dmg stepped on mine|p 7 20 20 12 12 |a t
 
 # magic dmg
-dmg hit by a fireball
-magic 8 6 6 12
-a t
+dmg hit by a fireball | magic 8 6 6 12 | a t

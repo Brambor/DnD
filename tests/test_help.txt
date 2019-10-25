@@ -1,10 +1,16 @@
 help
+help commands
+help entity_reference
+help symbol
 create
 dmg
 effect
+erase
 eval
 fight
+inventory
 library
 move
 set
 spell
+window

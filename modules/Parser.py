@@ -51,8 +51,12 @@ texts["help"]["symbol"] = {
 	" Separators are %s set in 'settings.SEPARATORS.'\n" % ", ".join("'%s'" % s for s in settings.SEPARATORS),
 }
 
-texts["help_general"] = ("General help: use 'help WHAT' for more detailed help.\n"
-						"\tWHAT can be: %s\n" % ", ".join(texts["help"]))
+texts["help_general"] = (
+	"General help: use 'help WHAT' for more detailed help.\n"
+	"\tWHAT can be: %s\n" % ", ".join(texts["help"])
+	+"If something doesn't work or you don't understand somethin TELL ME IMIDIATELY please!\n"
+	"It means that something is wrongly implemented or documented!\n"
+)
 
 def separate(splitted_parts):
 	splitted_parts = [part.strip() for part in re.split("|".join("\\%s" % s for s in settings.SEPARATORS), " ".join(splitted_parts))]
