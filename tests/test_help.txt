@@ -11,6 +11,7 @@ fight
 inventory
 library
 move
+remove
 set
 spell
 window

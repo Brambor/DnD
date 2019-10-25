@@ -25,6 +25,7 @@ cmd = (
 	("inventory", "i"),
 	("library", "lib", "list", "l"),
 	("move", "m"),
+	("remove", "r"),
 	("set",),
 	("spell", "s", "cast"),
 	("turn", "t"),
@@ -176,7 +177,9 @@ class Parser():
 
 			elif parts[0] == "erase":
 				if len(parts) == 1:
-					self.cPrint("erase entity\n")
+					self.cPrint("erase entity\n"
+								"\tnot to be confused with 'remove'\n"
+								"\terases entity\n")
 				elif len(parts) == 2:
 					self.game.erase(parts[1])
 				else:
@@ -321,6 +324,30 @@ class Parser():
 					self.cPrint(errors)
 				else:
 					self.cPrint("Toggled:%s\n%s" % (changes, errors))
+
+			elif parts[0] in ("remove", "r"):
+				if len(parts) == 1:
+					self.cPrint("remove entity\n"
+								"\tnot to be confused with 'erase'\n"
+								"\tprints all effects of entity in numbered order\n"
+								"ef+\n"
+								"\tef are numbers of effects to remove\n"
+								+texts["help"]["symbol"]["+"])
+					return
+				entity = self.game.get_entity(parts[1])[1]
+				self.cPrint(
+						"\n".join("%d. %s" % (i, entity.get_effect_string(e)) for i, e in enumerate(entity.body["effects"])) + "\n"
+					)
+				effects_to_remove = self.cInput("effects to remove:\n>>>").split()
+				
+				indexes = []
+				for i in effects_to_remove:
+					if i.isdigit():
+						indexes.append(int(i))
+					else:
+						raise DnDException("%s is not a number." % i) 
+
+				entity.remove_effects_by_index(indexes)
 
 			elif parts[0] == "set":
 				if len(parts) == 1:

@@ -332,6 +332,12 @@ class Entity():
 			else:
 				i += 1
 
+	def remove_effects_by_index(self, indexes):
+		self.cPrint("%s is no longer:\n" % self)
+		for index in sorted(indexes, reverse=True):
+			self.cPrint("\t%s\n" % self.get_effect_string(self.body["effects"][index]))
+			del self.body["effects"][index]
+
 	def apply_effects(self):
 		i = 0
 		effects = self.body["effects"]
