@@ -1,4 +1,6 @@
 import os
+import traceback
+import sys
 
 from modules.CustomCurses import CustomCurses
 from modules.CustomInput import CustomInput
@@ -69,6 +71,7 @@ if not do_tests:
 		cCurses.endCurses()
 		print("\n\n")
 		print(e)
+		traceback.print_exc(file=sys.stdout)
 		input("CRASHED, PRESS ENTER")
 		raise
 	cCurses.endCurses()
@@ -113,6 +116,7 @@ else:
 			print("\n\n")
 			print(e)
 			sys.stdin = f1
+			traceback.print_exc(file=sys.stdout)
 			input("CRASHED, PRESS ENTER")
 			raise
 
@@ -130,6 +134,7 @@ else:
 		cCurses.endCurses()
 		print("\n\n")
 		print(e)
+		traceback.print_exc(file=sys.stdout)
 		input("CRASHED, PRESS ENTER")
 		raise
 
