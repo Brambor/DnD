@@ -34,9 +34,10 @@ cmd = (
 	("window", "w"),
 )
 texts["help"]["commands"] = (
+	"Write command without any more arguments for further help,\n"
+	"(except for turn)\n"
+	"See example usage in directory 'tests'\n"
 	"COMMANDS:\n"
-		"\twrite command without any more arguments for further help,\n"
-		"\t(except for turn)\n"
 )
 
 for c in (", ".join(c) for c in cmd):
