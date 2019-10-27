@@ -177,19 +177,25 @@ class Parser():
 
 			elif parts[0] in ("dmg", "d", "attack", "a"):
 				if len(parts) == 1:
-					self.cPrint("[d]mg/[a]ttack source_text | type_of_dmg base_dmg dice(die)+ | target(s)+\n"
+					self.cPrint("[d]mg/[a]ttack source_text | type_of_dmg base_dmg dice(die)* | target(s)+\n"
 							"\tsource_text is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
 							"\tdamage_type ([p]hysical/[m]agic/[t]rue)\n"
 							"\tdie are row integers representing used dice(die)\n"
 							"\ttarget_entity_1 target_entity_2 ...\n"
-							"\t"+texts["help"]["symbol"]["+"]
+							"\t"+texts["help"]["symbol"]["*"]
+							+"\t"+texts["help"]["symbol"]["+"]
 							+"\t"+texts["help"]["symbol"]["|"]
 							)
 					return
 				parts = separate(parts[1:])
-				source_text = parts[1:]
+				if len(parts) != 3:
+					raise DnDException("Command 'dmg' (with arguments) takes 2 separators, %d given." % (len(parts)-1))
+
+				source_text = parts[0]
 
 				damages = parts[1].split()
+				if len(damages) < 2:
+					raise DnDException("Command 'dmg' after first separator (damage) takes at least 2 arguments, %d given." % len(damages))
 
 				damage_type = damages[0]
 				if damage_type not in ("physical", "p", "magic", "m", "true", "t"):
@@ -199,11 +205,17 @@ class Parser():
 				self.check(base_dmg, "dice")
 				base_dmg = int(base_dmg)
 
-				dice = damages[2:]
-				self.check(" ".join(dice), " ".join(["dice"]*len(dice)))  # cubersome...
-				dice = [int(d) for d in dice]
+				if len(damages) > 2:
+					dice = damages[2:]
+					self.check(" ".join(dice), " ".join(["dice"]*len(dice)))  # cubersome...
+					dice = [int(d) for d in dice]
+				else:
+					dice = []
 
 				targets = parts[2].split()
+				if len(targets) == 0:
+					raise DnDException("Command 'dmg' after second separator (targets) takes at least 1 arguments, %d given." % len(targets))
+
 				targets = [self.game.get_entity(target)[1] for target in targets]
 
 				threw_crit = self.game.throw_dice(dice)
