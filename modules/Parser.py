@@ -24,6 +24,7 @@ cmd = (
 	("erase",),
 	("eval",),
 	("fight", "f"),
+	#HISTORY	("history",),
 	("inventory", "i"),
 	("library", "lib", "list", "l"),
 	("move", "m"),
@@ -266,9 +267,10 @@ class Parser():
 			elif parts[0] in ("fight", "f"):
 				if len(parts) == 1:
 					complete_string = ( "[f]ight entity1 entity2 val1 val2 placeholder_input_sequence\n"
-										"\tval is integer, 'a' for auto\n" )
-					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
-					complete_string +=  "\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
+										"\tval is integer, 'a' for auto\n"
+										+("\t%s\n" % texts["placeholder_input_sequence"])
+										+"\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
+					)
 					self.cPrint(complete_string)
 					return
 
@@ -295,6 +297,13 @@ class Parser():
 					e1.fight(e2, d1, d2, self.cInput)
 				else:
 					e1.fight(e2, d1, d2)
+
+				"""
+				HISTORY
+				elif parts[0] in ("history",):
+					"prints history"
+					self.cInput.print_history()
+				"""
 
 			elif parts[0] in ("inventory", "i"):
 				if len(parts) == 1:

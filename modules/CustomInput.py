@@ -25,6 +25,14 @@ class CustomInput():
 			self.i += 1
 		return res
 
+	"""
+	HISTORY
+	def print_history(self):
+		for h in self.input_handlerer.history:
+			self.cPrint("%s\n" % h)
+		self.cPrint("history_pointer/len(history)=%d/%d\n" % (self.input_handlerer.history_pointer, len(self.input_handlerer.history)))
+	"""
+
 	def write_to_log(self, message, res):
 		if not os.path.exists("logs"):
 			os.mkdir("logs")

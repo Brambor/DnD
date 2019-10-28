@@ -17,6 +17,7 @@ class CustomPrint():
 			self.write_to_log(message)
 
 	def spaces_to_center(self, window_name, word):
+		# TODO: use str.center
 		return " "*(max(0, self.windows[window_name].getmaxyx()[1] - len(word))//2)
 
 	def refresh_entities(self, entities):

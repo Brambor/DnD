@@ -141,7 +141,7 @@ class Entity():
 
 	def fight(self, opponent, self_D, opponent_D, cInput=False):
 		"""... self_D, opponent_D are integers; -1 for auto
-		cInput passed down if needed """
+		cInput passed down if needed"""
 		# determining fight skill (who wins)
 		if self_D == -1:
 			self_D = dice_stat(self.get_stat("boj"))

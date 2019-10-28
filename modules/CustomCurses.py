@@ -13,6 +13,14 @@ class CustomCurses():
 		curses.start_color()
 		self.curses = curses
 
+		"""
+		HISTORY
+		# this means that history is session specific
+		# last thing in self.history is current command that hasn't been run yet
+		self.history = [""]
+		self.history_pointer = 0
+		self.move_history = 0
+		"""
 		curses.noecho()  # doesn't print pressed keys
 		#curses.echo()
 		#curses.cbreak()  # doesn't wait for Enter to be pressed
@@ -127,6 +135,12 @@ class CustomCurses():
 			input_command = "\n"
 
 		self.windows["console_input"].clear()
+		"""
+		HISTORY
+		if self.history_pointer == len(self.history) - 1:
+			self.history_pointer += 1
+		self.history.append(input_command_stripped)
+		"""
 
 		self.windows["fight"].addstr(input_command)  # fight, but s
 
