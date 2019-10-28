@@ -1,6 +1,6 @@
 import re
 
-from modules.DnDException import DnDException
+from modules.DnDException import DnDException, DnDExit
 from modules.Dice import D, dice_stat
 
 try:
@@ -60,6 +60,7 @@ texts["help_general"] = (
 	"\tWHAT can be: %s\n" % ", ".join(texts["help"])
 	+"If something doesn't work or you don't understand somethin TELL ME IMIDIATELY please!\n"
 	"It means that something is wrongly implemented or documented!\n"
+	"Use 'exit' pseudo command or press 'alt + f4' to exit."
 )
 
 def separate(splitted_parts):
@@ -92,7 +93,11 @@ class Parser():
 
 	def input_command(self):
 		"Handles one line of input. Returns True if game while loop should continue. False otherwise."
-		command = self.cInput(">>>")
+		try:
+			command = self.cInput(">>>")
+		except DnDExit as exception:
+			print("Exiting due to %s\n" % exception)  # for some reason this doesn't print
+			return False
 		if command == "exit":
 			return False # force break
 		self.process(command)

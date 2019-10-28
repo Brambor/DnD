@@ -3,7 +3,7 @@ from curses import textpad
 
 from time import sleep
 
-from modules.DnDException import DnDException
+from modules.DnDException import DnDException, DnDExit
 
 
 class CustomCurses():
@@ -80,6 +80,23 @@ class CustomCurses():
 		else:
 			raise DnDException("Window '%s' doesn't exist. These do: %s." % (window_name, ", ".join(key for key in self.windows)))
 
+	def enter_is_terminate(self, x):
+		#up right down left: 259 261 258 260
+		if x in (10, 459):  # regular enter, enter on notepad
+			return 7  # enter
+		"""
+		HISTORY
+		if x == 259:
+			self.move_history = -1
+			return 7
+		if x == 258:
+			self.move_history = +1
+			return 7
+		"""
+		if x == 304:  # alt + f4
+			raise DnDExit("alt + f4")
+		return x
+
 	def send(self, message):
 		self.windows["console_input"].addstr(0, 0, message)
 
@@ -90,7 +107,7 @@ class CustomCurses():
 
 		# INPUT
 		curses.curs_set(2)
-		input_command = self.command_textbox.edit(enter_is_terminate)
+		input_command = self.command_textbox.edit(self.enter_is_terminate)
 		# each line in regular input is " \n" instead of "\n" (for some reason)
 		input_command = input_command.replace(" \n", "\n")
 		curses.curs_set(False)  # so that it doesn't blink in top left corner. >>> ocasionally blinks thought...
@@ -178,11 +195,6 @@ class CustomCurses():
 		for w in self.windows:
 			self.windows[w].clear()
 			self.windows[w].refresh()
-
-def enter_is_terminate(x):
-	if x in (10, 459):  # regular enter, enter on notepad
-		x = 7
-	return x
 
 WINDOWS = {
 	"fight": {
