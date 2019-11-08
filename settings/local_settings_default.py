@@ -1,10 +1,11 @@
-# Copy this file, make one named 'local_settings.py'
-# in that file is your personal settings
+# This file is a template designed to be copied and pasted.
+# Copy this file, name the copy 'local_settings.py'.
+# The copied file contains personal settings that you can customize.
 
 
-DEBUG = True  # True: The program crashes when something goes wrong; False: it prints "fcked up" and carries on
-AUTO_INPUT = True  # True: when DnD is run, ask whether run tests
-LOG = False  # AUTO_INPUT must be False for this to work. False: Nothing; True: As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything, inputs are not numbered, unlike with tests)
+DEBUG = False  # True: When something goes wrong, the program prints error, waits for input, then crashes; False: it prints "fcked up" and carries on.
+AUTO_INPUT = True  # True: when DnD is run, DnD asks which tests to run, if any
+LOG = True  # False: Nothing; True: As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything, inputs are not numbered, unlike with tests)
 
 SEPARATORS = ["|", ";", "&"]
 

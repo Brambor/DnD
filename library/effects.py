@@ -24,7 +24,7 @@ effect has uniqe name, such as "chill" or "blead", then it can have following pr
 		entity is immune to all listed effects
 	"turned_by_into"
 		( (by_effect, (into_effect, value)), ... )
-		instead of '(into_effect, value)', None can be used for one-for-one removal
+		instead of '(into_effect, value)', None can be used for one-for-one removal (e.g. one FIRE cancels with one CHILL)
 """
 
 frozen_comment = """
