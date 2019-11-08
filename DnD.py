@@ -25,6 +25,8 @@ class Effect():
 
 tests = [f[5:-4] for f in os.listdir("tests")]
 print("Avaiable tests: %s" % ", ".join(tests))
+if not settings.AUTO_INPUT:
+	do_tests = False
 while settings.AUTO_INPUT:
 	the_input = input("Press enter if you wish to proceed.\nWrite '[t]est' to run all tests. Write 'test_name*' to select which tests to run.\n'*' is a symbol\n>>>")
 	do_tests = False
