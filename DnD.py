@@ -26,6 +26,8 @@ class Effect():
 		pass
 """
 
+path_to_DnD = sys.path[0]
+
 def wrapper(func, stdin=None, **kwargs):
 	try:
 		func(**kwargs)
@@ -55,7 +57,7 @@ def test_wrap(test, len_f_copy):
 
 do_tests = False
 if settings.AUTO_INPUT:
-	tests = [f[5:-4] for f in os.listdir("%s/tests" % sys.path[0])]
+	tests = [f[5:-4] for f in os.listdir("%s/tests" % path_to_DnD)]
 	print("Avaiable tests: %s" % ", ".join(tests))
 
 	while True:
@@ -89,8 +91,8 @@ if not do_tests:
 	windows = cCurses.windows
 	curses = cCurses.curses
 
-	cPrint = CustomPrint(windows, cCurses, log_file=current_time)
-	cInput = CustomInput(cPrint, cCurses, log_file=current_time, input_stream=False)
+	cPrint = CustomPrint(path_to_DnD, windows, cCurses, log_file=current_time)
+	cInput = CustomInput(cPrint, cCurses, input_stream=False)
 
 	G = Game(library, cPrint, cCurses)
 	P = Parser(G, cInput, cPrint, settings.DEBUG)
@@ -107,12 +109,12 @@ else:
 	windows = cCurses.windows
 	curses = cCurses.curses
 
-	cPrint = CustomPrint(windows, cCurses)
+	cPrint = CustomPrint(path_to_DnD, windows, cCurses)
 	cInput = CustomInput(cPrint, cCurses, input_stream=True, test_environment=True)  # input_stream latter changed 
 
 	for test in tests:
 		cInput.i = 0
-		path = '%s/tests/test_%s.txt' % (sys.path[0], test)
+		path = '%s/tests/test_%s.txt' % (path_to_DnD, test)
 		f = open(path,'r')
 		f_copy = open(path,'r').read().split("\n")
 		cInput.input_stream = f_copy

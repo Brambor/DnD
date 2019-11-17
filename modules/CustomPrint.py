@@ -3,8 +3,9 @@ import os
 class CustomPrint():
 	"log_file is path to the file where the output is saved\
 	windows are the four window object used for communication (courses.window)"
-	def __init__(self, windows, cCurses, log_file=""):
-		self.log_file = log_file
+	def __init__(self, path_to_DnD, windows, cCurses, log_file=""):
+		self.path_to_DnD = path_to_DnD
+		self.log_file = log_file.replace(":", "_")
 		self.windows = windows
 		self.cCurses = cCurses
 
@@ -72,7 +73,8 @@ class CustomPrint():
 		self.windows["inventory"].refresh()
 
 	def write_to_log(self, message):
-		if not os.path.exists("logs"):
-			os.mkdir("logs")
-		with open(("logs/%s.txt" % self.log_file).replace(":", "_"), "ab") as log_file:
+		logs_path = "%s/logs" % self.path_to_DnD
+		if not os.path.exists(logs_path):
+			os.mkdir(logs_path)
+		with open(("%s/%s.txt" % (logs_path, self.log_file)), "ab") as log_file:
 			log_file.write(("%s" % message).encode("utf8"))
