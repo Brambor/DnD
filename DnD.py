@@ -52,7 +52,7 @@ def test_wrap(test, len_f_copy):
 
 do_tests = False
 if settings.AUTO_INPUT:
-	tests = [f[5:-4] for f in os.listdir("tests")]
+	tests = [f[5:-4] for f in os.listdir("%s/tests" % sys.path[0])]
 	print("Avaiable tests: %s" % ", ".join(tests))
 
 	while True:
@@ -112,7 +112,7 @@ else:
 
 	for test in tests:
 		cInput.i = 0
-		path = 'tests/test_%s.txt' % test
+		path = '%s/tests/test_%s.txt' % (sys.path[0], test)
 		f = open(path,'r')
 		f_copy = open(path,'r').read().split("\n")
 		cInput.input_stream = f_copy
