@@ -2,6 +2,9 @@ import os
 import traceback
 import sys
 
+from datetime import datetime
+from time import sleep
+
 from modules.CustomCurses import CustomCurses
 from modules.CustomInput import CustomInput
 from modules.Game import Game
@@ -78,8 +81,7 @@ if settings.AUTO_INPUT:
 if not do_tests:
 	# REGULAR USE
 	if settings.LOG:
-		import datetime
-		current_time = str(datetime.datetime.today()).split(".")[0]
+		current_time = str(datetime.today()).split(".")[0]
 	else:
 		current_time = None
 
@@ -99,8 +101,6 @@ if not do_tests:
 	input("You are exiting")
 else:
 	# TESTING
-	import sys
-	from time import sleep
 	f1 = sys.stdin
 
 	cCurses = CustomCurses(settings.COLOR_PALETTE, settings.COLOR_USAGE)
