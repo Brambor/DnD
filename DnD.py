@@ -16,8 +16,7 @@ from library.Main import library
 try:
 	from settings import local_settings as settings
 except ImportError:
-	print("Did you forget to copy 'settings/local_settings_default.py' to a file named 'settings/local_settings.py'?")
-	input()
+	input("Did you forget to copy 'settings/local_settings_default.py' to a file named 'settings/local_settings.py'?")
 	raise
 
 """

@@ -28,7 +28,7 @@ cmd = (
 	("inventory", "i"),
 	("library", "lib", "list", "l"),
 	("move", "m"),
-	("remove", "r"),
+	("remove_effect", "remove", "r"),
 	("set",),
 	("spell", "s", "cast"),
 	("turn", "t"),
@@ -400,9 +400,9 @@ class Parser():
 				else:
 					self.cPrint("Toggled:%s\n%s" % (changes, errors))
 
-			elif parts[0] in ("remove", "r"):
+			elif parts[0] in ("remove_effect", "remove", "r"):
 				if len(parts) == 1:
-					self.cPrint("remove entity\n"
+					self.cPrint("remove_effect entity\n"
 								"\tnot to be confused with 'erase'\n"
 								"\tprints all effects of entity in numbered order\n"
 								"ef+\n"
@@ -415,6 +415,7 @@ class Parser():
 					)
 				effects_to_remove = self.cInput("effects to remove:\n>>>").split()
 				
+				#MUHAHAHAHA
 				indexes = [int(i) if i.isdigit() else DnDException("%s is not a non-negative integer." % i) for i in effects_to_remove]
 
 				entity.remove_effects_by_index(indexes)
