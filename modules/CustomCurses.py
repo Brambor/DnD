@@ -51,7 +51,7 @@ class CustomCurses():
 				self.windows[w].addstr("<<%s>>\n" % w)
 			self.windows[w].refresh()
 
-		self.command_textbox = textpad.Textbox(self.windows["console_input"])
+		self.command_textbox = textpad.Textbox(self.windows["console_input"], insert_mode=True)
 
 		# TODO: check if we have "console_input" window and "fight" window
 
