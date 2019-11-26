@@ -53,7 +53,7 @@ texts["help"]["symbol"] = {
 	"+": "Symbol '+' means at least one, as many as you want.\n",
 	"*": "Symbol '*' means optional (at least zero), as many as you want.\n",
 	"|": "Symbol '|' is separator, required when there are more arguments with '+' or '*'."
-	" Separators are %s set in 'settings.SEPARATORS.'\n" % ", ".join("'%s'" % s for s in settings.SEPARATORS),
+		" Separators are %s set in 'settings.SEPARATORS.'\n" % ", ".join("'%s'" % s for s in settings.SEPARATORS),
 }
 
 texts["help_general"] = (
@@ -61,7 +61,7 @@ texts["help_general"] = (
 	"\tWHAT can be: %s\n" % ", ".join(texts["help"])
 	+"If something doesn't work or you don't understand somethin TELL ME IMIDIATELY please!\n"
 	"It means that something is wrongly implemented or documented!\n"
-	"Use 'exit' pseudo command or press 'alt + f4' to exit."
+	"Use 'exit' pseudo command or press 'alt + f4' to exit.\n"
 )
 
 def separate(splitted_parts):
