@@ -2,6 +2,7 @@ import re
 
 from modules.DnDException import DnDException, DnDExit
 from modules.Dice import D, dice_stat
+from modules.Misc import get_int_from_dice
 
 try:
 	from settings import local_settings as settings
@@ -67,13 +68,6 @@ texts["help_general"] = (
 def separate(splitted_parts):
 	splitted_parts = [part.strip() for part in re.split("|".join("\\%s" % s for s in settings.SEPARATORS), " ".join(splitted_parts))]
 	return splitted_parts
-
-def get_int_from_dice(n_str):
-	if n_str.replace("-", "", 1).isdigit():
-		return int(n_str)
-	elif n_str.startswith("d") and n_str[1:].isdigit():
-		return D(int(n_str[1:]))
-	raise DnDException("'%s' is not an integer nor in format 'dx'." % n_str)
 
 class Parser():
 	def __init__(self, game, cInput, cPrint, DEBUG):
