@@ -1,6 +1,7 @@
 import importlib
 
 from modules.DnDException import DnDException
+from modules.Dice import D
 
 
 def get_int_from_dice(n_str):

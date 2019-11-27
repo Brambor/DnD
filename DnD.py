@@ -7,9 +7,9 @@ from time import sleep
 
 from modules.CustomCurses import CustomCurses
 from modules.CustomInput import CustomInput
+from modules.CustomPrint import CustomPrint
 from modules.Game import Game
 from modules.Parser import Parser
-from modules.CustomPrint import CustomPrint
 
 from library.Main import library
 
