@@ -1,73 +1,7 @@
-import re
-
 from modules.DnDException import DnDException, DnDExit
 from modules.Dice import D, dice_stat
-from modules.Misc import get_int_from_dice
-
-try:
-	from settings import local_settings as settings
-except ImportError:
-	print("Did you forget to copy 'settings/local_settings_default.py' to a file named 'settings/local_settings.py'?")
-	input()
-	raise
-
-texts = {
-	"placeholder_input_sequence": "placeholder_input_sequence activates inputing sequence latter down the chain; for now any value just means True",
-	"help": {},
-}
-
-cmd = (
-	("help", "h"),
-	("create", "c"),
-	("compare", "cmp"),
-	("dmg", "d", "attack", "a"),
-	("effect", "e"),
-	("erase",),
-	("eval",),
-	("fight", "f"),
-	#HISTORY	("history",),
-	("inventory", "i"),
-	("library", "lib", "list", "l"),
-	("move", "m"),
-	("remove_effect", "remove", "r"),
-	("set",),
-	("spell", "s", "cast"),
-	("turn", "t"),
-	("window", "w"),
-)
-texts["help"]["commands"] = (
-	"Write command without any more arguments for further help,\n"
-	"(except for turn)\n"
-	"See example usage in directory 'tests'\n"
-	"COMMANDS:\n"
-)
-
-for c in (", ".join(c) for c in cmd):
-	texts["help"]["commands"] += "\t%s\n" % c
-
-texts["help"]["entity_reference"] = ("'entity' can be referenced via entity nickname or entity id.\n"
-					"e.g. for entity 'a_0' either 'a' (entity nickname) or '0' (entity id) works.\n"
-					"Then commands 'move a' & 'move 0' are equivalent.\n"
-)
-
-texts["help"]["symbol"] = {
-	"+": "Symbol '+' means at least one, as many as you want.\n",
-	"*": "Symbol '*' means optional (at least zero), as many as you want.\n",
-	"|": "Symbol '|' is separator, required when there are more arguments with '+' or '*'."
-		" Separators are %s set in 'settings.SEPARATORS.'\n" % ", ".join("'%s'" % s for s in settings.SEPARATORS),
-}
-
-texts["help_general"] = (
-	"General help: use 'help WHAT' for more detailed help.\n"
-	"\tWHAT can be: %s\n" % ", ".join(texts["help"])
-	+"If something doesn't work or you don't understand somethin TELL ME IMIDIATELY please!\n"
-	"It means that something is wrongly implemented or documented!\n"
-	"Use 'exit' pseudo command or press 'alt + f4' to exit.\n"
-)
-
-def separate(splitted_parts):
-	splitted_parts = [part.strip() for part in re.split("|".join("\\%s" % s for s in settings.SEPARATORS), " ".join(splitted_parts))]
-	return splitted_parts
+from modules.Misc import get_int_from_dice  # imports its own Dice
+from modules.Strings import strs, separate
 
 class Parser():
 	def __init__(self, game, cInput, cPrint, DEBUG):
@@ -108,10 +42,10 @@ class Parser():
 
 			elif parts[0] in ("help", "h"):
 				if len(parts) == 1:
-					self.cPrint(texts["help_general"])
+					self.cPrint(strs["help_general"])
 				elif len(parts) == 2:
-					if parts[1] in texts["help"]:
-						d = texts["help"][parts[1]]
+					if parts[1] in strs["help"]:
+						d = strs["help"][parts[1]]
 						text = ""
 						if type(d) == dict:
 							for key in d:
@@ -122,7 +56,7 @@ class Parser():
 							raise
 						self.cPrint(text)
 					else:
-						raise DnDException("'%s' is not helped with. These are: %s." % (parts[1], ", ".join(texts["help"])))
+						raise DnDException("'%s' is not helped with. These are: %s." % (parts[1], ", ".join(strs["help"])))
 
 			elif parts[0] in ("create", "c"):
 				if len(parts) == 1:
@@ -182,9 +116,9 @@ class Parser():
 							"\tdamage_type ([p]hysical/[m]agic/[t]rue)\n"
 							"\tdie are row integers representing used dice(die)\n"
 							"\ttarget_entity_1 target_entity_2 ...\n"
-							"\t"+texts["help"]["symbol"]["*"]
-							+"\t"+texts["help"]["symbol"]["+"]
-							+"\t"+texts["help"]["symbol"]["|"]
+							"\t"+strs["help"]["symbol"]["*"]
+							+"\t"+strs["help"]["symbol"]["+"]
+							+"\t"+strs["help"]["symbol"]["|"]
 							)
 					return
 				parts = separate(parts[1:])
@@ -262,7 +196,7 @@ class Parser():
 				if len(parts) == 1:
 					complete_string = ( "[f]ight entity1 entity2 val1 val2 placeholder_input_sequence\n"
 										"\tval is integer, 'a' for auto\n"
-										+("\t%s\n" % texts["placeholder_input_sequence"])
+										+("\t%s\n" % strs["placeholder_input_sequence"])
 										+"\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
 					)
 					self.cPrint(complete_string)
@@ -401,7 +335,7 @@ class Parser():
 								"\tprints all effects of entity in numbered order\n"
 								"ef+\n"
 								"\tef are numbers of effects to remove\n"
-								+texts["help"]["symbol"]["+"])
+								+strs["help"]["symbol"]["+"])
 					return
 				entity = self.game.get_entity(parts[1])[1]
 				self.cPrint(
@@ -435,7 +369,7 @@ class Parser():
 					complete_string = ( "1) [s]pell/cast caster_entity spell manual_dice\n"
 										"\tspell must be from library.spells\n"
 										"\tif manual_dice, dice are not thrown automatically\n" )
-					complete_string +=  "\t%s\n" % texts["placeholder_input_sequence"]
+					complete_string +=  "\t%s\n" % strs["placeholder_input_sequence"]
 
 					complete_string +=  "2) target_entity_1 target_entity_2 ...\n"
 					self.cPrint(complete_string)
