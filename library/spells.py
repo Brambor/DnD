@@ -1,3 +1,6 @@
+from modules.Misc import local_loader
+
+
 """
 GUIDLINE:
 
@@ -87,3 +90,5 @@ spells = {
 # Add names to spells
 for spell in spells:
 	spells[spell]["name"] = spell
+
+local_loader(spells, "library.spells_local", "spells")

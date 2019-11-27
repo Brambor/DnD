@@ -1,3 +1,5 @@
+import importlib
+
 from modules.DnDException import DnDException
 
 
@@ -20,3 +22,14 @@ def yield_valid(threw_sequence):
 	if type(threw) != int:
 		raise DnDException("Sequence was too short!")
 	return threw
+
+def local_loader(global_dict, lib, dicts_name):
+	try:
+		loc_dict = getattr(importlib.import_module(lib), dicts_name)
+		print("'%s' loaded" % dicts_name)
+		for e in loc_dict:
+			if e in global_dict:
+				print("\t'%s' overrode" % e)
+		global_dict.update(loc_dict)
+	except ImportError:
+		pass

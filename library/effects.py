@@ -1,3 +1,6 @@
+from modules.Misc import local_loader
+
+
 """
 GUIDLINE:
 
@@ -83,3 +86,5 @@ for effect in effects:
 # shortcuts
 effects["f"] = effects["FIRE"]
 effects["b"] = effects["BLEAD"]
+
+local_loader(effects, "library.effects_local", "effects")

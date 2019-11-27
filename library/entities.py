@@ -1,4 +1,10 @@
+from modules.Misc import local_loader
 from modules.Weapons import Fist, Axe
+
+
+"""
+DOCS: Notify the programmer that you wanted to make entities, but they didn't write the docs...
+"""
 
 entities = {
 	"pes": {
@@ -33,3 +39,5 @@ entities = {
 # Add names to spells
 for e in entities:
 	entities[e]["derived_from"] = e
+
+local_loader(entities, "library.entities_local", "entities")

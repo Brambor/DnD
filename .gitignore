@@ -118,3 +118,4 @@ dmypy.json
 TODO/
 logs/
 settings/local_settings.py
+library/*_local.py
