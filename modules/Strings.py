@@ -39,9 +39,15 @@ strs = {
 	"help": {
 		"commands": (
 			"Write command without any more arguments for further help,\n"
-			"(except for turn)\n"
+			"(except for turn) <-- TODO: fix with 'help command turn'\n"
 			"See example usage in directory 'tests'\n"
 			"COMMANDS:\n"
+			"\t%s\n" % "\n\t".join(", ".join(c) for c in cmd)
+		),
+		"entity_reference": (
+			"'entity' can be referenced via entity nickname or entity id.\n"
+			"e.g. for entity 'a_0' either 'a' (entity nickname) or '0' (entity id) works.\n"
+			"Then commands 'move a' & 'move 0' are equivalent.\n"
 		),
 		"symbol": {
 			"+": "Symbol '+' means at least one, as many as you want.\n",
@@ -58,13 +64,5 @@ strs = {
 		"Use 'exit' pseudo command or press 'alt + f4' to exit.\n"
 	),
 }
-
-for c in (", ".join(c) for c in cmd):
-	strs["help"]["commands"] += "\t%s\n" % c
-#print("\n\t".join(", ".join(c) for c in cmd))
-strs["help"]["entity_reference"] = ("'entity' can be referenced via entity nickname or entity id.\n"
-					"e.g. for entity 'a_0' either 'a' (entity nickname) or '0' (entity id) works.\n"
-					"Then commands 'move a' & 'move 0' are equivalent.\n"
-)
 
 strs["help_general"] %= ", ".join(strs["help"])
