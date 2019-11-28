@@ -3,15 +3,18 @@ help commands
 help entity_reference
 help symbol
 create
-dmg
+compare
+damage
 effect
 erase
 eval
+help cmd exit
 fight
 inventory
 library
 move
-remove
+remove_effect
 set
 spell
+help cmd turn
 window

@@ -11,6 +11,28 @@ class Parser():
 		self.cPrint = cPrint
 		self.inventory_of_entity = None
 
+	def argument_wrong_ammount(self, cmd, takes, count, separators=False):
+		count -= 1
+		takes = (1,) + takes
+		takes = tuple(t-1 for t in takes)
+		if len(takes) == 1:
+			takes_str = str(takes[0])
+		else:
+			takes_str = "%s or %s" % (", ".join((str(t) for t in takes[:-1])), takes[-1])
+
+		if not separators:
+			raise DnDException(
+				"Command '%s' takes %s arguments, %d given." % (
+					cmd, takes_str, count
+				)
+			)
+		else:
+			raise DnDException(
+				"Command '%s' (with arguments!) takes %s separators, %d given." % (
+					cmd, takes_str, count
+				)
+			)
+
 	def check(self, values, types):
 		for v, t in zip(values.split(), types.split()):
 			if t == "entity_library":
@@ -24,12 +46,10 @@ class Parser():
 		"Handles one line of input. Returns True if game while loop should continue. False otherwise."
 		try:
 			command = self.cInput(">>>")
+			self.process(command)
 		except DnDExit as exception:
 			print("Exiting due to %s\n" % exception)  # for some reason this doesn't print
 			return False
-		if command == "exit":
-			return False # force break
-		self.process(command)
 		return True
 
 	def process(self, cmd):
@@ -37,13 +57,18 @@ class Parser():
 		try:
 			if len(parts) == 0:
 				pass
+
+			elif (len(parts) == 1) and (parts[0] not in ("#", "//", "exit", "turn")):
+				if parts[0] in strs["commands"]:
+					self.cPrint(strs["commands"][parts[0]])
+				else:
+					self.cPrint("Unknown command: '%s'. (Or help might be missing.)\n" % parts[0])
+
 			elif parts[0] in ("#", "//"):
 				self.cPrint("\r# %s\n" % " ".join(parts[1:]))
 
 			elif parts[0] in ("help", "h"):
-				if len(parts) == 1:
-					self.cPrint(strs["help_general"])
-				elif len(parts) == 2:
+				if len(parts) == 2:
 					if parts[1] in strs["help"]:
 						d = strs["help"][parts[1]]
 						text = ""
@@ -57,31 +82,28 @@ class Parser():
 						self.cPrint(text)
 					else:
 						raise DnDException("'%s' is not helped with. These are: %s." % (parts[1], ", ".join(strs["help"])))
+				elif len(parts) == 3:
+					if parts[1] not in ("commands", "cmd"):
+						raise DnDException("Command 'help' with 3 arguments accepts only 'commands'/'cmd' as second argument.")
+					if parts[2] in strs["commands"]:
+						self.cPrint(strs["commands"][parts[2]])
+					else:
+						raise DnDException("Help for command '%s' not found. See 'help commands' for avaiable commands." % parts[2])
+				else:
+					self.argument_wrong_ammount("help", (2, 3), len(parts))
 
 			elif parts[0] in ("create", "c"):
-				if len(parts) == 1:
-					self.cPrint("[c]reate entity_library nickname_to_be_set\n"
-								"\t'entity_library' can be listed via command 'library entities' 'l en' for short.\n")
-					return
+				if len(parts) not in (2, 3):
+					self.argument_wrong_ammount("create", (2, 3), len(parts))
+
 				self.check(parts[1], "entity_library")
 
-				if len(parts) > 2:
-					e = self.game.create(parts[1], parts[2])
-				else:
+				if len(parts) == 2:
 					e = self.game.create(parts[1])
+				elif len(parts) == 3:
+					e = self.game.create(parts[1], parts[2])
 
 			elif parts[0] in ("compare", "cmp"):
-				if len(parts) == 1:
-					self.cPrint(
-						"compare/cmp entity1 skill1 val1 entity2 skill2 val2\n"
-						"\tprobably throws a die to see who won\n"
-						"\tskill determines which skill is entity using\n"
-						"\tval is integer, 'a' for auto based on skill\n"
-						"compare/cmp val1 val2\n"
-						"\tprobably throws a die to see what is more\n"
-						"\tval is either integer or dice in format 'dx' where x is integer\n"
-						)
-					return
 				if len(parts) == 3:
 					val1 = get_int_from_dice(parts[1])
 					val2 = get_int_from_dice(parts[2])
@@ -104,26 +126,14 @@ class Parser():
 						("<" if val1 < val2 else ">" if val1 > val2 else "="),
 						e2, parts[5], val2,
 						))
-					pass
 				else:
-					raise DnDException("Command 'compare' takes 3 or 7 arguments, %d given." % len(parts))
+					self.argument_wrong_ammount("compare", (3, 7), len(parts))
 
-
-			elif parts[0] in ("dmg", "d", "attack", "a"):
-				if len(parts) == 1:
-					self.cPrint("[d]mg/[a]ttack source_text | type_of_dmg base_dmg dice(die)* | target(s)+\n"
-							"\tsource_text is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
-							"\tdamage_type ([p]hysical/[m]agic/[t]rue)\n"
-							"\tdie are row integers representing used dice(die)\n"
-							"\ttarget_entity_1 target_entity_2 ...\n"
-							"\t"+strs["help"]["symbol"]["*"]
-							+"\t"+strs["help"]["symbol"]["+"]
-							+"\t"+strs["help"]["symbol"]["|"]
-							)
-					return
+			elif parts[0] in ("damage", "dmg", "d", "attack", "a"):
 				parts = separate(parts[1:])
+
 				if len(parts) != 3:
-					raise DnDException("Command 'dmg' (with arguments) takes 2 separators, %d given." % (len(parts)-1))
+					self.argument_wrong_ammount("damage", (2,), len(parts), separators=True)
 
 				source_text = parts[0]
 
@@ -158,11 +168,8 @@ class Parser():
 					target.damaged(damage_sum, damage_type)
 
 			elif parts[0] in ("effect", "e"):
-				if len(parts) == 1:
-					self.cPrint("[e]ffect entity effect dice\n")
-					return
 				if len(parts) != 4:
-					raise DnDException("Command 'effect' takes 1 or 4 arguments, %d given." % len(parts))
+					self.argument_wrong_ammount("effect", (4,), len(parts))
 
 				entity = self.game.get_entity(parts[1])[1]
 				effect = self.game.get("effects", parts[2])
@@ -171,20 +178,12 @@ class Parser():
 				entity.add_effect(effect, dice)
 
 			elif parts[0] == "erase":
-				if len(parts) == 1:
-					self.cPrint("erase entity\n"
-								"\tnot to be confused with 'remove'\n"
-								"\terases entity\n")
-				elif len(parts) == 2:
+				if len(parts) == 2:
 					self.game.erase(parts[1])
 				else:
-					raise DnDException("Command 'erase' takes 1 or 2 arguments, %d given." % len(parts))
+					self.argument_wrong_ammount("erase", (2,), len(parts))
 
 			elif parts[0] == "eval":
-				if len(parts) == 1:
-					self.cPrint("eval command\n"
-								"\tbetter not use that!\n")
-					return
 				parts = " ".join(parts[1:])
 				try:
 					self.cPrint("eval:\n")
@@ -192,15 +191,15 @@ class Parser():
 				except:
 					self.cPrint("eval done wrong\n")
 
-			elif parts[0] in ("fight", "f"):
+			elif parts[0] == "exit":
 				if len(parts) == 1:
-					complete_string = ( "[f]ight entity1 entity2 val1 val2 placeholder_input_sequence\n"
-										"\tval is integer, 'a' for auto\n"
-										+("\t%s\n" % strs["placeholder_input_sequence"])
-										+"\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
-					)
-					self.cPrint(complete_string)
-					return
+					raise DnDExit("command exit")
+				else:
+					self.argument_wrong_ammount("exit", tuple(), len(parts))
+
+			elif parts[0] in ("fight", "f"):
+				if len(parts) not in (3, 4, 5, 6):
+					self.argument_wrong_ammount("fight", (3, 4, 5, 6), len(parts))
 
 				e1 = self.game.get_entity(parts[1])[1]
 				e2 = self.game.get_entity(parts[2])[1]
@@ -234,85 +233,69 @@ class Parser():
 				"""
 
 			elif parts[0] in ("inventory", "i"):
-				if len(parts) == 1:
-					self.cPrint("[i]nventory entity\n"
-								"\tchoose entity's inventory to be listed in inventory window; lists items in inventory\n"
-								"[i]nventory entity add/del item\n"
-								"\titem is from item_library\n"
-								"[i]nventory entity mod item key value\n"
-								"\titem is from entity's inventory\n"
-								"\tkey & value are it's key & value respectively\n"
-								"\tvalue is transformed into int if possible\n")
-				elif len(parts) in (2, 4, 6):
-					entity = self.game.get_entity(parts[1])[1]
-					self.inventory_of_entity = entity
-					if len(parts) == 2:
-						if entity.body["inventory"]:
-							self.cPrint("\n".join("%d: %s" % (i, str(item)) for i, item in enumerate(entity.body["inventory"])) + "\n")
-						else:
-							self.cPrint("%s's inventory is empty.\n" % entity)
-					elif len(parts) == 4:
-						if parts[2] == "add":
-							item = self.game.get("items", parts[3])
-							entity.put_item_into_inventory(item)
-						elif parts[2] == "del":
-							entity.remove_item_from_inventory(parts[3])
-						else:
-							raise DnDException("On 4 arguments, command's 'inventory' third argument should be add/del, %s given." % parts[2])
-					elif len(parts) == 6:
-						item, key, value = parts[3], parts[4], parts[5]
-						if value.replace("-", "", 1).isdigit():
-							value = int(value)
-						entity.set_inventory_item(item, key, value)
-				else:
-					raise DnDException("Command 'inventory' takes 1, 2, 4 or 6 arguments, %d given." % len(parts))
+				if len(parts) not in (2, 4, 6):
+					self.argument_wrong_ammount("inventory", (2, 4, 6), len(parts))
+
+				entity = self.game.get_entity(parts[1])[1]
+				self.inventory_of_entity = entity
+				if len(parts) == 2:
+					if entity.body["inventory"]:
+						self.cPrint("\n".join("%d: %s" % (i, str(item)) for i, item in enumerate(entity.body["inventory"])) + "\n")
+					else:
+						self.cPrint("%s's inventory is empty.\n" % entity)
+				elif len(parts) == 4:
+					if parts[2] == "add":
+						item = self.game.get("items", parts[3])
+						entity.put_item_into_inventory(item)
+					elif parts[2] == "del":
+						entity.remove_item_from_inventory(parts[3])
+					else:
+						raise DnDException("On 4 arguments, command's 'inventory' third argument should be add/del, %s given." % parts[2])
+				elif len(parts) == 6:
+					item, key, value = parts[3], parts[4], parts[5]
+					if value.replace("-", "", 1).isdigit():
+						value = int(value)
+					entity.set_inventory_item(item, key, value)
 
 			elif parts[0] in ("library", "lib", "list", "l"):
-				if len(parts) == 1:
-					self.cPrint("[[l]ib]rary/list WHAT\n"
-								"\tWHAT can be [en]tities, [ef]fects, [[s]p]ells, [i]tems\n")
-				elif len(parts) == 2:
-					lib = {
-						"ef": "effects",
-						"en": "entities",
-						"i": "items",
-						"s": "spells",
-						"sp": "spells",
-					}.get(parts[1], parts[1])
-					if lib in self.game.library:
-						lib = self.game.library[lib]
-					else:
-						raise DnDException("No library '%s'." % lib)
+				if len(parts) != 2:
+					self.argument_wrong_ammount("library", (2,), len(parts))
 
-					# print duplicates in 'a1/a2/a3, b1, c1/c2' form
-					unique = {}
-					for orig in lib:
-						is_unique = True
-						for u in unique:
-							if lib[orig] == lib[u]:
-								unique[u].append(orig)
-								is_unique = False
-						if is_unique:
-							unique[orig] = []
-
-					complete_string = ""
-					comma = ""
-					for u in unique:
-						complete_string += comma
-						comma = ", "
-						complete_string += u
-						if unique[u]:
-							complete_string += "/%s" % "/".join(unique[u])
-
-					self.cPrint(complete_string + "\n")
+				lib = {
+					"ef": "effects",
+					"en": "entities",
+					"i": "items",
+					"s": "spells",
+					"sp": "spells",
+				}.get(parts[1], parts[1])
+				if lib in self.game.library:
+					lib = self.game.library[lib]
 				else:
-					raise DnDException("Command 'library' takes 1 or 2 arguments, %d given." % len(parts))
+					raise DnDException("No library '%s'." % lib)
+
+				# print duplicates in 'a1/a2/a3, b1, c1/c2' form
+				unique = {}
+				for orig in lib:
+					is_unique = True
+					for u in unique:
+						if lib[orig] == lib[u]:
+							unique[u].append(orig)
+							is_unique = False
+					if is_unique:
+						unique[orig] = []
+
+				complete_string = ""
+				comma = ""
+				for u in unique:
+					complete_string += comma
+					comma = ", "
+					complete_string += u
+					if unique[u]:
+						complete_string += "/%s" % "/".join(unique[u])
+
+				self.cPrint(complete_string + "\n")
 
 			elif parts[0] in ("move", "m"):
-				if len(parts) == 1:
-					self.cPrint("[m]ove target_entity_1 target_entity_2 ...\n"
-								"\ttoggles all selected entities played_this_turn\n")
-					return
 				changes = ""
 				errors = ""
 				for p in parts[1:]:
@@ -329,57 +312,43 @@ class Parser():
 					self.cPrint("Toggled:%s\n%s" % (changes, errors))
 
 			elif parts[0] in ("remove_effect", "remove", "r"):
-				if len(parts) == 1:
-					self.cPrint("remove_effect entity\n"
-								"\tnot to be confused with 'erase'\n"
-								"\tprints all effects of entity in numbered order\n"
-								"ef+\n"
-								"\tef are numbers of effects to remove\n"
-								+strs["help"]["symbol"]["+"])
-					return
+				if len(parts) != 2:
+					self.argument_wrong_ammount("remove_effect", (2,), len(parts))
+
 				entity = self.game.get_entity(parts[1])[1]
+				if not entity.body["effects"]:
+					self.cPrint("Entity '%s' has no effects." % entity)
+					return
+
 				self.cPrint(
-						"\n".join("%d. %s" % (i, entity.get_effect_string(e)) for i, e in enumerate(entity.body["effects"])) + "\n"
+						"%s\n" % "\n".join("%d. %s" % (i, entity.get_effect_string(e)) for i, e in enumerate(entity.body["effects"]))
 					)
 				effects_to_remove = self.cInput("effects to remove:\n>>>").split()
 				
 				#MUHAHAHAHA
-				indexes = [int(i) if i.isdigit() else DnDException("%s is not a non-negative integer." % i) for i in effects_to_remove]
+				indexes = [int(i) if i.isdigit() else DnDException("'%s' is not a non-negative integer." % i) for i in effects_to_remove]
 
 				entity.remove_effects_by_index(indexes)
 
 			elif parts[0] == "set":
-				if len(parts) == 1:
-					self.cPrint("set entity\n"
-								"\tprints all stats of entity\n"
-								"set entity stat to_value\n")
-					return
+				if len(parts) not in (2, 4):
+					self.argument_wrong_ammount("set", (2, 4), len(parts))
+
 				entity = self.game.get_entity(parts[1])[1]
 				if len(parts) == 2:
 					entity.printStats()
-					return
-				if len(parts) == 3:
-					raise DnDException("Command 'set' takes 1, 2 or 4 arguments, %d given." % len(parts))
-				stat = parts[2]
-				value = parts[3]
-				entity.setStat(stat, value)
+				else:  # len == 4
+					stat = parts[2]
+					value = parts[3]
+					entity.setStat(stat, value)
 
 			elif parts[0] in ("spell", "s", "cast"):
-				if len(parts) == 1:
-					complete_string = ( "1) [s]pell/cast caster_entity spell manual_dice\n"
-										"\tspell must be from library.spells\n"
-										"\tif manual_dice, dice are not thrown automatically\n" )
-					complete_string +=  "\t%s\n" % strs["placeholder_input_sequence"]
-
-					complete_string +=  "2) target_entity_1 target_entity_2 ...\n"
-					self.cPrint(complete_string)
-					return
-				elif len(parts) == 3:
+				if len(parts) == 3:
 					theInput = False
-				elif len(parts) >= 4:
+				elif len(parts) == 4:
 					theInput = self.cInput
 				else:
-					raise DnDException("Command 'spell' takes 1, 3 or 4 arguments, %d given." % len(parts))
+					self.argument_wrong_ammount("spell", (3, 4), len(parts))
 
 				caster = self.game.get_entity(parts[1])[1]
 				spell = self.game.get("spells", parts[2])
@@ -391,24 +360,13 @@ class Parser():
 				caster.cast_spell(targets, spell, theInput)
 
 			elif parts[0] in ("turn", "t"):
-				self.game.turn()
+				if len(parts) == 1:
+					self.game.turn()
+				else:
+					self.argument_wrong_ammount("turn", tuple(), len(parts))
 
 			elif parts[0] in ("window", "w"):
-				if len(parts) == 1:
-					self.cPrint("w <==> window; ([w]indow)\n"
-								"w show sleep_for\n"
-								"\tdisplays windows (what + size) for sleep_for secs\n\n"  # TODO until enter is pressed
-								
-								"w get_size/gs what_window\n"
-								"\tprints (height, width) of window\n"
-								"w get_top_left/gtl what_window\n"
-								"\tprints (y, x) of top left corner\n\n"
-
-								"w set_size/ss what_window ncols nlines\n"
-								"\tset window size to (ncols, nlines)\n"
-								"w set_top_left/stl what_window y x\n"
-								"\tset window top left corner to (y, x)\n")
-				elif len(parts) >= 2:
+				if len(parts) >= 2:
 					if parts[1] in ("show", "s"):
 						if len(parts) == 3:
 							if parts[2].isdigit():
@@ -416,17 +374,17 @@ class Parser():
 							else:
 								raise DnDException("Argument 'sleep_for' of command 'window show' must be integer, '%s' given." % parts[2])
 						else:
-							raise DnDException("Command 'window show' takes 3 arguments, %d given." % len(parts))
+							self.argument_wrong_ammount("window show", (3,), len(parts))
 					elif parts[1] in ("get_size", "gs"):
 						if len(parts) == 3:
 								self.cPrint.cCurses.window_get_size(parts[2])
 						else:
-							raise DnDException("Command 'window get_size' takes 3 arguments, %d given." % len(parts))
+							self.argument_wrong_ammount("window get_size", (3,), len(parts))
 					elif parts[1] in ("get_top_left", "gtl"):
 						if len(parts) == 3:
 								self.cPrint.cCurses.window_get_top_left(parts[2])
 						else:
-							raise DnDException("Command 'window get_top_left' takes 3 arguments, %d given." % len(parts))
+							self.argument_wrong_ammount("window get_top_left", (3,), len(parts))
 					elif parts[1] in ("set_size", "ss"):
 						if len(parts) == 5:
 							if (parts[3].isdigit() and parts[4].isdigit()):
@@ -434,7 +392,7 @@ class Parser():
 							else:
 								raise DnDException("ncols & nlines must be ints, %s, %s given." % (parts[3], parts[4]))
 						else:
-							raise DnDException("Command 'window set_size' takes 5 arguments, %d given." % len(parts))
+							self.argument_wrong_ammount("window set_size", (5,), len(parts))
 					elif parts[1] in ("set_top_left", "stl"):
 						if len(parts) == 5:
 							if (parts[3].isdigit() and parts[4].isdigit()):
@@ -442,7 +400,7 @@ class Parser():
 							else:
 								raise DnDException("y & x must be ints, %s, %s given." % (parts[3], parts[4]))
 						else:
-							raise DnDException("Command 'window set_top_left' takes 5 arguments, %d given." % len(parts))
+							self.argument_wrong_ammount("window set_top_left", (5,), len(parts))
 
 			else:
 				self.cPrint("?\n")
@@ -464,4 +422,3 @@ class Parser():
 			if self.DEBUG:
 				raise
 			self.cPrint("fcked up\n")
-
