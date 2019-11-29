@@ -8,6 +8,9 @@ LOG = True  # False: Nothing; True: As the program runs, it logs all input and o
 
 SEPARATORS = ["|", ";", "&"]
 
+TEST_WAIT_BETWEEN_COMMANDS = 0.1
+TEST_WAIT_BETWEEN_TESTS = 1
+
 # COLORS
 """
 predefined:
