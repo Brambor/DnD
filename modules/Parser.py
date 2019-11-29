@@ -93,15 +93,19 @@ class Parser():
 					self.argument_wrong_ammount("help", (2, 3), len(parts))
 
 			elif parts[0] in ("create", "c"):
-				if len(parts) not in (2, 3):
-					self.argument_wrong_ammount("create", (2, 3), len(parts))
-
 				self.check(parts[1], "entity_library")
 
 				if len(parts) == 2:
-					e = self.game.create(parts[1])
-				elif len(parts) == 3:
-					e = self.game.create(parts[1], parts[2])
+					parts.append("_")
+
+				for nickname in parts[2:]:
+					try:
+						if nickname == "_":
+							self.game.create(parts[1])
+						else:
+							self.game.create(parts[1], nickname)
+					except DnDException as e:
+						self.cPrint("?!: %s\n" % str(e))
 
 			elif parts[0] in ("compare", "cmp"):
 				if len(parts) == 3:

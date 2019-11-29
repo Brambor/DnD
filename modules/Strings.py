@@ -82,8 +82,11 @@ strs = {
 			"\tcommand_body will be printed. This command does nothing else."
 		),
 		"create": (
-			"[c]reate entity_library nickname_to_be_set\n"
+			"[c]reate entity_library nickname*\n"
 			"\t'entity_library' can be listed via command 'library entities' 'l en' for short.\n"
+			"\tif 'nickname' is '_', automatic nickname is used\n"
+			"\tc pes <==> c pes _\n"
+			"\t%s" % symbol["*"]
 		),
 		"compare": (
 			"compare/cmp entity1 skill1 val1 entity2 skill2 val2\n"
