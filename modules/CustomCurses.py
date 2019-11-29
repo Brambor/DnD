@@ -9,9 +9,32 @@ from modules.DnDException import DnDException, DnDExit
 class CustomCurses():
 	def __init__(self, COLOR_PALETTE, COLOR_USAGE):
 		input("Make this window however big and press ENTER.")
+		self.curses = curses
+		self.COLOR_USAGE = COLOR_USAGE
+
+		self.width = 0
+		self.init_windows()
+
+		# Colors
+		self.color_palette = {
+			"black": 0,
+			"blue": 1,
+			"green": 2,
+			"cyan": 3,
+			"red": 4,
+			"magenta": 5,
+			"yellow": 6,
+			"white": 7,
+		}
+		for i, key in enumerate(COLOR_PALETTE):
+			curses.init_color(i+8, *COLOR_PALETTE[key])
+			self.color_palette[key] = i+8
+
+		self.init_colors()
+
+	def init_windows(self):
 		stdscr = curses.initscr()
 		curses.start_color()
-		self.curses = curses
 
 		"""
 		HISTORY
@@ -23,18 +46,27 @@ class CustomCurses():
 		"""
 		curses.noecho()  # doesn't print pressed keys
 		#curses.echo()
-		#curses.cbreak()  # doesn't wait for Enter to be pressed
+		curses.cbreak()  # doesn't wait for Enter to be pressed
 		
 		#unnecesary since it is handled around every input
 		curses.curs_set(2)  # cursor is: [0/False] doesn't show blinking cursor; [1] underslash; [2] block
 		stdscr.keypad(True)  # getting special keys such as curses.KEY_LEFT
 		#stdscr.nodelay(1)  # get_wch doesn't wait for char, returns -1 instead
-
-		self.width = curses.COLS - 1
-		self.height = curses.LINES - 1
-
+		if self.width == 0:
+			starty, startx = stdscr.getmaxyx()
+			self.width = startx - 1
+			self.height = starty - 1
+			self.windows = {}
+		else:
+			curses.resize_term(0, 0)
+			stdscr.clear()
+			stdscr.refresh()
+			starty, startx = stdscr.getmaxyx()
+			self.width = startx - 1
+			self.height = starty - 1
+			self.windows.clear()
+		
 		#win = curses.newwin(height, width//3, begin_y, begin_x)
-		self.windows = {}
 
 		for w in WINDOWS:
 			wi = self.calculate(WINDOWS[w]["width_height"][0])
@@ -49,32 +81,18 @@ class CustomCurses():
 					self.windows[w].addstr("\n")
 			if w != "console_input":
 				self.windows[w].addstr("<<%s>>\n" % w)
-			self.windows[w].refresh()
+			self.windows[w].refresh()  # shouldn't this refresh it after resize?
 
 		self.command_textbox = textpad.Textbox(self.windows["console_input"], insert_mode=True)
 
 		# TODO: check if we have "console_input" window and "fight" window
 
-		# Colors
-		color_palette = {
-			"black": 0,
-			"blue": 1,
-			"green": 2,
-			"cyan": 3,
-			"red": 4,
-			"magenta": 5,
-			"yellow": 6,
-			"white": 7,
-		}
-		for i, key in enumerate(COLOR_PALETTE):
-			curses.init_color(i+8, *COLOR_PALETTE[key])
-			color_palette[key] = i+8
-
+	def init_colors(self):
 		# Color pairs
 		self.color_usage = {}
-		for i, key in enumerate(COLOR_USAGE):
-			foreground, background = COLOR_USAGE[key]
-			foreground, background = color_palette[foreground], color_palette[background]
+		for i, key in enumerate(self.COLOR_USAGE):
+			foreground, background = self.COLOR_USAGE[key]
+			foreground, background = self.color_palette[foreground], self.color_palette[background]
 			curses.init_pair(i+1, foreground, background)
 			self.color_usage[key] = i+1
 
@@ -89,6 +107,11 @@ class CustomCurses():
 			raise DnDException("Window '%s' doesn't exist. These do: %s." % (window_name, ", ".join(key for key in self.windows)))
 
 	def enter_is_terminate(self, x):
+		if x == curses.KEY_RESIZE:
+			self.init_windows()
+			self.init_colors()
+			self.msg_interrupted = True
+			return 7
 		#up right down left: 259 261 258 260
 		if x in (10, 459):  # regular enter, enter on notepad
 			return 7  # enter
@@ -106,16 +129,31 @@ class CustomCurses():
 		return x
 
 	def send(self, message):
-		self.windows["console_input"].addstr(0, 0, message)
+		self.msg_interrupted = False
+		while True:
+			if self.msg_interrupted:
+				input_command = input_command.strip()
+				if input_command.endswith(">>>"):
+					input_command += " "
+				self.windows["console_input"].addstr(0, 0, input_command)
+				input_command_s = input_command.split("\n")
+				self.windows["console_input"].move(len(input_command_s)-1, len(input_command_s[-1]))
+			else:
+				self.windows["console_input"].addstr(0, 0, message)
 
-		message_s = message.split("\n")
+				message_s = message.split("\n")
 
-		self.windows["console_input"].move(len(message_s)-1, len(message_s[-1])+1)  # TODO: crashes when len(message_s) > 3 or 4
-#		windows["console_input"].leaveok(False)
+				self.windows["console_input"].move(len(message_s)-1, len(message_s[-1])+1)  # TODO: crashes when len(message_s) > 3 or 4
+	#		windows["console_input"].leaveok(False)
 
-		# INPUT
-		curses.curs_set(2)
-		input_command = self.command_textbox.edit(self.enter_is_terminate)
+			# INPUT
+			curses.curs_set(2)
+			self.msg_interrupted = False
+			input_command = self.command_textbox.edit(self.enter_is_terminate)
+			if self.msg_interrupted:
+				continue
+			break
+
 		# each line in regular input is " \n" instead of "\n" (for some reason)
 		input_command = input_command.replace(" \n", "\n")
 		curses.curs_set(False)  # so that it doesn't blink in top left corner. >>> ocasionally blinks thought...

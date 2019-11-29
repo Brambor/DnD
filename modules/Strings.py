@@ -175,7 +175,7 @@ strs = {
 			"\tdisplays windows (what + size) for sleep_for secs\n\n"  # TODO until enter is pressed
 			
 			"w get_size/gs what_window\n"
-			"\tprints (height, width) of window\n"
+			"\tprints (ncols, nlines) of window\n"
 			"w get_top_left/gtl what_window\n"
 			"\tprints (y, x) of top left corner\n\n"
 
