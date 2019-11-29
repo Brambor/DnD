@@ -52,7 +52,20 @@ class Entity():
 		if self.body["effects"]:
 			yield (" %s\n" % ", ".join("%sϟ%d" % (i["name"], i["value"]) if i["type"] == "duration" else i["name"] for i in self.body["effects"]), 0)
 
-	def setStat(self, stat, value):
+	def setStat(self, stat, value, stat_type=None):
+		if stat_type:
+			if stat in self.body:
+				raise DnDException("Entity '%s' already has stat '%s' so it's type cannot be modified, do not try." % (self, stat))
+			if stat_type == "int":
+				if value.replace("-", "", 1).isdigit():
+					value = int(value)
+			elif stat_type == "bool":
+				value = convert_string_to_bool(value)
+			elif stat_type != "str":
+				raise DnDException("'stat_type' must be one of 'int', 'bool', or 'str', not '%s'." % stat_type)
+			self.body[stat] = value
+			return
+
 		if ( ( stat in self.body ) and ( type(self.body[stat]) == str ) ):
 			self.body[stat] = value	
 		elif ( ( stat in self.body ) and ( type(self.body[stat]) == int ) ):
@@ -78,7 +91,7 @@ class Entity():
 		#	self.body["weapon = int(value)
 		# remove effect ?
 		else:
-			raise DnDException("Unknown stat '%s'" % stat)
+			raise DnDException("Unknown stat '%s'. If you want to set it, give it 'stat_type'." % stat)
 
 	def set_nickname(self, nickname):
 		if nickname == "":
