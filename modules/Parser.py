@@ -331,16 +331,21 @@ class Parser():
 				entity.remove_effects_by_index(indexes)
 
 			elif parts[0] == "set":
-				if len(parts) not in (2, 4):
+				if len(parts) not in (2, 4, 5):
 					self.argument_wrong_ammount("set", (2, 4), len(parts))
 
 				entity = self.game.get_entity(parts[1])[1]
 				if len(parts) == 2:
 					entity.printStats()
-				else:  # len == 4
-					stat = parts[2]
-					value = parts[3]
+					return
+				
+				stat = parts[2]
+				value = parts[3]
+				
+				if len(parts) == 4:
 					entity.setStat(stat, value)
+				elif len(parts) == 5:
+					entity.setStat(stat, value, parts[4])
 
 			elif parts[0] in ("spell", "s", "cast"):
 				if len(parts) == 3:

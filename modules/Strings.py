@@ -154,7 +154,10 @@ strs = {
 			"set entity\n"
 			"\tprints all stats of entity\n"
 			"set entity stat to_value\n"
-			"\tsets or changes entity's 'stat' to 'to_value'"
+			"\tchanges entity's 'stat' to 'to_value'\n"
+			"set entity stat value stat_type\n"
+			"\tmakes new 'stat' for 'entity' with 'value' of type 'stat_type'\n"
+			"\t'stat_type' can be one of 'int', 'str', or 'bool'\n"
 		),
 		"spell": (
 			"1) [s]pell/cast caster_entity spell manual_dice\n"
