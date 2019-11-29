@@ -117,5 +117,5 @@ dmypy.json
 # Custom
 TODO/
 logs/
-settings/local_settings.py
+settings/settings_local.py
 library/*_local.py

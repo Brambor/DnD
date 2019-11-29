@@ -8,12 +8,7 @@ if __name__ == "__main__":
 			self.SEPARATORS = ["|", ";", "&"]
 	settings = A()
 else:
-	try:
-		from settings import local_settings as settings
-	except ImportError:
-		print("Did you forget to copy 'settings/local_settings_default.py' to a file named 'settings/local_settings.py'?")
-		input()
-		raise
+	from modules.SettingsLoader import settings
 
 
 def separate(splitted_parts):

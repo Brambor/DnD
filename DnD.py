@@ -10,14 +10,9 @@ from modules.CustomInput import CustomInput
 from modules.CustomPrint import CustomPrint
 from modules.Game import Game
 from modules.Parser import Parser
+from modules.SettingsLoader import settings
 
 from library.Main import library
-
-try:
-	from settings import local_settings as settings
-except ImportError:
-	input("Did you forget to copy 'settings/local_settings_default.py' to a file named 'settings/local_settings.py'?")
-	raise
 
 """
 class Effect():
