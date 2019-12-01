@@ -87,4 +87,4 @@ for effect in effects:
 effects["f"] = effects["FIRE"]
 effects["b"] = effects["BLEAD"]
 
-local_loader(effects, "library.effects_local", "effects")
+output = local_loader(effects, "library.effects_local", "effects")

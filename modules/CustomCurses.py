@@ -8,11 +8,31 @@ from modules.DnDException import DnDException, DnDExit
 
 class CustomCurses():
 	def __init__(self, COLOR_PALETTE, COLOR_USAGE):
-		input("Make this window however big and press ENTER.")
+		"Needs self.cPrint from outside. Both way dependency."
+		# got self.cPrint = cPrint from outside
 		self.curses = curses
 		self.COLOR_USAGE = COLOR_USAGE
+		self.history = []
 
 		self.width = 0
+		stdscr = curses.initscr()
+		curses.start_color()
+		self.stdscr = stdscr
+
+		curses.noecho()  # doesn't print pressed keys
+		#curses.echo()
+		curses.cbreak()  # doesn't wait for Enter to be pressed
+		
+		#unnecesary since it is handled around every input
+		curses.curs_set(2)  # cursor is: [0/False] doesn't show blinking cursor; [1] underslash; [2] block
+		stdscr.keypad(True)  # getting special keys such as curses.KEY_LEFT
+		#stdscr.nodelay(1)  # get_wch doesn't wait for char, returns -1 instead
+
+		starty, startx = stdscr.getmaxyx()
+		self.width = startx - 1
+		self.height = starty - 1
+		self.windows = {}
+
 		self.init_windows()
 
 		# Colors
@@ -32,9 +52,20 @@ class CustomCurses():
 
 		self.init_colors()
 
+		"""
+		leaving it there just in case something breaks 
+		except Exception as e:
+			curses.nocbreak()
+			curses.echo()
+			curses.endwin()
+			print("\n\n")
+			traceback.print_exc(file=sys.stdout)
+			input("CRASHED, PRESS ENTER")
+			raise
+		"""
+
 	def init_windows(self):
-		stdscr = curses.initscr()
-		curses.start_color()
+		stdscr = self.stdscr
 
 		"""
 		HISTORY
@@ -44,20 +75,12 @@ class CustomCurses():
 		self.history_pointer = 0
 		self.move_history = 0
 		"""
-		curses.noecho()  # doesn't print pressed keys
-		#curses.echo()
-		curses.cbreak()  # doesn't wait for Enter to be pressed
 		
-		#unnecesary since it is handled around every input
-		curses.curs_set(2)  # cursor is: [0/False] doesn't show blinking cursor; [1] underslash; [2] block
-		stdscr.keypad(True)  # getting special keys such as curses.KEY_LEFT
-		#stdscr.nodelay(1)  # get_wch doesn't wait for char, returns -1 instead
-		if self.width == 0:
-			starty, startx = stdscr.getmaxyx()
-			self.width = startx - 1
-			self.height = starty - 1
-			self.windows = {}
+		if self.windows == {}:
+			add_history = False
 		else:
+			add_history = True
+
 			curses.resize_term(0, 0)
 			stdscr.clear()
 			stdscr.refresh()
@@ -82,6 +105,15 @@ class CustomCurses():
 			if w != "console_input":
 				self.windows[w].addstr("<<%s>>\n" % w)
 			self.windows[w].refresh()  # shouldn't this refresh it after resize?
+
+		if add_history:
+			for msg in self.history[-self.windows["fight"].getmaxyx()[0]:]:
+				self.windows["fight"].addstr(msg)
+
+			for w in self.windows:
+				self.windows[w].refresh()
+			self.cPrint.refresh_entity_window()
+			self.cPrint.refresh_inventory_window()
 
 		self.command_textbox = textpad.Textbox(self.windows["console_input"], insert_mode=True)
 
@@ -181,6 +213,7 @@ class CustomCurses():
 		"""
 
 		self.windows["fight"].addstr(input_command)  # fight, but s
+		self.history.append(input_command)
 
 		for w in self.windows:
 			self.windows[w].refresh()

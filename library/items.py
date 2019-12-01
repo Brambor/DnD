@@ -19,4 +19,4 @@ items = {
 for i in items:
 	items[i]["derived_from"] = i
 
-local_loader(items, "items.items_local", "items")
+output = local_loader(items, "library.items_local", "items")

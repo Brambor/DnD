@@ -91,4 +91,4 @@ spells = {
 for spell in spells:
 	spells[spell]["name"] = spell
 
-local_loader(spells, "library.spells_local", "spells")
+output = local_loader(spells, "library.spells_local", "spells")

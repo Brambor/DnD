@@ -8,10 +8,13 @@ class CustomPrint():
 		self.log_file = log_file.replace(":", "_")
 		self.windows = windows
 		self.cCurses = cCurses
+		#self.game from outside
+		self.inventory_entity = None  # which entity is selected for inventory display
 
 	def __call__(self, message="", info_type="fight"):
 		if info_type == "fight":
 			self.windows["fight"].addstr(message)  # fight window
+			self.cCurses.history.append(message)
 			self.windows["fight"].refresh()
 
 		if self.log_file:
@@ -21,7 +24,8 @@ class CustomPrint():
 		# TODO: use str.center
 		return " "*(max(0, self.windows[window_name].getmaxyx()[1] - len(word))//2)
 
-	def refresh_entities(self, entities):
+	def refresh_entity_window(self):
+		entities = self.game.entities
 		self.windows["entities"].clear()
 		if not entities:
 			self.windows["entities"].addstr("no entities")
@@ -46,13 +50,15 @@ class CustomPrint():
 			self.windows["entities"].addstr(spaces + group + "\n", self.cCurses.curses.color_pair(CU["mana"]))
 			# TODO CRASH WHEN TO MANY LINES IN TOTAL
 			for e in groups[group]:
-				generator = e.get_stats_reduced()
-				for item in generator:
+				for item in e.get_stats_reduced():
 					self.windows["entities"].addstr(item[0], self.cCurses.curses.color_pair(item[1]))
 
 		self.windows["entities"].refresh()
+	def select_entity_inventory(self, entity):
+		self.inventory_entity = entity
 
-	def refresh_inventory(self, entity):
+	def refresh_inventory_window(self):
+		entity = self.inventory_entity
 		self.windows["inventory"].clear()
 		if entity == None:
 			header = "%sinventory\n" % self.spaces_to_center("inventory", "inventory")

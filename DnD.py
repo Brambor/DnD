@@ -10,9 +10,9 @@ from modules.CustomInput import CustomInput
 from modules.CustomPrint import CustomPrint
 from modules.Game import Game
 from modules.Parser import Parser
-from modules.SettingsLoader import settings
+from modules.SettingsLoader import settings, output_settings
 
-from library.Main import library
+from library.Main import library, output_library
 
 """
 class Effect():
@@ -39,6 +39,8 @@ def wrapper(func, stdin=None, **kwargs):
 		raise
 
 def regular_wrap():
+	for line in (*output_settings, *output_library):
+		cPrint("%s\n" % line)
 	while P.input_command():
 		pass
 
@@ -83,13 +85,14 @@ if not do_tests:
 
 	cCurses = CustomCurses(settings.COLOR_PALETTE, settings.COLOR_USAGE)
 	windows = cCurses.windows
-	curses = cCurses.curses
 
 	cPrint = CustomPrint(path_to_DnD, windows, cCurses, log_file=current_time)
 	cInput = CustomInput(cPrint, cCurses, input_stream=False)
+	cCurses.cPrint = cPrint
 
 	G = Game(library, cPrint, cCurses)
 	P = Parser(G, cInput, cPrint, settings.DEBUG)
+	cPrint.game = G
 	
 	wrapper(regular_wrap)
 
@@ -101,10 +104,10 @@ else:
 
 	cCurses = CustomCurses(settings.COLOR_PALETTE, settings.COLOR_USAGE)
 	windows = cCurses.windows
-	curses = cCurses.curses
 
 	cPrint = CustomPrint(path_to_DnD, windows, cCurses)
 	cInput = CustomInput(cPrint, cCurses, input_stream=True, test_environment=True)  # input_stream latter changed 
+	cCurses.cPrint = cPrint
 
 	for test in tests:
 		cInput.i = 0
@@ -115,6 +118,7 @@ else:
 
 		G = Game(library, cPrint, cCurses)
 		P = Parser(G, cInput, cPrint, settings.DEBUG)
+		cPrint.game = G
 		sys.stdin = f
 
 		wrapper(test_wrap, stdin=f1, test=test, len_f_copy=len(f_copy))

@@ -9,7 +9,6 @@ class Parser():
 		self.DEBUG = DEBUG
 		self.cInput = cInput
 		self.cPrint = cPrint
-		self.inventory_of_entity = None
 
 	def argument_wrong_ammount(self, cmd, takes, count, separators=False):
 		count -= 1
@@ -53,6 +52,8 @@ class Parser():
 		return True
 
 	def process(self, cmd):
+		"processes one command"
+		#input
 		parts = cmd.split()
 		try:
 			if len(parts) == 0:
@@ -241,7 +242,7 @@ class Parser():
 					self.argument_wrong_ammount("inventory", (2, 4, 6), len(parts))
 
 				entity = self.game.get_entity(parts[1])[1]
-				self.inventory_of_entity = entity
+				self.cPrint.select_entity_inventory(entity)
 				if len(parts) == 2:
 					if entity.body["inventory"]:
 						self.cPrint("\n".join("%d: %s" % (i, str(item)) for i, item in enumerate(entity.body["inventory"])) + "\n")
@@ -416,6 +417,8 @@ class Parser():
 
 		except DnDException as exception:
 			self.cPrint("?!: %s\n" % exception)
+		except DnDExit:
+			raise
 		except:
 			if self.DEBUG:
 				raise
@@ -423,10 +426,12 @@ class Parser():
 
 		# entities window refresh
 		try:
-			self.cPrint.refresh_entities(self.game.entities)
-			self.cPrint.refresh_inventory(self.inventory_of_entity)
+			self.cPrint.refresh_entity_window()
+			self.cPrint.refresh_inventory_window()
 		except DnDException as exception:
 			self.cPrint("?!: %s\n" % exception)
+		except DnDExit:
+			raise
 		except:
 			if self.DEBUG:
 				raise

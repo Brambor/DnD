@@ -40,4 +40,4 @@ entities = {
 for e in entities:
 	entities[e]["derived_from"] = e
 
-local_loader(entities, "library.entities_local", "entities")
+output = local_loader(entities, "library.entities_local", "entities")
