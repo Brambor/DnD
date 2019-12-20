@@ -59,7 +59,7 @@ class Parser():
 			if len(parts) == 0:
 				pass
 
-			elif (len(parts) == 1) and (parts[0] not in ("#", "//", "exit", "turn")):
+			elif (len(parts) == 1) and (parts[0] not in ("#", "//", "exit", "turn", "t")):
 				if parts[0] in strs["commands"]:
 					self.cPrint(strs["commands"][parts[0]])
 				else:
