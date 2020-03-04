@@ -57,7 +57,12 @@ if settings.AUTO_INPUT:
 	print("Avaiable tests: %s" % ", ".join(tests))
 
 	while True:
-		the_input = input("Press enter if you wish to proceed.\nWrite '[t]est' to run all tests. Write 'test_name*' to select which tests to run.\n'*' is a symbol\n>>> ")
+		the_input = input("Press enter if you wish to proceed.\n"
+			"Write '[t]est' to run all tests.\n"
+			"Write 'test_name*' to select which tests to run.\n"
+			"'*' is a symbol\n"
+			">>> "
+		)
 		if the_input == "":
 			break
 		elif the_input in ("test", "t"):
@@ -106,7 +111,10 @@ else:
 	windows = cCurses.windows
 
 	cPrint = CustomPrint(path_to_DnD, windows, cCurses)
-	cInput = CustomInput(cPrint, cCurses, input_stream=True, test_environment=True)  # input_stream latter changed 
+	cInput = CustomInput(cPrint, cCurses,
+		input_stream=True,  # input_stream latter changed
+		test_environment=True,
+	)
 	cCurses.cPrint = cPrint
 
 	for test in tests:
