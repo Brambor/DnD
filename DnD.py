@@ -88,7 +88,7 @@ if not do_tests:
 	else:
 		current_time = None
 
-	cCurses = CustomCurses(settings.COLOR_PALETTE, settings.COLOR_USAGE)
+	cCurses = CustomCurses(settings)
 	windows = cCurses.windows
 
 	cPrint = CustomPrint(path_to_DnD, windows, cCurses, log_file=current_time)
@@ -107,7 +107,7 @@ else:
 	# TESTING
 	f1 = sys.stdin
 
-	cCurses = CustomCurses(settings.COLOR_PALETTE, settings.COLOR_USAGE)
+	cCurses = CustomCurses(settings)
 	windows = cCurses.windows
 
 	cPrint = CustomPrint(path_to_DnD, windows, cCurses)

@@ -7,11 +7,11 @@ from modules.DnDException import DnDException, DnDExit
 
 
 class CustomCurses():
-	def __init__(self, COLOR_PALETTE, COLOR_USAGE):
+	def __init__(self, settings):
 		"Needs self.cPrint from outside. Both way dependency."
 		# got self.cPrint = cPrint from outside
 		self.curses = curses
-		self.COLOR_USAGE = COLOR_USAGE
+		self.COLOR_USAGE = settings.COLOR_USAGE
 		self.history = []
 
 		self.width = 0
@@ -46,8 +46,8 @@ class CustomCurses():
 			"yellow": 6,
 			"white": 7,
 		}
-		for i, key in enumerate(COLOR_PALETTE):
-			curses.init_color(i+8, *COLOR_PALETTE[key])
+		for i, key in enumerate(settings.COLOR_PALETTE):
+			curses.init_color(i+8, *settings.COLOR_PALETTE[key])
 			self.color_palette[key] = i+8
 
 		self.init_colors()
