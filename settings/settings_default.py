@@ -37,3 +37,25 @@ COLOR_USAGE = {
 	"HP": ("green", "black"),  # used for hp/hp_max
 	"mana": ("cyan", "black"),  # used for mana/mana_max ; group names
 }
+
+WINDOWS = {
+	"fight": {
+		"left_top": ("0", "0"),
+		"width_height": ("2*x//3", "y-2"),
+	},
+	"entities": {
+		"left_top": ("2*x//3", "0"),
+		"width_height": ("x//3", "y//2"),
+		"scrollok": False,
+	},
+	"inventory": {
+		"left_top": ("2*x//3", "y//2"),
+		"width_height": ("x//3", "y//2-1"),
+		"scrollok": False,
+	},
+	"console_input": {
+		"left_top": ("0", "y-2"),
+		"width_height": ("x", "3"),
+	},
+}
+

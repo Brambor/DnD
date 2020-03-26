@@ -12,6 +12,7 @@ class CustomCurses():
 		# got self.cPrint = cPrint from outside
 		self.curses = curses
 		self.COLOR_USAGE = settings.COLOR_USAGE
+		self.WINDOWS = settings.WINDOWS
 		self.history = []
 
 		self.width = 0
@@ -91,14 +92,14 @@ class CustomCurses():
 		
 		#win = curses.newwin(height, width//3, begin_y, begin_x)
 
-		for w in WINDOWS:
-			wi = self.calculate(WINDOWS[w]["width_height"][0])
-			he = self.calculate(WINDOWS[w]["width_height"][1])
-			left_top_wi = self.calculate(WINDOWS[w]["left_top"][0])
-			left_top_he = self.calculate(WINDOWS[w]["left_top"][1])
+		for w in self.WINDOWS:
+			wi = self.calculate(self.WINDOWS[w]["width_height"][0])
+			he = self.calculate(self.WINDOWS[w]["width_height"][1])
+			left_top_wi = self.calculate(self.WINDOWS[w]["left_top"][0])
+			left_top_he = self.calculate(self.WINDOWS[w]["left_top"][1])
 			self.windows[w] = curses.newwin(he, wi, left_top_he, left_top_wi)
 
-			if WINDOWS[w].get("scrollok", True):
+			if self.WINDOWS[w].get("scrollok", True):
 				self.windows[w].scrollok( True )  # on False it crashes
 				for i in range(self.height):
 					self.windows[w].addstr("\n")
@@ -281,47 +282,6 @@ class CustomCurses():
 			self.windows[w].clear()
 			self.windows[w].refresh()
 
-WINDOWS = {
-	"fight": {
-		"left_top": ("0", "0"),
-		"width_height": ("2*x//3", "y-2"),
-	},
-	"entities": {
-		"left_top": ("2*x//3", "0"),
-		"width_height": ("x//3", "y//2"),
-		"scrollok": False,
-	},
-	"inventory": {
-		"left_top": ("2*x//3", "y//2"),
-		"width_height": ("x//3", "y//2-1"),
-		"scrollok": False,
-	},
-	"console_input": {
-		"left_top": ("0", "y-2"),
-		"width_height": ("x", "3"),
-	},
-}
-
-"""
-WINDOWS = { # fight, help, effect ; console_input
-	"fight": {
-		"left_top": ("0", "0"),
-		"width_height": ("x//3", "y-3"),
-	},
-	"help": {
-		"left_top": ("x//3", "0"),
-		"width_height": ("x//3", "y-3"),
-	},
-	"effect": {
-		"left_top": ("2*x//3", "0"),
-		"width_height": ("x//3", "y-3"),
-	},
-	"console_input": {
-		"left_top": ("0", "y-2"),
-		"width_height": ("x", "3"),
-	},
-}
-"""
 
 #curses.wrapper(input_curses)
 
