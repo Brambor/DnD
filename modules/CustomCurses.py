@@ -125,7 +125,7 @@ class CustomCurses():
 
 	def calculate(self, expresion):
 		"expresion is a string that can contain 'x' or 'y' and other mathematical "
-		return eval( expresion.replace("x", str(self.width)).replace("y", str(self.height)) )
+		return eval( expresion.replace("x", str(self.width+1)).replace("y", str(self.height+1)) )
 
 	def get_window(self, window_name):
 		if window_name in self.windows:

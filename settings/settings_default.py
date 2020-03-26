@@ -41,20 +41,20 @@ COLOR_USAGE = {
 WINDOWS = {
 	"fight": {
 		"left_top": ("0", "0"),
-		"width_height": ("2*x//3", "y-2"),
+		"width_height": ("(2*x+1)//3", "y-3"),
 	},
 	"entities": {
-		"left_top": ("2*x//3", "0"),
-		"width_height": ("x//3", "y//2"),
+		"left_top": ("(2*x+1)//3", "0"),
+		"width_height": ("(x+1)//3", "(y-3+1)//2"),
 		"scrollok": False,
 	},
 	"inventory": {
-		"left_top": ("2*x//3", "y//2"),
-		"width_height": ("x//3", "y//2-1"),
+		"left_top": ("(2*x+1)//3", "(y-3+1)//2"),
+		"width_height": ("(x+1)//3", "(y-3)//2"),
 		"scrollok": False,
 	},
 	"console_input": {
-		"left_top": ("0", "y-2"),
+		"left_top": ("0", "y-3"),
 		"width_height": ("x", "3"),
 	},
 }
