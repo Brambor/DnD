@@ -25,6 +25,8 @@ class CustomPrint():
 		return " "*(max(0, self.windows[window_name].getmaxyx()[1] - len(word))//2)
 
 	def refresh_entity_window(self):
+		if "entities" not in self.windows:
+			return
 		entities = self.game.entities
 		self.windows["entities"].clear()
 		if not entities:
@@ -58,6 +60,8 @@ class CustomPrint():
 		self.inventory_entity = entity
 
 	def refresh_inventory_window(self):
+		if "inventory" not in self.windows:
+			return
 		entity = self.inventory_entity
 		self.windows["inventory"].clear()
 		if entity == None:
