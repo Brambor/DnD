@@ -82,6 +82,29 @@ class CustomPrint():
 				self.windows["inventory"].addstr("empty inventory!")
 		self.windows["inventory"].refresh()
 
+	def refresh_history_window(self):
+		if "history" not in self.windows:
+			return
+
+		history_w = self.windows["history"]
+		# current command in the middle of window
+		height, width = history_w.getmaxyx()
+		height -= 1
+		if len(self.cCurses.history_commands) <= height:
+			slice_start = 0
+			slice_end = len(self.cCurses.history_commands)
+		else:
+			slice_start = max(0, self.cCurses.history_pointer - height//2)
+			slice_start = min(slice_start, len(self.cCurses.history_commands)-height)
+			slice_end = slice_start + height
+
+		history_w.clear()
+		for i, line in enumerate(self.cCurses.history_commands[slice_start:slice_end]):
+			i += slice_start
+			history_w.addnstr("%d.%s%s" % (i, [" ", "*"][i==self.cCurses.history_pointer], line), width)
+#		self.windows["history"].addstr("[%d:%d] / %d" % (slice_start, slice_end, len(self.cCurses.history_commands)))
+		self.windows["history"].refresh()
+
 	def write_to_log(self, message):
 		logs_path = "%s/logs" % self.path_to_DnD
 		if not os.path.exists(logs_path):

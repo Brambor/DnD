@@ -14,6 +14,8 @@ class CustomCurses():
 		self.COLOR_USAGE = settings.COLOR_USAGE
 		self.WINDOWS = settings.WINDOWS
 		self.history = []
+		self.history_commands = []
+		self.history_pointer = 0
 
 		self.width = 0
 		stdscr = curses.initscr()
@@ -68,15 +70,6 @@ class CustomCurses():
 	def init_windows(self):
 		stdscr = self.stdscr
 
-		"""
-		HISTORY
-		# this means that history is session specific
-		# last thing in self.history is current command that hasn't been run yet
-		self.history = [""]
-		self.history_pointer = 0
-		self.move_history = 0
-		"""
-		
 		if self.windows == {}:
 			add_history = False
 		else:
@@ -115,6 +108,7 @@ class CustomCurses():
 				self.windows[w].refresh()
 			self.cPrint.refresh_entity_window()
 			self.cPrint.refresh_inventory_window()
+			self.cPrint.refresh_history_window()
 
 		self.command_textbox = textpad.Textbox(self.windows["console_input"], insert_mode=True)
 
@@ -145,38 +139,35 @@ class CustomCurses():
 			self.init_colors()
 			self.msg_interrupted = True
 			return 7
-		#up right down left: 259 261 258 260
 		if x in (10, 459):  # regular enter, enter on notepad
 			return 7  # enter
-		"""
-		HISTORY
+		#up right down left: 259 261 258 260
 		if x == 259:
-			self.move_history = -1
+			self.move_in_history = -1
 			return 7
 		if x == 258:
-			self.move_history = +1
+			self.move_in_history = +1
 			return 7
-		"""
 		if x == 304:  # alt + f4
 			raise DnDExit("alt + f4")
 		return x
 
 	def send(self, message):
 		self.msg_interrupted = False
+		self.move_in_history = 0
 		while True:
 			if self.msg_interrupted:
 				input_command = input_command.strip()
 				if input_command.endswith(">>>"):
 					input_command += " "
-				self.windows["console_input"].addstr(0, 0, input_command)
-				input_command_s = input_command.split("\n")
-				self.windows["console_input"].move(len(input_command_s)-1, len(input_command_s[-1]))
+				offset = 0
 			else:
-				self.windows["console_input"].addstr(0, 0, message)
+				input_command = message
+				offset = 1
 
-				message_s = message.split("\n")
-
-				self.windows["console_input"].move(len(message_s)-1, len(message_s[-1])+1)  # TODO: crashes when len(message_s) > 3 or 4
+			self.windows["console_input"].addstr(0, 0, input_command)
+			input_command_s = input_command.split("\n")
+			self.windows["console_input"].move(len(input_command_s)-1, len(input_command_s[-1])+offset)  # TODO: crashes when len(message_s) > 3 or 4
 	#		windows["console_input"].leaveok(False)
 
 			# INPUT
@@ -184,6 +175,15 @@ class CustomCurses():
 			self.msg_interrupted = False
 			input_command = self.command_textbox.edit(self.enter_is_terminate)
 			if self.msg_interrupted:
+				continue
+			if self.move_in_history:
+				if self.history_commands:
+					self.history_pointer = (self.history_pointer + self.move_in_history) % len(self.history_commands)
+					input_command = "%s %s" % (message, self.history_commands[self.history_pointer])
+				self.windows["console_input"].clear()
+				self.cPrint.refresh_history_window()
+				self.move_in_history = 0
+				self.msg_interrupted = True
 				continue
 			break
 
@@ -206,19 +206,24 @@ class CustomCurses():
 			input_command = "\n"
 
 		self.windows["console_input"].clear()
-		"""
-		HISTORY
-		if self.history_pointer == len(self.history) - 1:
-			self.history_pointer += 1
-		self.history.append(input_command_stripped)
-		"""
-
 		self.windows["fight"].addstr(input_command)  # fight, but s
 		self.history.append(input_command)
+		self.add_to_history_commands(input_command_stripped)
 
+		self.cPrint.refresh_history_window()
 		for w in self.windows:
 			self.windows[w].refresh()
 		return input_command_stripped[:-1]  # removing ending \n
+
+	def add_to_history_commands(self, command):
+		if command in ("",):
+			return
+		if self.history_commands and command == self.history_commands[-1]:
+			return
+
+		if self.history_pointer == len(self.history_commands) - 1:
+			self.history_pointer += 1
+		self.history_commands.append(command)
 
 	def endCurses(self):
 		curses.nocbreak()

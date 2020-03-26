@@ -428,6 +428,7 @@ class Parser():
 		try:
 			self.cPrint.refresh_entity_window()
 			self.cPrint.refresh_inventory_window()
+			self.cPrint.refresh_history_window()
 		except DnDException as exception:
 			self.cPrint("?!: %s\n" % exception)
 		except DnDExit:
