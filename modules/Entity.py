@@ -110,7 +110,7 @@ class Entity():
 		if stat not in self.body:
 			raise DnDException("Entity %s does not have stat '%s'." % (self, stat))
 		if type(self.body[stat]) != int:
-				return self.body[stat]
+			return self.body[stat]
 		else:
 			base = self.body[stat]
 			bp = {
