@@ -1,13 +1,10 @@
 # DnD
 ## Instalation:
-1) Install libraries required. These are written in `requirements.txt`.
-2) Copy `settings/local_settings_default.py` to make new file: `settings/local_settings.py`.
-3) Open `settings/local_settings.py` and edit it to your preferences, you will probably want.
-```
-DEBUG = False
-AUTO_INPUT = False
-LOG = True
-```
-## Regular use:
-1) While having `AUTO_INPUT = False`, execute `DnD.py`. If `LOG = True`, then input and output will be saved in `logs/` folder.
-2) If you need help using with the commands, use command `help`.
+Install libraries required. These are written in `requirements.txt`.
+
+## Use
+If you need help using the commands, use command `help`.
+
+## Custom Settings
+Make file `settings/settings_local.py` and put there your preferences. These overwrite the defaults in `settings/settings_default.py`.
+Look into `settings/settings_default.py` for inspiration.
