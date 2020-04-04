@@ -137,34 +137,6 @@ class Entity():
 				else:
 					return str(base)
 
-	def apply_damage_resistance(self, damage_type, dmg, caused_by_effect):
-		if damage_type not in library["damage_types"]:
-			raise DnDException("Unknown damage type: '%s'.\n" % damage_type)
-
-		dmg_mult = 1
-		relevant = []
-		if damage_type in ("physical", "p"):
-			dmg = max(dmg - self.get_stat("armor"), 0)
-			relevant.append("armor %d" % self.get_stat("armor"))
-		elif damage_type in ("magic", "m"):
-			dmg = max(dmg - self.get_stat("magie"), 0)
-			relevant.append("magie %d" % self.get_stat("magie"))
-
-		if "resistance" in self.body:
-			if damage_type in self.body["resistance"]:
-				r = self.body["resistance"][damage_type]
-				if not (-1 <= r <= 1):
-					self.cPrint("Warning! Resistance is not in interval <-100%, 100%>!\n")
-				dmg_mult *= (1 - r)
-				relevant.append("resistance to %s %d%%" % (damage_type, int(100 * r)))
-
-		if not(caused_by_effect) and self.turned_by_into(damage_type.upper()):
-			dmg_mult *= 0.5
-			relevant.append("removed effect 50%")
-			self.cPrint("Rule (off screen): Nevýhoda na kostku.\n")
-
-		return (normal_round(dmg * dmg_mult), ", ".join(relevant))
-
 	# ALIVE / DEATH
 	def alive(self):
 		return self.get_stat("alive")
@@ -287,6 +259,35 @@ class Entity():
 		self.cPrint("%s healed for %d HladinPetroleje\n" % (self, healed_for))
 		self.body["hp"] += healed_for
 		self.check_revived()
+
+	# partly effects
+	def apply_damage_resistance(self, damage_type, dmg, caused_by_effect):
+		if damage_type not in library["damage_types"]:
+			raise DnDException("Unknown damage type: '%s'.\n" % damage_type)
+
+		dmg_mult = 1
+		relevant = []
+		if damage_type in ("physical", "p"):
+			dmg = max(dmg - self.get_stat("armor"), 0)
+			relevant.append("armor %d" % self.get_stat("armor"))
+		elif damage_type in ("magic", "m"):
+			dmg = max(dmg - self.get_stat("magie"), 0)
+			relevant.append("magie %d" % self.get_stat("magie"))
+
+		if "resistance" in self.body:
+			if damage_type in self.body["resistance"]:
+				r = self.body["resistance"][damage_type]
+				if not (-1 <= r <= 1):
+					self.cPrint("Warning! Resistance is not in interval <-100%, 100%>!\n")
+				dmg_mult *= (1 - r)
+				relevant.append("resistance to %s %d%%" % (damage_type, int(100 * r)))
+
+		if not(caused_by_effect) and self.turned_by_into(damage_type.upper()):
+			dmg_mult *= 0.5
+			relevant.append("removed effect 50%")
+			self.cPrint("Rule (off screen): Nevýhoda na kostku.\n")
+
+		return (normal_round(dmg * dmg_mult), ", ".join(relevant))
 
 	# EFFECTS
 	def get_effect_string(self, effect, sub_value=None):
