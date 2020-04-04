@@ -147,8 +147,11 @@ class Parser():
 					raise DnDException("Command 'dmg' after first separator (damage) takes at least 2 arguments, %d given." % len(damages))
 
 				damage_type = damages[0]
-				if damage_type not in ("physical", "p", "magic", "m", "true", "t"):
-					raise DnDException("Damage type must be one of [p]hysical/[m]agic/[t]rue, '%s' is not either of them." % damage_type)
+				if damage_type not in self.game.library["damage_types"]:
+					raise DnDException("Damage type must be one of %s, '%s' is not either of them." % (
+						", ".join(self.game.library["damage_types"]),
+						damage_type,
+					))
 
 				base_dmg = damages[1]
 				self.check(base_dmg, "dice")
@@ -279,6 +282,8 @@ class Parser():
 					raise DnDException("No library '%s'." % lib)
 
 				# print duplicates in 'a1/a2/a3, b1, c1/c2' form
+				if type(lib) == set:
+					lib = dict(zip(sorted(lib), (i for i in lib)))
 				unique = {}
 				for orig in lib:
 					is_unique = True

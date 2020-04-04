@@ -1,5 +1,7 @@
 import re
 
+from library.Main import library
+
 
 if __name__ == "__main__":
 	print("[fake settings]")
@@ -95,7 +97,7 @@ strs = {
 		"dmg": (
 			"[d]amage/dmg/[a]ttack source_text | type_of_dmg base_dmg dice(die)* | target(s)+\n"
 			"\tsource_text is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
-			"\tdamage_type ([p]hysical/[m]agic/[t]rue)\n"
+			"\tdamage_type are listed in 'library damage_types'\n"
 			"\tdie are row integers representing used dice(die)\n"
 			"\ttarget_entity_1 target_entity_2 ...\n"
 			"\t%s" % symbol["*"]
@@ -134,7 +136,9 @@ strs = {
 		),
 		"library": (
 			"[[l]ib]rary/list WHAT\n"
-			"\tWHAT can be [en]tities, [ef]fects, [[s]p]ells, [i]tems\n"
+			"\tWHAT can be [en]tities, [ef]fects, [[s]p]ells, [i]tems, %s\n" % ", ".join(
+				set(library) - {"entities", "effects", "spells", "items"}
+			)
 		),
 		"move": (
 			"[m]ove target_entity_1 target_entity_2 ...\n"
