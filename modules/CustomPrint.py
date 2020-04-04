@@ -47,13 +47,16 @@ class CustomPrint():
 			del groups["DEAD"]
 
 		CU = self.cCurses.color_usage
-		for group in groups:
-			spaces = self.spaces_to_center("entities", group)
-			self.windows["entities"].addstr(spaces + group + "\n", self.cCurses.curses.color_pair(CU["mana"]))
-			# TODO CRASH WHEN TO MANY LINES IN TOTAL
-			for e in groups[group]:
-				for item in e.get_stats_reduced():
-					self.windows["entities"].addstr(item[0], self.cCurses.curses.color_pair(item[1]))
+		try:
+			for group in groups:
+				spaces = self.spaces_to_center("entities", group)
+				self.windows["entities"].addstr(spaces + group + "\n", self.cCurses.curses.color_pair(CU["mana"]))
+				# TODO CRASH WHEN TO MANY LINES IN TOTAL
+				for e in groups[group]:
+					for item in e.get_stats_reduced():
+						self.windows["entities"].addstr(item[0], self.cCurses.curses.color_pair(item[1]))
+		except self.cCurses.curses.error as e:
+			self.windows["fight"].addstr("ERR: Window entities overflowed.")
 
 		self.windows["entities"].refresh()
 	def select_entity_inventory(self, entity):
@@ -64,22 +67,25 @@ class CustomPrint():
 			return
 		entity = self.inventory_entity
 		self.windows["inventory"].clear()
-		if entity == None:
-			header = "%sinventory\n" % self.spaces_to_center("inventory", "inventory")
-			self.windows["inventory"].addstr(header)
-			self.windows["inventory"].addstr("None entity selected! Note: select with command 'inventory entity'.\n")
-		else:
-			header = "%s's inventory" % entity.nickname
-			header = "%s%s\n" % (self.spaces_to_center("inventory", header), header)
-			self.windows["inventory"].addstr(header)
-			if entity.body["inventory"]:
-				for item in entity.body["inventory"]:
-					self.windows["inventory"].addstr("%s: %s\n" % (
-						item["derived_from"],
-						{key:item[key] for key in item if key != "derived_from"},  # remove derived_from
-					))
+		try:
+			if entity == None:
+				header = "%sinventory\n" % self.spaces_to_center("inventory", "inventory")
+				self.windows["inventory"].addstr(header)
+				self.windows["inventory"].addstr("None entity selected! Note: select with command 'inventory entity'.\n")
 			else:
-				self.windows["inventory"].addstr("empty inventory!")
+				header = "%s's inventory" % entity.nickname
+				header = "%s%s\n" % (self.spaces_to_center("inventory", header), header)
+				self.windows["inventory"].addstr(header)
+				if entity.body["inventory"]:
+					for item in entity.body["inventory"]:
+						self.windows["inventory"].addstr("%s: %s\n" % (
+							item["derived_from"],
+							{key:item[key] for key in item if key != "derived_from"},  # remove derived_from
+						))
+				else:
+					self.windows["inventory"].addstr("empty inventory!")
+		except self.cCurses.curses.error as e:
+			self.windows["fight"].addstr("ERR: Window inventory overflowed.")
 		self.windows["inventory"].refresh()
 
 	def refresh_history_window(self):
