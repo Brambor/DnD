@@ -12,6 +12,7 @@ class Entity():
 		del self.body["nickname"]
 		self.nickname = library_entity["nickname"]
 		# setStat (and many others) counts with "hp"
+		# if "hp" not in self.body:
 		self.body["hp"] = library_entity["hp_max"]
 		if "mana_max" in library_entity:
 			self.body["mana"] = library_entity["mana_max"]
