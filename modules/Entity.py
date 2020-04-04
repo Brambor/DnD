@@ -2,7 +2,7 @@ from copy import copy
 
 from modules.Dice import D, dice_crit, dice_stat
 from modules.DnDException import DnDException
-from modules.Misc import parse_sequence, yield_valid
+from modules.Misc import convert_string_to_bool, parse_sequence, yield_valid
 
 
 class Entity():
@@ -399,9 +399,9 @@ class Entity():
 					return under_effect  # imunity by
 		return None  # Nothing gives imunity
 
-	def turned_by_into(self, flag, once=False):
+	def turned_by_into(self, flag, once="NOT IMPLEMENTED"):
 		"apply flag on current effects (only the first one!) \
-		return True: something was turned; False: not"
+		return True: something was turned; False: wasn't"
 
 		i_x = len(self.body["effects"]) - 1
 		while i_x >= 0:
@@ -467,12 +467,3 @@ class Entity():
 		item_i, item = self.get_item(cmd)
 		self.body["inventory"][item_i][key] = value
 		self.cPrint("%s's item now reads: %s.\n" % (self, item))
-
-
-def convert_string_to_bool(string):
-	if string == "True":
-		return True
-	elif string == "False":
-		return False
-	else:
-		raise DnDException("Unacceptable value '%s' accepting only 'True' and 'False'." % string)

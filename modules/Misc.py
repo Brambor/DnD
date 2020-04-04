@@ -4,6 +4,14 @@ from modules.DnDException import DnDException
 from modules.Dice import D
 
 
+def convert_string_to_bool(string):
+	if string == "True":
+		return True
+	elif string == "False":
+		return False
+	else:
+		raise DnDException("Unacceptable value '%s' accepting only 'True' and 'False'." % string)
+
 def get_int_from_dice(n_str):
 	if n_str.replace("-", "", 1).isdigit():
 		return int(n_str)
