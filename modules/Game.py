@@ -1,3 +1,5 @@
+from copy import copy
+
 from modules.Entity import Entity
 from modules.Dice import D, dice_crit, dice_stat
 from modules.DnDException import DnDException
@@ -71,3 +73,30 @@ class Game():
 		) + "\n"
 		self.cPrint(complete_string)
 		return threw_crit
+
+	def save_dict(self, the_dict=None):
+		from modules.CustomPrint import CustomPrint
+		from modules.CustomCurses import CustomCurses
+		from modules.Weapons import Fist, Axe
+		from modules.Entity import Entity
+		if the_dict == None:
+			the_dict = self.__dict__
+		save = {}
+		for key in the_dict:
+			value = the_dict[key]
+			if type(value) == dict:
+				value = self.save_dict(value)
+			if type(value) == list:
+				value = self.save_list(value)
+			print("key:", key, "value:", value)
+			if type(value) in {CustomPrint, CustomCurses}:
+				continue
+			elif type(value) == Entity:
+				value = self.save_dict(value.__dict__)
+			save[key] = value
+		return save
+	def save_list(self, the_list):
+		
+		for item in the_list:
+			pass
+
