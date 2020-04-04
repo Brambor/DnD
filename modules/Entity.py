@@ -1,8 +1,10 @@
 from copy import copy
 
+from library.Main import library
+
 from modules.Dice import D, dice_crit, dice_stat
 from modules.DnDException import DnDException
-from modules.Misc import convert_string_to_bool, parse_sequence, yield_valid
+from modules.Misc import convert_string_to_bool, normal_round, parse_sequence, yield_valid
 
 
 class Entity():
@@ -18,6 +20,7 @@ class Entity():
 			self.body["mana"] = library_entity["mana_max"]
 		self.body["group"] = library_entity.get("group", "")
 		self.body["inventory"] = library_entity.get("inventory", [])
+		self.body["resistance"] = library_entity.get("resistance", set())
 		self.body["effects"] = []
 		self.body["alive"] = True
 		self.game = game
@@ -134,6 +137,34 @@ class Entity():
 				else:
 					return str(base)
 
+	def apply_damage_resistance(self, damage_type, dmg):
+		if damage_type not in library["damage_types"]:
+			raise DnDException("Unknown damage type: '%s'.\n" % damage_type)
+
+		dmg_mult = 1
+		relevant = []
+		if damage_type in ("physical", "p"):
+			dmg = max(dmg - self.get_stat("armor"), 0)
+			relevant.append("armor %d" % self.get_stat("armor"))
+		elif damage_type in ("magic", "m"):
+			dmg = max(dmg - self.get_stat("magie"), 0)
+			relevant.append("magie %d" % self.get_stat("magie"))
+
+		if "resistance" in self.body:
+			if damage_type in self.body["resistance"]:
+				r = self.body["resistance"][damage_type]
+				if not (-1 <= r <= 1):
+					self.cPrint("Warning! Resistance is not in interval <-100%, 100%>!\n")
+				dmg_mult *= (1 - r)
+				relevant.append("resistance to %s %d%%" % (damage_type, int(100 * r)))
+
+		if self.turned_by_into(damage_type.upper()):
+			dmg_mult *= 0.5
+			relevant.append("removed effect 50%")
+			self.cPrint("Rule (off screen): Nevýhoda na kostku.\n")
+
+		return (normal_round(dmg * dmg_mult), ", ".join(relevant))
+
 	# ALIVE / DEATH
 	def alive(self):
 		return self.get_stat("alive")
@@ -230,18 +261,22 @@ class Entity():
 			dmg = damage_dict[damage_type]
 
 			# resistance
-			if damage_type in ("physical", "p"):
-				dmg = max(dmg - self.get_stat("armor"), 0)
-			elif damage_type in ("magic", "m"):
-				dmg = max(dmg - self.get_stat("magie"), 0)
-			elif damage_type not in ("true", "t"):
-				raise
+			dmg, damage_resistance = self.apply_damage_resistance(damage_type, dmg)
+
 
 			#printing
 			if statement == "":
 				statement = "recived"
+			if damage_resistance != "":
+				damage_resistance = " (%s)" % damage_resistance
 			if self.get_stat("alive"):
-				self.cPrint("%s %s %d %s dmg\n" % (self, statement, dmg, damage_type))
+				self.cPrint("%s %s %d %s dmg%s\n" % (
+					self,
+					statement,
+					dmg,
+					damage_type,
+					damage_resistance
+				))
 
 			# applying
 			self.body["hp"] -= dmg

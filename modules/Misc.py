@@ -32,6 +32,9 @@ def local_loader(global_dict, lib, dicts_name):
 	except ImportError:
 		return []
 
+def normal_round(f):
+	return int(f) + ( f - int(f) >= 0.5 )
+
 def parse_sequence(sequence, carry_when_crit=False):
 	"does not process negative integers as integers"
 	sequence = sequence.split()
