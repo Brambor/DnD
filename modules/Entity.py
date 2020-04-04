@@ -137,7 +137,7 @@ class Entity():
 				else:
 					return str(base)
 
-	def apply_damage_resistance(self, damage_type, dmg):
+	def apply_damage_resistance(self, damage_type, dmg, caused_by_effect):
 		if damage_type not in library["damage_types"]:
 			raise DnDException("Unknown damage type: '%s'.\n" % damage_type)
 
@@ -158,7 +158,7 @@ class Entity():
 				dmg_mult *= (1 - r)
 				relevant.append("resistance to %s %d%%" % (damage_type, int(100 * r)))
 
-		if self.turned_by_into(damage_type.upper()):
+		if not(caused_by_effect) and self.turned_by_into(damage_type.upper()):
 			dmg_mult *= 0.5
 			relevant.append("removed effect 50%")
 			self.cPrint("Rule (off screen): Nevýhoda na kostku.\n")
@@ -255,13 +255,13 @@ class Entity():
 		return (total_hp, crit)
 
 	# RECIVE DAMAGE, HEAL
-	def damaged(self, damage_dict, statement=""):
+	def damaged(self, damage_dict, statement="", caused_by_effect=False):
 		"damage_dict example: {'physical': 12}"
 		for damage_type in damage_dict:
 			dmg = damage_dict[damage_type]
 
 			# resistance
-			dmg, damage_resistance = self.apply_damage_resistance(damage_type, dmg)
+			dmg, damage_resistance = self.apply_damage_resistance(damage_type, dmg, caused_by_effect)
 
 
 			#printing
@@ -409,7 +409,7 @@ class Entity():
 
 			if effect["name"] == "FIRE":
 				threw = D(effect["value"])
-				self.damaged({"true": threw}, "burns for")
+				self.damaged({"true": threw}, "burns for", caused_by_effect=True)
 				if threw == 1:
 					self.cPrint("\t and stopped %s\n" % self.get_effect_string(effect))
 					del effects[i]
@@ -417,7 +417,7 @@ class Entity():
 
 			if effect["name"] == "BLEAD":
 				threw = D(effect["value"])
-				self.damaged({"true": threw}, "bleads for")
+				self.damaged({"true": threw}, "bleads for", caused_by_effect=True)
 
 			if effect["type"] == "duration":
 				effect["value"] -= 1
