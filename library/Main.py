@@ -7,10 +7,10 @@ from library.spells import spells, output as output_sp
 
 
 library = {
-	"entities": entities,
-	"spells": spells,
 	"effects": effects,
+	"entities": entities,
 	"items": items,
+	"spells": spells,
 }
 
 output_library = chain( (*output_ef, *output_en, *output_it, *output_sp) )
