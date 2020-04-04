@@ -1,6 +1,7 @@
 from modules.DnDException import DnDException, DnDExit
 from modules.Dice import D, dice_stat
 from modules.Misc import get_int_from_dice  # imports its own Dice
+from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
 
 class Parser():
@@ -51,6 +52,12 @@ class Parser():
 			return False
 		return True
 
+	def print_unrecognized_command(self, parts):
+		self.cPrint("?: Unrecognized command '%s'.%s\n" % (
+			parts[0],
+			["", " Maybe you forgot a space between command and first separator?"][any(separator in parts[0] for separator in settings.SEPARATORS)],
+		))
+
 	def process(self, cmd):
 		"processes one command"
 		#input
@@ -63,7 +70,7 @@ class Parser():
 				if parts[0] in strs["commands"]:
 					self.cPrint(strs["commands"][parts[0]])
 				else:
-					self.cPrint("Unknown command: '%s'. (Or help might be missing.)\n" % parts[0])
+					self.print_unrecognized_command(parts)
 
 			elif parts[0] in ("#", "//"):
 				self.cPrint("\r# %s\n" % " ".join(parts[1:]))
@@ -418,7 +425,7 @@ class Parser():
 							self.argument_wrong_ammount("window set_top_left", (5,), len(parts))
 
 			else:
-				self.cPrint("?\n")
+				self.print_unrecognized_command(parts)
 
 		except DnDException as exception:
 			self.cPrint("?!: %s\n" % exception)
