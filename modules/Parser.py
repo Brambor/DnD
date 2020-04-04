@@ -170,7 +170,7 @@ class Parser():
 				threw_crit = self.game.throw_dice(dice)
 				damage_sum = base_dmg + sum(t[0] for t in threw_crit)
 				for target in targets:
-					target.damaged(damage_sum, damage_type)
+					target.damaged({damage_type: damage_sum})
 
 			elif parts[0] in ("effect", "e"):
 				if len(parts) != 4:
