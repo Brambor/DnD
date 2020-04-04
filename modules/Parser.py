@@ -20,15 +20,15 @@ class Parser():
 		else:
 			takes_str = "%s or %s" % (", ".join((str(t) for t in takes[:-1])), takes[-1])
 
-		if not separators:
+		if separators:
 			raise DnDException(
-				"Command '%s' takes %s arguments, %d given." % (
+				"Command '%s' (with arguments!) takes %s separators, %d given." % (
 					cmd, takes_str, count
 				)
 			)
 		else:
 			raise DnDException(
-				"Command '%s' (with arguments!) takes %s separators, %d given." % (
+				"Command '%s' takes %s arguments, %d given." % (
 					cmd, takes_str, count
 				)
 			)
