@@ -154,7 +154,7 @@ class Entity():
 
 	# FIGHT, CAST
 	def attack(self, target, dmg):
-		target.damaged({"physical": dmg})
+		target.damaged( (({"physical"}, dmg),) )
 
 	def fight(self, opponent, self_D, opponent_D, cInput=False):
 		"""... self_D, opponent_D are integers; -1 for auto
@@ -199,7 +199,7 @@ class Entity():
 			crit = False
 			if "damages" in spell["effects"]:
 				damage, crit = self.count_spell_hp(spell["effects"]["damages"], cInput)
-				target.damaged({"magic": damage})
+				target.damaged( (({"magic"}, damage),) )
 				if crit:
 					self.cPrint("Critical spell!!\n")
 			if "heals" in spell["effects"]:
@@ -227,14 +227,14 @@ class Entity():
 		return (total_hp, crit)
 
 	# RECIVE DAMAGE, HEAL
-	def damaged(self, damage_dict, statement="", caused_by_effect=False):
-		"damage_dict example: {'physical': 12}"
-		for damage_type in damage_dict:
-			dmg = damage_dict[damage_type]
+	def damaged(self, damage_list, statement="", caused_by_effect=False):
+		"damage_list example: [{'physical', 'acid'}: 12, {'acid'}: 8, {'acid'}: 5]"
+		for damage_types, dmg in damage_list:
 
 			# resistance
-			dmg, damage_resistance = self.apply_damage_resistance(damage_type, dmg, caused_by_effect)
-
+			dmg, damage_resistance = self.apply_damage_resistance(
+				damage_types, dmg, caused_by_effect
+			)
 
 			#printing
 			if statement == "":
@@ -246,7 +246,7 @@ class Entity():
 					self,
 					statement,
 					dmg,
-					damage_type,
+					" & ".join(damage_types),
 					damage_resistance
 				))
 
@@ -261,31 +261,33 @@ class Entity():
 		self.check_revived()
 
 	# partly effects
-	def apply_damage_resistance(self, damage_type, dmg, caused_by_effect):
-		if damage_type not in library["damage_types"]:
-			raise DnDException("Unknown damage type: '%s'.\n" % damage_type)
+	def apply_damage_resistance(self, damage_types, dmg, caused_by_effect):
+		for damage_type in damage_types:
+			if damage_type not in library["damage_types"]:
+				raise DnDException("Unknown damage type: '%s'.\n" % damage_type)
 
 		dmg_mult = 1
 		relevant = []
-		if damage_type in ("physical", "p"):
-			dmg = max(dmg - self.get_stat("armor"), 0)
-			relevant.append("armor %d" % self.get_stat("armor"))
-		elif damage_type in ("magic", "m"):
-			dmg = max(dmg - self.get_stat("magie"), 0)
-			relevant.append("magie %d" % self.get_stat("magie"))
+		for damage_type in damage_types:
+			if damage_type in ("physical", "p"):
+				dmg = max(dmg - self.get_stat("armor"), 0)
+				relevant.append("armor %d" % self.get_stat("armor"))
+			elif damage_type in ("magic", "m"):
+				dmg = max(dmg - self.get_stat("magie"), 0)
+				relevant.append("magie %d" % self.get_stat("magie"))
 
-		if "resistance" in self.body:
-			if damage_type in self.body["resistance"]:
-				r = self.body["resistance"][damage_type]
-				if not (-1 <= r <= 1):
-					self.cPrint("Warning! Resistance is not in interval <-100%, 100%>!\n")
-				dmg_mult *= (1 - r)
-				relevant.append("resistance to %s %d%%" % (damage_type, int(100 * r)))
+			if "resistance" in self.body:
+				if damage_type in self.body["resistance"]:
+					r = self.body["resistance"][damage_type]
+					if not (-1 <= r <= 1):
+						self.cPrint("Warning! Resistance is not in interval <-100%, 100%>!\n")
+					dmg_mult *= (1 - r)
+					relevant.append("resistance to %s %d%%" % (damage_type, int(100 * r)))
 
-		if not(caused_by_effect) and self.turned_by_into(damage_type.upper()):
-			dmg_mult *= 0.5
-			relevant.append("removed effect 50%")
-			self.cPrint("Rule (off screen): Nevýhoda na kostku.\n")
+			if not(caused_by_effect) and self.turned_by_into(damage_type.upper()):
+				dmg_mult *= 0.5
+				relevant.append("removed effect 50%")
+				self.cPrint("Rule (off screen): Nevýhoda na kostku.\n")
 
 		return (normal_round(dmg * dmg_mult), ", ".join(relevant))
 
@@ -410,7 +412,7 @@ class Entity():
 
 			if effect["name"] == "FIRE":
 				threw = D(effect["value"])
-				self.damaged({"true": threw}, "burns for", caused_by_effect=True)
+				self.damaged((({"true"}, threw),), "burns for", caused_by_effect=True)
 				if threw == 1:
 					self.cPrint("\t and stopped %s\n" % self.get_effect_string(effect))
 					del effects[i]
@@ -418,7 +420,7 @@ class Entity():
 
 			if effect["name"] == "BLEAD":
 				threw = D(effect["value"])
-				self.damaged({"true": threw}, "bleads for", caused_by_effect=True)
+				self.damaged((({"true"}, threw),), "bleads for", caused_by_effect=True)
 
 			if effect["type"] == "duration":
 				effect["value"] -= 1
