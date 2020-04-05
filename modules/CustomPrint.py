@@ -5,7 +5,7 @@ class CustomPrint():
 	windows are the four window object used for communication (courses.window)"
 	def __init__(self, path_to_DnD, windows, cCurses, log_file=""):
 		self.path_to_DnD = path_to_DnD
-		self.log_file = log_file.replace(":", "_")
+		self.log_file = log_file.replace(":", "_") if log_file else ""
 		self.windows = windows
 		self.cCurses = cCurses
 		#self.game from outside
