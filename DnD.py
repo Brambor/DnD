@@ -58,7 +58,7 @@ def test_wrap(test, len_f_copy):
 do_tests = False
 if settings.AUTO_INPUT:
 	tests = [f[5:-4] for f in os.listdir("%s/tests" % path_to_DnD)]
-	print("Avaiable tests: %s" % ", ".join(tests))
+	print("Avaiable tests: %s" % " ".join(tests))
 
 	while True:
 		the_input = input("Press enter if you wish to proceed.\n"
@@ -75,12 +75,11 @@ if settings.AUTO_INPUT:
 		else:
 			do_tests = True
 			tests_selected = the_input.split()
-			good = True
 			for t in tests_selected:
 				if t not in tests:
 					print("'%s' is not a valid test." % t)
-					good = False
-			if not good:
+					do_tests = False
+			if not do_tests:
 				continue
 			tests = tests_selected
 			break
