@@ -16,6 +16,15 @@ class CustomCurses():
 		self.history = []
 		self.history_commands = []
 		self.history_pointer = 0
+		self.keys = {
+			10: 7,  # regular enter -> enter
+			459: 7,  # enter on notepad -> enter
+			#NumePad / * - +
+			458: "/",
+			463: "*",
+			464: "-",
+			465: "+",
+		}
 
 		self.width = 0
 		stdscr = curses.initscr()
@@ -139,8 +148,8 @@ class CustomCurses():
 			self.init_colors()
 			self.msg_interrupted = True
 			return 7
-		if x in (10, 459):  # regular enter, enter on notepad
-			return 7  # enter
+		if x in self.keys:
+			return self.keys[x]
 		#up right down left: 259 261 258 260
 		if x == 259:
 			self.move_in_history = -1
