@@ -22,7 +22,7 @@ cmd = (
 	("help", "h"),
 	("create", "c"),
 	("compare", "cmp"),
-	("damage", "dmg", "d", "attack", "a"),
+	("damage", "dmg", "d"),
 	("effect", "e"),
 	("erase",),
 	("eval",),
@@ -95,7 +95,7 @@ strs = {
 			"\tval is either integer or dice in format 'dx' where x is integer\n"
 		),
 		"dmg": (
-			"[d]amage/dmg/[a]ttack source_text | type_of_dmg base_dmg dice(die)* | target(s)+\n"
+			"[d]amage/dmg source_text | type_of_dmg base_dmg dice(die)* | target(s)+\n"
 			"\tsource_text is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
 			"\tdamage_type are listed in 'library damage_types'\n"
 			"\tdie are row integers representing used dice(die)\n"

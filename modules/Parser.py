@@ -143,7 +143,7 @@ class Parser():
 				else:
 					self.argument_wrong_ammount("compare", (3, 7), len(parts))
 
-			elif parts[0] in ("damage", "dmg", "d", "attack", "a"):
+			elif parts[0] in ("damage", "dmg", "d"):
 				parts = separate(parts[1:])
 
 				if len(parts) != 3:
