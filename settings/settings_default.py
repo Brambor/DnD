@@ -6,6 +6,8 @@ DEBUG = False  # True: When something goes wrong, the program prints error, wait
 AUTO_INPUT = False  # True: when DnD is run, DnD asks which tests to run, if any
 LOG = True  # False: Nothing; True: As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything, inputs are not numbered, unlike with tests)
 
+EXIT_MESSAGE = True # True: on exit prevent closing terminal right away with exit message requiring enter press
+
 SEPARATORS = ["|", ";", "&"]
 
 TEST_WAIT_BETWEEN_COMMANDS = 0.1

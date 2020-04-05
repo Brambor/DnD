@@ -34,8 +34,9 @@ def wrapper(func, stdin=None, **kwargs):
 		print("\n\n")
 		if stdin:
 			sys.stdin = stdin
-		traceback.print_exc(file=sys.stdout)
-		input("CRASHED, PRESS ENTER")
+		if settings.EXIT_MESSAGE:
+			traceback.print_exc(file=sys.stdout)
+			input("CRASHED, PRESS ENTER")
 		raise
 
 def regular_wrap():
@@ -102,7 +103,8 @@ if not do_tests:
 	wrapper(regular_wrap)
 
 	cCurses.endCurses()
-	input("You are exiting")
+	if settings.EXIT_MESSAGE:
+		input("You are exiting")
 else:
 	# TESTING
 	f1 = sys.stdin
@@ -143,4 +145,5 @@ else:
 	wrapper(regular_wrap)
 
 	cCurses.endCurses()
-	input("You are exiting")
+	if settings.EXIT_MESSAGE:
+		input("You are exiting")
