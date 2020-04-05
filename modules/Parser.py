@@ -57,6 +57,8 @@ class Parser():
 			parts[0],
 			["", " Maybe you forgot a space between command and first separator?"][any(separator in parts[0] for separator in settings.SEPARATORS)],
 		))
+		if settings.TEST_CRASH_ON_UNKNOWN_COMMAND and self.cInput.test_environment:
+			raise ValueError("Unknown command '%s'." % parts[0])
 
 	def process(self, cmd):
 		"processes one command"

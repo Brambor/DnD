@@ -48,8 +48,11 @@ def regular_wrap():
 def test_wrap(test, len_f_copy):
 	cPrint("test name: %s\n" % test)
 	sleep(settings.TEST_WAIT_BETWEEN_TESTS)
-	while (cInput.i+1 < len_f_copy) and P.input_command():
-		sleep(settings.TEST_WAIT_BETWEEN_COMMANDS)
+	try:
+		while (cInput.i+1 < len_f_copy) and P.input_command():
+			sleep(settings.TEST_WAIT_BETWEEN_COMMANDS)
+	except ValueError as e:
+		raise Exception("test failed: %s" % test) from e
 	cPrint("\n\n\n\n")
 
 do_tests = False
