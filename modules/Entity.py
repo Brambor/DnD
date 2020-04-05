@@ -269,10 +269,11 @@ class Entity():
 		dmg_mult = 1
 		relevant = []
 		for damage_type in damage_types:
-			if damage_type in ("physical", "p"):
+			damage_type = library["damage_types"][damage_type]
+			if damage_type == "physical":
 				dmg = max(dmg - self.get_stat("armor"), 0)
 				relevant.append("armor %d" % self.get_stat("armor"))
-			elif damage_type in ("magic", "m"):
+			elif damage_type == "magic":
 				dmg = max(dmg - self.get_stat("magie"), 0)
 				relevant.append("magie %d" % self.get_stat("magie"))
 

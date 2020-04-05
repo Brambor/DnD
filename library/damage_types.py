@@ -21,4 +21,6 @@ damage_types = {
 	'wind',
 }
 
+damage_types = dict(((d, d) for d in damage_types))
+
 output = local_loader(damage_types, "library.damage_types_local", "damage_types")
