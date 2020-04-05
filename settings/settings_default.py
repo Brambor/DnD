@@ -4,7 +4,8 @@
 
 DEBUG = False  # True: When something goes wrong, the program prints error, waits for input, then crashes; False: it prints "fcked up" and carries on.
 AUTO_INPUT = False  # True: when DnD is run, DnD asks which tests to run, if any
-LOG = True  # False: Nothing; True: As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything, inputs are not numbered, unlike with tests)
+LOG = True  # Log while not testing. As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything, inputs are not numbered, unlike with tests)
+LOG_TEST = False  # Log while testing.
 
 EXIT_MESSAGE = True # True: on exit prevent closing terminal right away with exit message requiring enter press
 

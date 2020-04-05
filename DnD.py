@@ -109,12 +109,16 @@ if not do_tests:
 		input("You are exiting")
 else:
 	# TESTING
+	if settings.LOG_TEST:
+		current_time = str(datetime.today()).split(".")[0]
+	else:
+		current_time = None
 	f1 = sys.stdin
 
 	cCurses = CustomCurses(settings)
 	windows = cCurses.windows
 
-	cPrint = CustomPrint(path_to_DnD, windows, cCurses)
+	cPrint = CustomPrint(path_to_DnD, windows, cCurses, log_file=current_time)
 	cInput = CustomInput(cPrint, cCurses,
 		input_stream=True,  # input_stream latter changed
 		test_environment=True,
