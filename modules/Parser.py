@@ -1,5 +1,7 @@
+from library.Main import library
+
 from modules.DnDException import DnDException, DnDExit
-from modules.Dice import D, dice_stat
+from modules.Dice import D, dice_stat, dice_parser
 from modules.Misc import get_int_from_dice  # imports its own Dice
 from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
@@ -149,40 +151,36 @@ class Parser():
 				if len(parts) != 3:
 					self.argument_wrong_ammount("damage", (2,), len(parts), separators=True)
 
-				source_text = parts[0]
+				source_text = parts[0]  # TODO wrong, also, use it somewhere...
 
-				damages = parts[1].split()
-				if len(damages) < 2:
-					raise DnDException("Command 'dmg' after first separator (damage) takes at least 2 arguments, %d given." % len(damages))
+				damage_list = []
+				for whole in (type_damage.split("{") for type_damage in parts[1].split("}") if type_damage != ""):
+					if len(whole) != 2:
+						raise DnDException("%s is %d long, 2 expected.\nMaybe you forgot '{' ?" % (whole, len(whole)))
 
-				damage_type = damages[0]
-				if damage_type not in self.game.library["damage_types"]:
-					raise DnDException("Damage type must be one of %s, '%s' is not either of them." % (
-						", ".join(self.game.library["damage_types"]),
-						damage_type,
-					))
+					types = set()
+					for damage_type in whole[0].strip().split():
+						if damage_type not in library["damage_types"]:
+							raise DnDException("Invalid damage_type '%s'." % damage_type)
+						types.add(damage_type)
 
-				base_dmg = damages[1]
-				self.check(base_dmg, "dice")
-				base_dmg = int(base_dmg)
+					dice = dice_parser(whole[1])
 
-				if len(damages) > 2:
-					dice = damages[2:]
-					self.check(" ".join(dice), " ".join(["dice"]*len(dice)))  # cubersome...
-					dice = [int(d) for d in dice]
-				else:
-					dice = []
+					if dice:
+						threw_crit = self.game.throw_dice(dice)
+						# put the results back into the expression
+						for n, threw in zip(dice, threw_crit):
+							whole[1] = whole[1].replace("d%d" % n, str(threw[0]), 1)
+
+					# eval
+					damage_list.append((types, eval(whole[1])))
 
 				targets = parts[2].split()
 				if len(targets) == 0:
 					raise DnDException("Command 'dmg' after second separator (targets) takes at least 1 arguments, %d given." % len(targets))
 
-				targets = [self.game.get_entity(target)[1] for target in targets]
-
-				threw_crit = self.game.throw_dice(dice)
-				damage_sum = base_dmg + sum(t[0] for t in threw_crit)
-				for target in targets:
-					target.damaged( ((damage_type, damage_sum),) )
+				for target in [self.game.get_entity(target)[1] for target in targets]:
+					target.damaged(damage_list)
 
 			elif parts[0] in ("effect", "e"):
 				if len(parts) != 4:

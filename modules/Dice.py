@@ -24,6 +24,26 @@ def check_dice_exists(n):
 	if n not in all_dice:
 		raise DnDException("Dice %d doesn't exist. Existing die: %s." % (n, ", ".join(str(d) for d in all_dice)))
 
+def dice_parser(expression):
+	dice = []
+	i = expression.find("d")
+	while i != -1:
+		i = expression.find("d", i) + 1
+		if i == 0:
+			break
+		cube = ""
+		for c in expression[i:]:
+			if c.isdigit():
+				cube += c
+				i += 1
+				continue
+			break
+		if cube == "":
+			raise DnDException("'d' must be directly, withou spaces, followed by number of sides.")
+		else:
+			dice.append(int(cube))
+	return dice
+
 # dice : since which n does it crit
 all_dice = {
 	4: 4,

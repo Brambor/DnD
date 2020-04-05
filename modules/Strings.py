@@ -95,10 +95,17 @@ strs = {
 			"\tval is either integer or dice in format 'dx' where x is integer\n"
 		),
 		"dmg": (
-			"[d]amage/dmg source_text | type_of_dmg base_dmg dice(die)* | target(s)+\n"
-			"\tsource_text is string latter used in log message (it is NOT optional, thought it is vaguely saved)\n"
+			"[d]amage/dmg source_text | (damage_types* {expression})+ | target+\n"
+			"\tdo not write (), only spaces, example:\n"
+			"\tdamage | physical blunt {45+12+4-2+d8} fire elemental {(d4+10)*0.5} ... | entity_1 entity_2 ...\n"
+			"\tsource_text* (optional) words describing the source of the damage\n"  # TODO: hook it up!
 			"\tdamage_type are listed in 'library damage_types'\n"
-			"\tdie are row integers representing used dice(die)\n"
+			"\n"
+			"\t{expression} can contain multiplication, rational numbers, die in form dX where X is number of sides\n"
+			"\tab is not multiplication, a*b is\n"
+			"\t0.5 5 1/3 are all acceptable, '0,5' is not\n"
+			"\tfor each dX one dice is thrown, 3*dX is result of throwing a dice multiplied by 3\n"
+			"\n"
 			"\ttarget_entity_1 target_entity_2 ...\n"
 			"\t%s" % symbol["*"]
 			+"\t%s" % symbol["+"]
