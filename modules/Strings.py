@@ -89,7 +89,7 @@ strs = {
 			"compare/cmp entity1 skill1 val1 entity2 skill2 val2\n"
 			"\tprobably throws a die to see who won\n"
 			"\tskill determines which skill is entity using\n"
-			"\tval is integer, 'a' for auto based on skill\n"
+			"\tval is integer, 'a' or 'auto' for auto based on skill\n"
 			"compare/cmp val1 val2\n"
 			"\tprobably throws a die to see what is more\n"
 			"\tval is either integer or dice in format 'dx' where x is integer\n"
@@ -127,7 +127,7 @@ strs = {
 		"exit": "Exits the program.",
 		"fight": (
 			"[f]ight entity1 entity2 val1 val2 manual_dice\n"
-			"\tval is integer, 'a' for auto\n"
+			"\tval is integer, 'a' or 'auto' for auto\n"
 			"%s"
 			"\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
 		),

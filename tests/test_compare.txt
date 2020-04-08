@@ -9,8 +9,8 @@ cmp d12 7
 c pes a
 c pes b
 
-cmp a int a b int a
+cmp a int auto b int auto
 
-cmp a boj a b boj a
+cmp a boj auto b boj auto
 
-cmp a boj 16 b boj a
+cmp a boj 16 b boj auto

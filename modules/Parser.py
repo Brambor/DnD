@@ -127,11 +127,11 @@ class Parser():
 				elif len(parts) == 7:
 					e1 = self.game.get_entity(parts[1])[1]
 					e2 = self.game.get_entity(parts[4])[1]
-					if parts[3] == "a":
+					if parts[3] in ("auto", "a"):
 						val1 = dice_stat(e1.get_stat(parts[2], return_as_integer=True))
 					else:
 						val1 = get_int_from_dice(parts[3])
-					if parts[6] == "a":
+					if parts[6] in ("auto", "a"):
 						val2 = dice_stat(e2.get_stat(parts[5], return_as_integer=True))
 					else:
 						val2 = get_int_from_dice(parts[6])
@@ -223,13 +223,13 @@ class Parser():
 					d1 = -1
 					d2 = -1
 				elif len(parts) in (5, 6):  # fight + 2 entities + 2 dice rolls ?+placeholder_input_sequence
-					if parts[3] == "a":
+					if parts[3] in ("auto", "a"):
 						d1 = -1
 					else:
 						self.check(parts[3], "dice")
 						d1 = int(parts[3])
 
-					if parts[4] == "a":
+					if parts[4] in ("auto", "a"):
 						d2 = -1
 					else:
 						self.check(parts[4], "dice")
