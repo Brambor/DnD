@@ -17,4 +17,29 @@ library = {
 	"skills": skills,
 }
 
-output_library = chain( (*output_df, *output_ef, *output_en, *output_it, *output_sk, *output_sp) )
+# Check if things in entities.py are defined in respective libraries
+warnings = []
+for e_name in entities:
+	e = entities[e_name]
+	if "skills" in e:
+		for skill in e["skills"]:
+			if skill not in skills:
+				warnings.append(
+					"Skill '%s' of entity '%s' is not in library of skills." % (
+						skill, e_name))
+	if "resistances" in e:
+		for resistance in e["resistances"]:
+			if resistance not in damage_types:
+				warnings.append(
+					"Resistance '%s' of entity '%s' is not in library"
+					" of damage_types." % (resistance, e_name))
+
+output_library = chain((
+	*output_df,
+	*output_ef,
+	*output_en,
+	*output_it,
+	*output_sk,
+	*output_sp,
+	*("WARNING: %s" % w for w in warnings),
+))
