@@ -57,8 +57,13 @@ class Entity():
 			yield (" %s\n" % ", ".join("%sϟ%d" % (i["name"], i["value"]) if i["type"] == "duration" else i["name"] for i in self.body["effects"]), 0)
 
 	def setStat(self, stat, value, stat_type=None):
+		if stat in library["skills"]:
+			body = self.body["skills"]
+		else:
+			body = self.body
+
 		if stat_type:
-			if stat in self.body:
+			if stat in body:
 				raise DnDException("Entity '%s' already has stat '%s' so it's type cannot be modified, do not try." % (self, stat))
 			if stat_type == "int":
 				if value.replace("-", "", 1).isdigit():
@@ -67,16 +72,16 @@ class Entity():
 				value = convert_string_to_bool(value)
 			elif stat_type != "str":
 				raise DnDException("'stat_type' must be one of 'int', 'bool', or 'str', not '%s'." % stat_type)
-			self.body[stat] = value
+			body[stat] = value
 			return
 
-		if ( ( stat in self.body ) and ( type(self.body[stat]) == str ) ):
-			self.body[stat] = value	
-		elif ( ( stat in self.body ) and ( type(self.body[stat]) == int ) ):
+		if ( ( stat in body ) and ( type(body[stat]) == str ) ):
+			body[stat] = value	
+		elif ( ( stat in body ) and ( type(body[stat]) == int ) ):
 			if value.replace("-", "", 1).isdigit():
 				value = int(value)
-				before = self.body[stat]
-				self.body[stat] = value
+				before = body[stat]
+				body[stat] = value
 				if stat == "hp":  # if entity died or rose from dead
 					if before <= 0 and value > 0:
 						self.check_revived()
@@ -84,9 +89,9 @@ class Entity():
 						self.check_dead()
 			else:
 				raise DnDException("Stat %s is integer, value '%s' is not." % (stat, value))
-		elif ( ( stat in self.body ) and ( type(self.body[stat]) == bool ) ):
+		elif ( ( stat in body ) and ( type(body[stat]) == bool ) ):
 			# b = True if a == "False": False
-			self.body[stat] = convert_string_to_bool(value)
+			body[stat] = convert_string_to_bool(value)
 		elif stat == "nickname":
 			self.set_nickname(value)
 		elif stat == "played_this_turn":
