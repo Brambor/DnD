@@ -15,9 +15,11 @@ entities = {
 		"mana_max": 1,
 		"weapon": Fist(2, 8), # weapons["fist"],  # 
 		"armor": 1,
-		"boj": 1,
-		"magie": 1,
-		"víra": 1,
+		"skills": {
+			"boj": 1,
+			"magie": 1,
+			"víra": 1,
+		},
 	},
 	"weaping_angel": {
 		"nickname": "weaping_angel",
@@ -35,9 +37,11 @@ entities = {
 		"mana_max": 2,  # added, not Thorbald
 		"weapon": Axe(29, 8),
 		"armor": 22,
-		"boj": 13,
-		"magie": 1,
-		"víra": 1,
+		"skills": {
+			"boj": 13,
+			"magie": 1,
+			"víra": 1,
+		},
 		"resistances": {  # how much resistance does this creature have.
 			"fire": 1/3, # 1/3 = 33.3% reduction in incoming damage
 		},

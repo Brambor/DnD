@@ -111,12 +111,17 @@ class Entity():
 
 	def get_stat(self, stat, return_as_integer=True):
 		"return_as_integer False: returns string in form '7 (5 + 4 - 2)' base + bonus - penalty"
-		if stat not in self.body:
-			raise DnDException("Entity %s does not have stat '%s'." % (self, stat))
-		if type(self.body[stat]) != int:
-			return self.body[stat]
+		if stat in self.body:
+			value = self.body[stat]
+		elif stat in library["skills"] and stat in self.body["skills"]:
+			value = self.body["skills"][stat]
 		else:
-			base = self.body[stat]
+			raise DnDException("Entity %s does not have stat '%s'." % (self, stat))
+
+		if type(value) != int:
+			return value
+		else:
+			base = value
 			bp = {
 				"stat_penalty": 0,
 				"stat_bonus": 0,
