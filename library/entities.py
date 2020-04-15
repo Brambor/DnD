@@ -22,7 +22,7 @@ entities = {
 	"weaping_angel": {
 		"nickname": "weaping_angel",
 		"hp_max": 10000,
-		"resistance": {
+		"resistances": {
 			"radiant": 2,  # trigers warning, this heals the char by 100% insead of damaging it
 			"psychic": -0.15, # 15% more dmg from psychic
 		},
@@ -38,7 +38,7 @@ entities = {
 		"boj": 13,
 		"magie": 1,
 		"víra": 1,
-		"resistance": {  # how much resistance does this creature have.
+		"resistances": {  # how much resistance does this creature have.
 			"fire": 1/3, # 1/3 = 33.3% reduction in incoming damage
 		},
 	},

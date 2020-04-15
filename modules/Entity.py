@@ -20,7 +20,7 @@ class Entity():
 			self.body["mana"] = library_entity["mana_max"]
 		self.body["group"] = library_entity.get("group", "")
 		self.body["inventory"] = library_entity.get("inventory", [])
-		self.body["resistance"] = library_entity.get("resistance", set())
+		self.body["resistances"] = library_entity.get("resistances", set())
 		self.body["effects"] = []
 		self.body["alive"] = True
 		self.game = game
@@ -277,9 +277,9 @@ class Entity():
 				dmg = max(dmg - self.get_stat("magie"), 0)
 				relevant.append("magie %d" % self.get_stat("magie"))
 
-			if "resistance" in self.body:
-				if damage_type in self.body["resistance"]:
-					r = self.body["resistance"][damage_type]
+			if "resistances" in self.body:
+				if damage_type in self.body["resistances"]:
+					r = self.body["resistances"][damage_type]
 					if not (-1 <= r <= 1):
 						self.cPrint("Warning! Resistance is not in interval <-100%, 100%>!\n")
 					dmg_mult *= (1 - r)
