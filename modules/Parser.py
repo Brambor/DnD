@@ -431,9 +431,10 @@ class Parser():
 			self.cPrint("?!: %s\n" % exception)
 		except DnDExit:
 			raise
-		except:
+		except Exception as exc:
 			if self.DEBUG:
 				raise
+			self.cPrint("EXCEPTION: %s\n" % exc)
 			self.cPrint("fcked up\n")
 
 		# entities window refresh
@@ -445,7 +446,8 @@ class Parser():
 			self.cPrint("?!: %s\n" % exception)
 		except DnDExit:
 			raise
-		except:
+		except Exception as exc:
 			if self.DEBUG:
 				raise
+			self.cPrint("EXCEPTION: %s\n" % exc)
 			self.cPrint("fcked up\n")
