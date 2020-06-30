@@ -2,6 +2,8 @@
 ## Instalation:
 Install libraries required. These are written in `requirements.txt`.
 
+Usually done with command `pip install -r requirements.txt`.
+
 ## Use
 If you need help using the commands, use command `help`.
 
