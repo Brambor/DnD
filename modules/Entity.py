@@ -45,16 +45,19 @@ class Entity():
 		"yields set(text to be printed, color_pair number)"
 		CU = self.game.cCurses.color_usage
 		played_this_turn = (0, CU["entity_played_this_turn"])[self.played_this_turn]
-		yield ("%s" % str(self), played_this_turn)
-		hp = ["\t%s/%s" % (self.body["hp"], self.body["hp_max"]), CU["HP"]]
+		yield (str(self), played_this_turn)
+		hp = [f' {self.body["hp"]}/{self.body["hp_max"]}', CU["HP"]]
 		if "mana" in self.body:
 			yield hp
-			yield ("\t%s/%s\n" % (self.body["mana"], self.body["mana_max"]), CU["mana"])
+			yield (f' {self.body["mana"]}/{self.body["mana_max"]}\n', CU["mana"])
 		else:
 			hp[0] += "\n"
 			yield hp
 		if self.body["effects"]:
-			yield (" %s\n" % ", ".join("%sϟ%d" % (i["name"], i["value"]) if i["type"] == "duration" else i["name"] for i in self.body["effects"]), 0)
+			yield ("%s%s\n" % (
+				" " * (len(self.body["derived_from"]) + 2),
+				", ".join(f'{i["name"]}ϟ{i["value"]}' if i["type"] == "duration" else i["name"] for i in self.body["effects"]),
+			), 0)
 
 	def setStat(self, stat, value, stat_type=None):
 		if stat in library["skills"]:
