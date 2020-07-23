@@ -35,7 +35,7 @@ class CustomCurses():
 		curses.noecho()  # doesn't print pressed keys
 		#curses.echo()
 		curses.cbreak()  # doesn't wait for Enter to be pressed
-		
+
 		#unnecesary since it is handled around every input
 		curses.curs_set(2)  # cursor is: [0/False] doesn't show blinking cursor; [1] underslash; [2] block
 		stdscr.keypad(True)  # getting special keys such as curses.KEY_LEFT
@@ -96,11 +96,12 @@ class CustomCurses():
 		#win = curses.newwin(height, width//3, begin_y, begin_x)
 
 		for w in self.WINDOWS:
-			wi = self.calculate(self.WINDOWS[w]["width_height"][0])
-			he = self.calculate(self.WINDOWS[w]["width_height"][1])
-			left_top_wi = self.calculate(self.WINDOWS[w]["left_top"][0])
-			left_top_he = self.calculate(self.WINDOWS[w]["left_top"][1])
-			self.windows[w] = curses.newwin(he, wi, left_top_he, left_top_wi)
+			self.windows[w] = curses.newwin(
+				self.calculate(self.WINDOWS[w]["width_height"][1]),
+				self.calculate(self.WINDOWS[w]["width_height"][0]),
+				self.calculate(self.WINDOWS[w]["left_top"][1]),
+				self.calculate(self.WINDOWS[w]["left_top"][0]),
+			)
 
 			if self.WINDOWS[w].get("scrollok", True):
 				self.windows[w].scrollok( True )  # on False it crashes
