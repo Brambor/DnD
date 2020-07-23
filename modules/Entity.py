@@ -252,13 +252,7 @@ class Entity():
 			if damage_resistance != "":
 				damage_resistance = " (%s)" % damage_resistance
 			if self.get_stat("alive"):
-				self.cPrint("%s %s %d %s dmg%s\n" % (
-					self,
-					statement,
-					dmg,
-					" & ".join(damage_types),
-					damage_resistance
-				))
+				self.cPrint(f'{str(self)} {statement} {dmg} {" & ".join(damage_types)} dmg{damage_resistance}\n')
 
 			# applying
 			self.body["hp"] -= dmg
