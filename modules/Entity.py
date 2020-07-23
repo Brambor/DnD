@@ -60,10 +60,7 @@ class Entity():
 			), 0)
 
 	def setStat(self, stat, value, stat_type=None):
-		if stat in library["skills"]:
-			body = self.body["skills"]
-		else:
-			body = self.body
+		body = self.body["skills"] if stat in library["skills"] else self.body
 
 		if stat_type:
 			if stat in body:
