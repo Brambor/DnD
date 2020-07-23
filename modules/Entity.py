@@ -152,12 +152,13 @@ class Entity():
 
 	def check_dead(self):  # not handeled at all
 		if self.get_stat("hp") <= 0:  # get_stat might result in wierd bug
-			self.cPrint("%s IS DEAD!\n" % self)
+			if self.body["alive"]:
+				self.cPrint("%s IS DEAD!\n" % self)
 			self.body["alive"] = False
 
 	def check_revived(self):
 		if self.get_stat("hp") > 0:
-			if self.body["alive"] == False:
+			if not self.body["alive"]:
 				self.cPrint("%s IS ALIVE!\n" % self)
 			self.body["alive"] = True
 
