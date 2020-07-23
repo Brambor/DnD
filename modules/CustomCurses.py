@@ -19,6 +19,7 @@ class CustomCurses():
 		self.keys = {
 			10: 7,  # regular enter -> enter
 			459: 7,  # enter on notepad -> enter
+			127: 263,  # backspace on android & wireless keyboard -> backspace
 			#NumePad / * - +
 			458: "/",
 			463: "*",
