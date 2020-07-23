@@ -138,6 +138,9 @@ class CustomCurses():
 		"expresion is a string that can contain 'x' or 'y' and other mathematical "
 		return eval( expresion.replace("x", str(self.width+1)).replace("y", str(self.height+1)) )
 
+	def get_color_pair(self, pair_human):
+		return curses.color_pair(self.color_usage[pair_human])
+
 	def get_window(self, window_name):
 		if window_name in self.windows:
 			return self.windows[window_name]

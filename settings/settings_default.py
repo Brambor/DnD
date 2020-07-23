@@ -37,9 +37,11 @@ COLOR_PALETTE = {
 # "name": foreground, background
 # name must be defined in code, fore/back are colors, either baisic or user defined in COLOR_PALETTE
 COLOR_USAGE = {
+	"basic": ("white", "black"),
 	"entity_played_this_turn": ("white", "grey300"),  # used for when entity played this turn already
 	"HP": ("green", "black"),  # used for hp/hp_max
 	"mana": ("cyan", "black"),  # used for mana/mana_max ; group names
+	"derived_from": ("yellow", "black"),  # used in "entities window" for derived from (such as "pes" in "pes a_0 100/1...")
 }
 
 WINDOWS = {

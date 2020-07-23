@@ -27,34 +27,42 @@ class CustomPrint():
 	def refresh_entity_window(self):
 		if "entities" not in self.windows:
 			return
-		entities = self.game.entities
 		self.windows["entities"].clear()
-		if not entities:
+		if not self.game.entities:
 			self.windows["entities"].addstr("no entities")
 			self.windows["entities"].refresh()
 			return
 
 		# get groups
-		groups = {"DEAD": []}
-		for e in entities:
+		groups = {"DEAD": {}}
+		for e in self.game.entities:
 			if not e.body["alive"]:
-				groups["DEAD"].append(e)
+				if e.body["derived_from"] not in groups["DEAD"]:
+					groups["DEAD"][e.body["derived_from"]] = []
+				groups["DEAD"][e.body["derived_from"]].append(e)
 				continue
 			if e.body["group"] not in groups:
-				groups[e.body["group"]] = []
-			groups[e.body["group"]].append(e)
-		if groups["DEAD"] == []:
+				groups[e.body["group"]] = {}
+			if e.body["derived_from"] not in groups[e.body["group"]]:
+				groups[e.body["group"]][e.body["derived_from"]] = []
+			groups[e.body["group"]][e.body["derived_from"]].append(e)
+		if not groups["DEAD"]:
 			del groups["DEAD"]
 
-		CU = self.cCurses.color_usage
+		get_color = self.cCurses.get_color_pair
 		try:
 			for group in groups:
 				spaces = self.spaces_to_center("entities", group)
-				self.windows["entities"].addstr(spaces + group + "\n", self.cCurses.curses.color_pair(CU["mana"]))
-				# TODO CRASH WHEN TO MANY LINES IN TOTAL
-				for e in groups[group]:
-					for item in e.get_stats_reduced():
-						self.windows["entities"].addstr(item[0], self.cCurses.curses.color_pair(item[1]))
+				self.windows["entities"].addstr(f"{spaces}{group}\n", get_color("mana"))
+				for derived_from in groups[group]:
+					self.windows["entities"].addstr(f"{derived_from} ", get_color("derived_from"))
+					first = True
+					for e in groups[group][derived_from]:
+						if not first:
+							self.windows["entities"].addstr(" " * (len(derived_from) + 1))
+						first = False
+						for item in e.get_stats_reduced():
+							self.windows["entities"].addstr(item[0], get_color(item[1]))
 		except self.cCurses.curses.error as e:
 			self.windows["fight"].addstr("ERR: Window entities overflowed.")
 
@@ -76,14 +84,12 @@ class CustomPrint():
 				header = "%s's inventory" % entity.nickname
 				header = "%s%s\n" % (self.spaces_to_center("inventory", header), header)
 				self.windows["inventory"].addstr(header)
-				if entity.body["inventory"]:
-					for item in entity.body["inventory"]:
-						self.windows["inventory"].addstr("%s: %s\n" % (
-							item["derived_from"],
-							{key:item[key] for key in item if key != "derived_from"},  # remove derived_from
-						))
-				else:
+				if not entity.body["inventory"]:
 					self.windows["inventory"].addstr("empty inventory!")
+				for item in entity.body["inventory"]:
+					self.windows["inventory"].addstr(f'{item["derived_from"]}: %s\n' %
+						{key:item[key] for key in item if key != "derived_from"},  # remove derived_from
+					)
 		except self.cCurses.curses.error as e:
 			self.windows["fight"].addstr("ERR: Window inventory overflowed.")
 		self.windows["inventory"].refresh()
