@@ -52,8 +52,9 @@ class CustomPrint():
 		get_color = self.cCurses.get_color_pair
 		try:
 			for group in groups:
-				spaces = self.spaces_to_center("entities", group)
-				self.windows["entities"].addstr(f"{spaces}{group}\n", get_color("mana"))
+				group_count = f'{group} (%d)' % sum(len(groups[group][derived_from]) for derived_from in groups[group])
+				spaces = self.spaces_to_center("entities", group_count)
+				self.windows["entities"].addstr(f"{spaces}{group_count}\n", get_color("mana"))
 				for derived_from in groups[group]:
 					self.windows["entities"].addstr(f"{derived_from} ", get_color("derived_from"))
 					first = True
