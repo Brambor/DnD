@@ -117,7 +117,7 @@ class Entity():
 		"return_as_integer False: returns string in form '7 (5 + 4 - 2)' base + bonus - penalty"
 		if stat in self.body:
 			value = self.body[stat]
-		elif stat in library["skills"] and stat in self.body["skills"]:
+		elif stat in library["skills"] and "skills" in self.body and stat in self.body["skills"]:
 			value = self.body["skills"][stat]
 		else:
 			raise DnDException("Entity %s does not have stat '%s'." % (self, stat))

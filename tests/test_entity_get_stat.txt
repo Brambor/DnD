@@ -1,0 +1,5 @@
+# prepare
+c weaping_angel wp
+
+# ?!: Entity wp_0 does not have stat 'magie'.
+dmg | air magic {22} | wp
