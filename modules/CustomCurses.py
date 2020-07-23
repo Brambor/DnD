@@ -29,6 +29,7 @@ class CustomCurses():
 
 		self.width = 0
 		stdscr = curses.initscr()
+		self.COLOR = curses.can_change_color()
 		curses.start_color()
 		self.stdscr = stdscr
 
@@ -49,19 +50,34 @@ class CustomCurses():
 		self.init_windows()
 
 		# Colors
-		self.color_palette = {
-			"black": 0,
-			"blue": 1,
-			"green": 2,
-			"cyan": 3,
-			"red": 4,
-			"magenta": 5,
-			"yellow": 6,
-			"white": 7,
-		}
-		for i, key in enumerate(settings.COLOR_PALETTE):
-			curses.init_color(i+8, *settings.COLOR_PALETTE[key])
-			self.color_palette[key] = i+8
+		if self.COLOR:
+			self.color_palette = {
+				"black": 0,
+				"blue": 1,
+				"green": 2,
+				"cyan": 3,
+				"red": 4,
+				"magenta": 5,
+				"yellow": 6,
+				"white": 7,
+			}
+			# TODO instead write WARNING when not self.COLOR
+			for key in settings.COLOR_PALETTE:
+				le = len(self.color_palette)
+				curses.init_color(le, *settings.COLOR_PALETTE[key])
+				self.color_palette[key] = le
+		else:
+			self.COLOR_USAGE.update(settings.COLOR_USAGE_BASIC)
+			self.color_palette = {
+				"black": 0,
+				"blue": 4,
+				"green": 2,
+				"cyan": 6,
+				"red": 1,
+				"magenta": 5,
+				"yellow": 3,
+				"white": 7,
+			}
 
 		self.init_colors()
 

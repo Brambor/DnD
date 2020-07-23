@@ -44,6 +44,12 @@ COLOR_USAGE = {
 	"derived_from": ("yellow", "black"),  # used in "entities window" for derived from (such as "pes" in "pes a_0 100/1...")
 }
 
+# used when Curses cannot change colors; all pairs in COLOR_USAGE that use COLOR_PALETTE should be replaced
+# otherwise it will crash when Curses cannot change colors
+COLOR_USAGE_BASIC = {
+	"entity_played_this_turn": ("white", "blue"),  # used for when entity played this turn already
+}
+
 WINDOWS = {
 	"fight": {
 		"left_top": ("0", "0"),
