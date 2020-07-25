@@ -134,7 +134,7 @@ class Parser():
 						val2 = dice_stat(e2.get_stat(parts[5], return_as_integer=True))
 					else:
 						val2 = get_int_from_dice(parts[6])
-					
+
 
 					self.cPrint("%s's %s: %d %s %s's %s: %d\n" % (
 						e1, parts[2], val1,
@@ -340,7 +340,7 @@ class Parser():
 						"%s\n" % "\n".join("%d. %s" % (i, entity.get_effect_string(e)) for i, e in enumerate(entity.body["effects"]))
 					)
 				effects_to_remove = self.cInput("effects to remove:\n>>>").split()
-				
+
 				#MUHAHAHAHA
 				indexes = [int(i) if i.isdigit() else DnDException("'%s' is not a non-negative integer." % i) for i in effects_to_remove]
 
@@ -354,14 +354,14 @@ class Parser():
 				if len(parts) == 2:
 					entity.printStats()
 					return
-				
+
 				stat = parts[2]
 				if len(parts) == 3:
 					entity.printStat(stat)
 					return
-				
+
 				value = parts[3]
-				
+
 				if len(parts) == 4:
 					entity.setStat(stat, value)
 				elif len(parts) == 5:

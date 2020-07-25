@@ -186,7 +186,7 @@ strs = {
 			"w <==> window; ([w]indow)\n"
 			"w show sleep_for\n"
 			"\tdisplays windows (what + size) for sleep_for secs\n\n"  # TODO until enter is pressed
-			
+
 			"w get_size/gs what_window\n"
 			"\tprints (ncols, nlines) of window\n"
 			"w get_top_left/gtl what_window\n"

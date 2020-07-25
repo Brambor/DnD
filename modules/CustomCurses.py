@@ -82,7 +82,7 @@ class CustomCurses():
 		self.init_colors()
 
 		"""
-		leaving it there just in case something breaks 
+		leaving it there just in case something breaks
 		except Exception as e:
 			curses.nocbreak()
 			curses.echo()
@@ -108,7 +108,7 @@ class CustomCurses():
 			self.width = startx - 1
 			self.height = starty - 1
 			self.windows.clear()
-		
+
 		#win = curses.newwin(height, width//3, begin_y, begin_x)
 
 		for w in self.WINDOWS:

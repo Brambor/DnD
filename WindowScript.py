@@ -17,7 +17,7 @@ scrollnotok window
 """
 
 # TODO add functionality: after "body" finishes it's run, other windows can take control and be splitted as body was
-# When "body" finished execution, it is removed. Don't require user to write "body", add it automatically. 
+# When "body" finished execution, it is removed. Don't require user to write "body", add it automatically.
 
 def reverse_index(lst, value):
 	i = len(lst) - 1
@@ -30,7 +30,7 @@ def reverse_index(lst, value):
 class Solver():
 	def __init__(self, string, width, height):
 		self.body = {
-			"left": 0, 
+			"left": 0,
 			"top": 0,
 			"width": width,
 			"height": height,
@@ -128,7 +128,7 @@ class Solver():
 
 			raise IndexError(msg)
 
-		ret = self.words[self.i]	
+		ret = self.words[self.i]
 		self.i += 1
 		return ret
 
@@ -187,7 +187,6 @@ class Solver():
 		return ""
 
 def m_to_rectangle(m, width, height):
-	
 	key = list(m)
 
 	screen = []
@@ -239,7 +238,7 @@ body
 		column 3
 			"date"
 			"mood_phase"
-			row 2 "hunger" 
+			row 2 "hunger"
 	top 1 "Zombols_or_Z's"
 	"log"
 """

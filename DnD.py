@@ -101,7 +101,7 @@ if not do_tests:
 	G = Game(library, cPrint, cCurses)
 	P = Parser(G, cInput, cPrint, settings.DEBUG)
 	cPrint.game = G
-	
+
 	wrapper(regular_wrap)
 
 	cCurses.endCurses()

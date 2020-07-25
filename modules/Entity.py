@@ -75,7 +75,7 @@ class Entity():
 			return
 
 		if ( ( stat in body ) and ( type(body[stat]) == str ) ):
-			body[stat] = value	
+			body[stat] = value
 		elif ( ( stat in body ) and ( type(body[stat]) == int ) ):
 			if value.replace("-", "", 1).isdigit():
 				value = int(value)

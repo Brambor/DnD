@@ -96,7 +96,7 @@ class Game():
 			save[key] = value
 		return save
 	def save_list(self, the_list):
-		
+
 		for item in the_list:
 			pass
 

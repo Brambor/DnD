@@ -13,7 +13,7 @@ entities = {
 		"group": "enemies",
 		"hp_max": 100,
 		"mana_max": 1,
-		"weapon": Fist(2, 8), # weapons["fist"],  # 
+		"weapon": Fist(2, 8), # weapons["fist"],
 		"armor": 1,
 		"skills": {
 			"boj": 1,
