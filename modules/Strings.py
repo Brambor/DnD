@@ -27,7 +27,6 @@ cmd = (
 	("erase",),
 	("eval",),
 	("exit",),
-	("fight", "f"),
 	#HISTORY	("history",),
 	("inventory", "i"),
 	("library", "lib", "list", "l"),
@@ -53,7 +52,7 @@ strs = {
 		"commands": (
 			"Write command without any more arguments for further help,\n"
 			"or 'help command/cmd command' which works for commands without arguments too.\n"
-			"\tsecond 'command' is one of commands, such as 'turn', 'move', 'fight'...\n"
+			"\tsecond 'command' is one of commands, such as 'turn', 'move'...\n"
 			"\texample: 'help cmd turn'\n"
 			"See example usage in directory 'tests'.\n"
 			"COMMANDS:\n"
@@ -125,12 +124,6 @@ strs = {
 			"\tbetter not use that!\n"
 		),
 		"exit": "Exits the program.",
-		"fight": (
-			"[f]ight entity1 entity2 val1 val2 manual_dice\n"
-			"\tval is integer, 'a' or 'auto' for auto\n"
-			"%s"
-			"\tboj entity1 entity2 <==> boj entity1 entity2 a a <!=!=!> boj entity1 entity2 a a anything\n"
-		),
 		"inventory": (
 			"[i]nventory entity\n"
 			"\tchoose entity's inventory to be listed in inventory window; lists items in inventory\n"
@@ -205,7 +198,7 @@ manual_dice = (
 	"\tif manual_dice, dice are not thrown automatically\n"
 	"\tmanual_dice must be one word\n"
 )
-for command in ("fight", "spell"):
+for command in ("spell",):
 	strs["commands"][command] %= manual_dice
 
 # BEGIN copying

@@ -2,9 +2,6 @@
 c pes e1
 c pes e2
 
-# fight
-fight e1 e2
-
 set e2
 # add effects
 e e1 f 4
@@ -18,7 +15,6 @@ set e1
 
 turn
 
-# more creating and fighting
+# more creating
 c Thorbald t
 c pes e3
-fight t e3

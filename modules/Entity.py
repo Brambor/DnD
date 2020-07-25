@@ -165,37 +165,7 @@ class Entity():
 				self.cPrint("%s IS ALIVE!\n" % self)
 			self.body["alive"] = True
 
-	# FIGHT, CAST
-	def attack(self, target, dmg):
-		target.damaged( (({"physical"}, dmg),) )
-
-	def fight(self, opponent, self_D, opponent_D, cInput=False):
-		"""... self_D, opponent_D are integers; -1 for auto
-		cInput passed down if needed"""
-		# determining fight skill (who wins)
-		if self_D == -1:
-			self_D = dice_stat(self.get_stat("boj"))
-		if opponent_D == -1:
-			opponent_D = dice_stat(opponent.get_stat("boj"))
-
-		self_power = self.get_stat("boj") + self_D
-		opponent_power = opponent.get_stat("boj") + opponent_D
-
-		for e, total_power in ((self, self_power), (opponent, opponent_power)):
-			self.cPrint("%s fights with power of %d (base %d + dice %d)\n" % (
-				e, total_power, e.get_stat("boj"), total_power - e.get_stat("boj")
-			))
-
-		# knowing who won, counting damage
-		if self_power > opponent_power:
-			self.attack(opponent, self.body["weapon"].use(cInput, self.cPrint))
-		elif opponent_power > self_power:
-			opponent.attack(self, opponent.body["weapon"].use(cInput, self.cPrint))
-		else:
-			# basic damage, no dice needed
-			self.attack(opponent, self.body["weapon"].dmg)
-			opponent.attack(self, opponent.body["weapon"].dmg)
-
+	# CAST
 	def cast_spell(self, targets, spell, cInput=False):
 		spell_cost = spell["mana_consumption"].get("base", 0) \
 					+spell["mana_consumption"].get("per_target", 0) * len(targets)

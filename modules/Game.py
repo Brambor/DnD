@@ -77,7 +77,6 @@ class Game():
 	def save_dict(self, the_dict=None):
 		from modules.CustomPrint import CustomPrint
 		from modules.CustomCurses import CustomCurses
-		from modules.Weapons import Fist, Axe
 		from modules.Entity import Entity
 		if the_dict == None:
 			the_dict = self.__dict__

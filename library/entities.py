@@ -1,6 +1,4 @@
 from modules.Misc import local_loader
-from modules.Weapons import Fist, Axe
-from library.weapons import weapons
 
 
 """
@@ -13,7 +11,6 @@ entities = {
 		"group": "enemies",
 		"hp_max": 100,
 		"mana_max": 1,
-		"weapon": Fist(2, 8), # weapons["fist"],
 		"armor": 1,
 		"skills": {
 			"boj": 1,
@@ -35,7 +32,6 @@ entities = {
 		"group": "players",
 		"hp_max": 100,
 		"mana_max": 2,  # added, not Thorbald
-		"weapon": Axe(29, 8),
 		"armor": 22,
 		"skills": {
 			"boj": 13,

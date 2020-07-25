@@ -10,8 +10,6 @@ at the begining of the output.
 """
 
 
-from modules.Weapons import Fist, Axe
-
 """
 DOCS: Notify the programmer that you wanted to make entities, but they didn't write the docs...
 """

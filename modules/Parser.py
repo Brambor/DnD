@@ -211,41 +211,6 @@ class Parser():
 				else:
 					self.argument_wrong_ammount("exit", tuple(), len(parts))
 
-			elif parts[0] in ("fight", "f"):
-				if len(parts) not in (3, 4, 5, 6):
-					self.argument_wrong_ammount("fight", (3, 4, 5, 6), len(parts))
-
-				e1 = self.game.get_entity(parts[1])[1]
-				e2 = self.game.get_entity(parts[2])[1]
-
-				if len(parts) in (3, 4):  # fight + 2 entities ?+placeholder_input_sequence
-					d1 = -1
-					d2 = -1
-				elif len(parts) in (5, 6):  # fight + 2 entities + 2 dice rolls ?+placeholder_input_sequence
-					if parts[3] in ("auto", "a"):
-						d1 = -1
-					else:
-						self.check(parts[3], "dice")
-						d1 = int(parts[3])
-
-					if parts[4] in ("auto", "a"):
-						d2 = -1
-					else:
-						self.check(parts[4], "dice")
-						d2 = int(parts[4])
-
-				if len(parts) in (4, 6):  # placeholder_input_sequence
-					e1.fight(e2, d1, d2, self.cInput)
-				else:
-					e1.fight(e2, d1, d2)
-
-				"""
-				HISTORY
-				elif parts[0] in ("history",):
-					"prints history"
-					self.cInput.print_history()
-				"""
-
 			elif parts[0] in ("inventory", "i"):
 				if len(parts) not in (2, 4, 6):
 					self.argument_wrong_ammount("inventory", (2, 4, 6), len(parts))

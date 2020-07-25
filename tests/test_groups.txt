@@ -8,5 +8,4 @@ c weaping_angel A
 
 set A group DEAD
 
-set a hp 1
-f a t
+dmg | physical {150} | a

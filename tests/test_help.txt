@@ -9,7 +9,6 @@ effect
 erase
 eval
 help cmd exit
-fight
 inventory
 library
 move

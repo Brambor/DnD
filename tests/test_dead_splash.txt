@@ -2,11 +2,8 @@
 c pes a
 c pes b
 
-set a hp 1
-set b hp 1
-
-# fight
-fight a b 5 4
+# kill b
+dmg | physical {150} | b
 
 # splash
 cast a splash
