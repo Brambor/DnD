@@ -162,6 +162,8 @@ strs = {
 		"set": (
 			"set entity\n"
 			"\tprints all stats of entity\n"
+			"set entity stat\n"
+			"\tprints 'stat' of entity\n"
 			"set entity stat to_value\n"
 			"\tchanges entity's 'stat' to 'to_value'\n"
 			"set entity stat value stat_type\n"

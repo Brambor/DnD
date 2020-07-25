@@ -1,0 +1,15 @@
+c pes a
+
+# give it chills
+e a CHILL 5
+
+set a
+
+set a effects
+
+set a group
+
+set a hp
+
+# should be affected by CHILL
+set a boj

@@ -31,13 +31,13 @@ class Entity():
 		return "%s_%d" % (self.nickname, self.id)
 
 	# RAW STAT MANIPULATION
+	def printStat(self, stat):
+		self.cPrint(f'{stat} = {self.get_stat(stat, False, for_printing=True)}\n')
+
 	def printStats(self):
 		complete_string = "nickname = '%s'\nid = %d\n" % (self.nickname, self.id)
-		for key in sorted(self.body.keys()):
-			value = self.get_stat(key, False)
-			if type(self.body[key]) == str:
-				value = "'%s'" % value
-			complete_string += "%s = %s\n" % (key, value)
+		for stat in sorted(self.body.keys()):
+			complete_string += f'{stat} = {self.get_stat(stat, False, for_printing=True)}\n'
 		complete_string += "played_this_turn = %s\n" % self.played_this_turn
 		self.cPrint(complete_string)
 
@@ -113,8 +113,9 @@ class Entity():
 		else:
 			self.nickname = nickname
 
-	def get_stat(self, stat, return_as_integer=True):
+	def get_stat(self, stat, return_as_integer=True, for_printing=False):
 		"return_as_integer False: returns string in form '7 (5 + 4 - 2)' base + bonus - penalty"
+		"for_printing True: wraps type==str with '' eg. \"v\" -> \"'v'\""
 		if stat in self.body:
 			value = self.body[stat]
 		elif stat in library["skills"] and "skills" in self.body and stat in self.body["skills"]:
@@ -122,6 +123,8 @@ class Entity():
 		else:
 			raise DnDException("Entity %s does not have stat '%s'." % (self, stat))
 
+		if for_printing and type(value) == str:
+			return f"'{value}'"
 		if type(value) != int:
 			return value
 		else:
