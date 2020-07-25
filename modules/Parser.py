@@ -15,8 +15,7 @@ class Parser():
 
 	def argument_wrong_ammount(self, cmd, takes, count, separators=False):
 		count -= 1
-		takes = (1,) + takes
-		takes = tuple(t-1 for t in takes)
+		takes = tuple(t-1 for t in ((1,) + takes))
 		if len(takes) == 1:
 			takes_str = str(takes[0])
 		else:
@@ -349,7 +348,7 @@ class Parser():
 
 			elif parts[0] == "set":
 				if len(parts) not in (2, 4, 5):
-					self.argument_wrong_ammount("set", (2, 4), len(parts))
+					self.argument_wrong_ammount("set", (2, 4, 5), len(parts))
 
 				entity = self.game.get_entity(parts[1])[1]
 				if len(parts) == 2:
