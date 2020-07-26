@@ -198,12 +198,12 @@ strs = {
 			"\tdisplays windows (what + size) for sleep_for secs\n\n"  # TODO until enter is pressed
 
 			"w get_size/gs what_window\n"
-			"\tprints (ncols, nlines) of window\n"
+			"\tprints (width, height) of window\n"
 			"w get_top_left/gtl what_window\n"
 			"\tprints (y, x) of top left corner\n\n"
 
-			"w set_size/ss what_window ncols nlines\n"
-			"\tset window size to (ncols, nlines)\n"
+			"w set_size/ss what_window width height\n"
+			"\tset window size to (width, height)\n"
 			"w set_top_left/stl what_window y x\n"
 			"\tset window top left corner to (y, x)\n"
 		),
