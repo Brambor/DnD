@@ -82,18 +82,6 @@ class CustomCurses():
 
 		self.init_colors()
 
-		"""
-		leaving it there just in case something breaks
-		except Exception as e:
-			curses.nocbreak()
-			curses.echo()
-			curses.endwin()
-			print("\n\n")
-			traceback.print_exc(file=sys.stdout)
-			input("CRASHED, PRESS ENTER")
-			raise
-		"""
-
 	def init_windows(self):
 		stdscr = self.stdscr
 
@@ -109,8 +97,6 @@ class CustomCurses():
 			self.width = startx - 1
 			self.height = starty - 1
 			self.windows.clear()
-
-		#win = curses.newwin(height, width//3, begin_y, begin_x)
 
 		for w in self.WINDOWS:
 			self.windows[w] = curses.newwin(
@@ -261,9 +247,7 @@ class CustomCurses():
 
 	def endCurses(self):
 		curses.nocbreak()
-		# stdscr.keypad(False)
 		curses.echo()
-
 		curses.endwin()
 
 	def window_get_size(self, window_name):
@@ -328,7 +312,3 @@ class CustomCurses():
 			self.windows[w] = curses.getwin(tmpfile)
 			self.windows[w].refresh()
 		self.init_command_textbox()
-
-#curses.wrapper(input_curses)
-
-#input()
