@@ -2,6 +2,7 @@ import curses
 from curses import textpad
 
 from time import sleep
+from tempfile import TemporaryFile
 
 from modules.DnDException import DnDException, DnDExit
 
@@ -137,7 +138,7 @@ class CustomCurses():
 			self.cPrint.refresh_inventory_window()
 			self.cPrint.refresh_history_window()
 
-		self.command_textbox = textpad.Textbox(self.windows["console_input"], insert_mode=True)
+		self.init_command_textbox()
 
 		# TODO: check if we have "console_input" window and "fight" window
 
@@ -149,6 +150,9 @@ class CustomCurses():
 			foreground, background = self.color_palette[foreground], self.color_palette[background]
 			curses.init_pair(i+1, foreground, background)
 			self.color_usage[key] = i+1
+
+	def init_command_textbox(self):
+		self.command_textbox = textpad.Textbox(self.windows["console_input"], insert_mode=True)
 
 	def calculate(self, expresion):
 		"expresion is a string that can contain 'x' or 'y' and other mathematical "
@@ -302,21 +306,28 @@ class CustomCurses():
 
 	def window_show(self, sleep_for):
 		"displays where are the windows, which are which and their size"
-		"TODO clears window. that should not happen"
+		tmpfiles = []
 		for i, w in enumerate(self.windows):
+			# save windows
 			window = self.windows[w]
-			bgchar = window.getbkgd()
-			window.bkgdset(str(i))
+			tmpfile = TemporaryFile()
+			window.putwin(tmpfile)
+			tmpfiles.append(tmpfile)
+
+			# fill windows up, destroying their content
+			CP = curses.color_pair(i+1)  # +1 to skip "basic" colour
+			window.bkgdset(str(i), CP)
 			window.clear()
-			window.addstr("<<%s>>" % w)
-			window.refresh()
-			window.bkgdset(bgchar)
+			window.addstr(f"<<{w}>>", CP)
 			window.refresh()
 		sleep(sleep_for)
-		for w in self.windows:
-			self.windows[w].clear()
-			self.windows[w].refresh()
 
+		for w, tmpfile in zip(self.windows, tmpfiles):
+			# restore windows
+			tmpfile.seek(0)
+			self.windows[w] = curses.getwin(tmpfile)
+			self.windows[w].refresh()
+		self.init_command_textbox()
 
 #curses.wrapper(input_curses)
 
