@@ -43,7 +43,7 @@ spells = {
 				"bonuses": { "magie": 2, "víra": 2, },
 				"dice": 6,
 			},
-			"removes": { "base": ("BLEAD",) },  # "on_crit": ()
+			"removes": { "base": ("BLEED",) },  # "on_crit": ()
 		},
 	},
 

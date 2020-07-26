@@ -396,9 +396,9 @@ class Entity():
 					del effects[i]
 					continue
 
-			if effect["name"] == "BLEAD":
+			if effect["name"] == "BLEED":
 				threw = D(effect["value"])
-				self.damaged((({"true"}, threw),), "bleads for", caused_by_effect=True)
+				self.damaged((({"true"}, threw),), "bleeds for", caused_by_effect=True)
 
 			if effect["type"] == "duration":
 				effect["value"] -= 1

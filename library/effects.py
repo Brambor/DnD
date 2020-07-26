@@ -45,10 +45,10 @@ effects = {
 		# removed by
 		"turned_by_into" : { "WET": None, "CHILL": None },
 	},
-	"BLEAD": {
+	"BLEED": {
 		"type": "dice",
 		"on_stack": "add",
-		"on_print": "bleading",
+		"on_print": "bleeding",
 		# "dice": 0,  # rewriten on use
 	},
 	"CHILL": {
@@ -85,6 +85,6 @@ for effect in effects:
 
 # shortcuts
 effects["f"] = effects["FIRE"]
-effects["b"] = effects["BLEAD"]
+effects["b"] = effects["BLEED"]
 
 output = local_loader(effects, "library.effects_local", "effects")
