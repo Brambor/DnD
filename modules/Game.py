@@ -25,6 +25,7 @@ class Game():
 	def erase(self, cmd):
 		entity_i, entity = self.get_entity(cmd)
 		self.cPrint("Entity %s has been deleted.\n" % entity)
+		self.cPrint.deselect_entity_inventory(entity)
 		del self.entities[entity_i]
 
 	def turn(self):

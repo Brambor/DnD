@@ -68,8 +68,15 @@ class CustomPrint():
 			self.windows["fight"].addstr("ERR: Window entities overflowed.")
 
 		self.windows["entities"].refresh()
+
 	def select_entity_inventory(self, entity):
 		self.inventory_entity = entity
+
+	def deselect_entity_inventory(self, entity):
+		# if given entity's inventory is selected, deselect it
+		# otherwise do nothing
+		if self.inventory_entity == entity:
+			self.inventory_entity = None
 
 	def refresh_inventory_window(self):
 		if "inventory" not in self.windows:
