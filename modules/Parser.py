@@ -274,7 +274,7 @@ class Parser():
 					raise DnDException("No library '%s'." % lib)
 
 				# print duplicates in 'a1/a2/a3, b1, c1/c2' form
-				if type(lib) == set:
+				if type(lib) in (set, tuple):
 					lib = dict(zip(sorted(lib), (i for i in lib)))
 				unique = {}
 				for orig in lib:

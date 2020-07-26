@@ -154,7 +154,8 @@ strs = {
 			"[[l]ib]rary/list WHAT\n"
 			"\tWHAT can be [en]tities, [ef]fects, [[s]p]ells, [i]tems, %s\n" % ", ".join(
 				set(library) - {"entities", "effects", "spells", "items"}
-			)
+			) +
+			"\tduplicates (a1, a2, a3 are the same, different from b1) are printed in 'a1/a2/a3, b1, c1/c2' form\n"
 		),
 		"move": (
 			"[m]ove target_entity_1 target_entity_2 ...\n"
