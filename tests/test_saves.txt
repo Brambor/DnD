@@ -1,0 +1,31 @@
+c pes a
+i a add sword
+dmg | physical {7} | a 
+file save test_save_A
+
+erase a
+c pes b
+file load test_save_A
+i a
+
+file save
+file delete test_save_A
+# Not associated!
+file save
+
+file save test_save_A
+file save test_save_B
+# Overwriting:
+file save test_save_A
+
+file list
+
+# cleaning
+file delete test_save_A
+file delete test_save_B
+
+# non existing save to load
+file load test_save_A
+
+# invalid filename
+file save a/b

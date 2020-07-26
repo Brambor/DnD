@@ -1,8 +1,11 @@
 from copy import copy
+import os
+import pickle
 
 from modules.Entity import Entity
 from modules.Dice import D, dice_crit, dice_stat
 from modules.DnDException import DnDException
+from modules.Misc import get_valid_filename
 
 
 class Game():
@@ -13,6 +16,7 @@ class Game():
 		self.entities = []
 		self.cPrint = cPrint
 		self.cCurses = cCurses  # only for library of color usage used in Entity
+		self.save_file_associated = None
 
 	def create(self, entity, nickname=""):
 		e = Entity(self.library["entities"][entity], self.i_entity, self)
@@ -75,28 +79,63 @@ class Game():
 		self.cPrint(complete_string)
 		return threw_crit
 
-	def save_dict(self, the_dict=None):
-		from modules.CustomPrint import CustomPrint
-		from modules.CustomCurses import CustomCurses
-		from modules.Entity import Entity
-		if the_dict == None:
-			the_dict = self.__dict__
-		save = {}
-		for key in the_dict:
-			value = the_dict[key]
-			if type(value) == dict:
-				value = self.save_dict(value)
-			if type(value) == list:
-				value = self.save_list(value)
-			print("key:", key, "value:", value)
-			if type(value) in {CustomPrint, CustomCurses}:
-				continue
-			elif type(value) == Entity:
-				value = self.save_dict(value.__dict__)
-			save[key] = value
-		return save
-	def save_list(self, the_list):
+	# SAVE / LOAD
+	def save(self, file_name=None):
+		saves_path = f'{self.cPrint.path_to_DnD}/saves'
 
-		for item in the_list:
-			pass
+		if file_name in {"test_save_A", "test_save_B"}:
+			self.cPrint(f"WARNING: '{file_name}' is rewritten on each run of 'test/test_save.py', do not use it!\n")
+		elif file_name == None:
+			if self.save_file_associated == None:
+				raise DnDException(f"No save file is yet asscociated with this game.")
+			file_name = self.save_file_associated
+		if file_name != get_valid_filename(file_name):
+			raise DnDException(f"'{file_name}' is not a valid filename.")
 
+		save_path = f'{saves_path}/{file_name}.pickle'
+
+		if file_name != self.save_file_associated and os.path.exists(save_path):
+			self.cPrint("Saving overwrote non asscociated file!\n")
+			# add date to save
+
+		big_d = {key: self.__dict__[key] for key in self.__dict__ if key not in {"cCurses", "cPrint", "save_file_associated"}}
+		for e in big_d["entities"]:
+			e.__dict__ = {key:e.__dict__[key] for key in e.__dict__ if key not in {"game", "cPrint"}}
+
+		if not os.path.exists(saves_path):
+			os.mkdir(saves_path)
+		with open((save_path), "wb") as save_file:
+			pickle.dump(big_d, save_file)
+		self.save_file_associated = file_name
+		self.cPrint(f"Saved as '{file_name}'.\n")
+
+	def load(self, file_name):
+		save_path = f'{self.cPrint.path_to_DnD}/saves/{file_name}.pickle'
+		if not os.path.exists(save_path):
+			raise DnDException(f"Save file '{file_name}' does not exist.")
+		# warn, then load
+		with open(save_path, "rb") as save_file:
+			big_d = pickle.load(save_file)
+		big_d["cCurses"] = self.cCurses
+		big_d["cPrint"] = self.cPrint
+		for e in big_d["entities"]:
+			e.game = self
+			e.cPrint = self.cPrint
+		self.cPrint.inventory_entity = None  # restarting to refresh
+		self.__dict__ = big_d
+		self.save_file_associated = file_name
+		self.cPrint(f"File '{file_name}' loaded.\n")
+
+	def list_saves(self):
+		saves_path = f'{self.cPrint.path_to_DnD}/saves'
+		self.cPrint("\n".join(f[:-7] for f in os.listdir(saves_path)) + "\n")
+
+	def delete(self, file_name):
+		save_path = f'{self.cPrint.path_to_DnD}/saves/{file_name}.pickle'
+		if not os.path.exists(save_path):
+			raise DnDException(f"Save file '{file_name}' does not exist.")
+		os.remove(save_path)
+		if self.save_file_associated == file_name:
+			self.save_file_associated = None
+			self.cPrint(f"This game was associated with '{file_name}', so it is no longer associated.\n")
+		self.cPrint(f"Save '{file_name}' deleted.\n")

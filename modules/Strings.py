@@ -27,6 +27,7 @@ cmd = (
 	("erase",),
 	("eval",),
 	("exit",),
+	("file",),
 	#HISTORY	("history",),
 	("inventory", "i"),
 	("library", "lib", "list", "l"),
@@ -124,6 +125,21 @@ strs = {
 			"\tbetter not use that!\n"
 		),
 		"exit": "Exits the program.",
+		"file": (
+			"WARNING(!): Warnings not yet implemented!\n"
+			"file list\n"
+			"\tlists currently saved files\n"
+			"file save\n"
+			"\tsaves game to a file associated with this game\n"
+			"\tsave becomes associated file, when it is loaded or saved\n"
+			"file save file_name\n"
+			"\tsaves game to 'saves/file_name'\n"
+			"\tto prevent human mistake, it is prefered to use 'file save' to save to associated file\n"
+			"file load file_name\n"
+			"\twarns(!), then deletes game and loads 'saves/file_name'\n"
+			"file delete file_name\n"
+			"\twarns(!), then deletes 'saves/file_name'\n"
+		),
 		"inventory": (
 			"[i]nventory entity\n"
 			"\tchoose entity's inventory to be listed in inventory window; lists items in inventory\n"

@@ -211,6 +211,27 @@ class Parser():
 				else:
 					self.argument_wrong_ammount("exit", tuple(), len(parts))
 
+			elif parts[0] == "file":
+				if len(parts) not in (2, 3):
+					self.argument_wrong_ammount("file", (2, 3), len(parts))
+
+				if len(parts) == 2:
+					if parts[1] == "save":
+						self.game.save()
+					elif parts[1] == "list":
+						self.game.list_saves()
+					else:
+						raise DnDException("Second argument of command 'file' with 2 arguments must be one of 'save' or 'list'.")
+				else:
+					if parts[1] == "save":
+						self.game.save(file_name=parts[2])
+					elif parts[1] == "load":
+						self.game.load(file_name=parts[2])
+					elif parts[1] == "delete":
+						self.game.delete(file_name=parts[2])
+					else:
+						raise DnDException("Second argument of command 'file' with 3 arguments must be one of 'save', 'load' or 'delete'.")
+
 			elif parts[0] in ("inventory", "i"):
 				if len(parts) not in (2, 4, 6):
 					self.argument_wrong_ammount("inventory", (2, 4, 6), len(parts))

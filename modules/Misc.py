@@ -1,4 +1,5 @@
 import importlib
+import re
 
 from modules.DnDException import DnDException
 from modules.Dice import D
@@ -18,6 +19,19 @@ def get_int_from_dice(n_str):
 	elif n_str.startswith("d") and n_str[1:].isdigit():
 		return D(int(n_str[1:]))
 	raise DnDException("'%s' is not an integer nor in format 'dx'." % n_str)
+
+def get_valid_filename(s):
+	"""
+	from https://github.com/django/django/blob/master/django/utils/text.py
+	Return the given string converted to a string that can be used for a clean
+	filename. Remove leading and trailing spaces; convert other spaces to
+	underscores; and remove anything that is not an alphanumeric, dash,
+	underscore, or dot.
+	>>> get_valid_filename("john's portrait in 2004.jpg")
+	'johns_portrait_in_2004.jpg'
+	"""
+	s = str(s).strip().replace(' ', '_')
+	return re.sub(r'(?u)[^-\w.]', '', s)
 
 def local_loader(global_dict, lib, dicts_name):
 	try:
