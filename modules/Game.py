@@ -7,7 +7,7 @@ from modules.DnDException import DnDException
 
 class Game():
 	def __init__(self, library, cPrint, cCurses):
-		self.i = 0
+		self.i_entity = 0
 		self.i_turn = 0
 		self.library = library
 		self.entities = []
@@ -15,10 +15,10 @@ class Game():
 		self.cCurses = cCurses  # only for library of color usage used in Entity
 
 	def create(self, entity, nickname=""):
-		e = Entity(self.library["entities"][entity], self.i, self)
+		e = Entity(self.library["entities"][entity], self.i_entity, self)
 		if nickname != "":
 			e.set_nickname(nickname)
-		self.i += 1
+		self.i_entity += 1
 		self.entities.append(e)
 		return e
 
