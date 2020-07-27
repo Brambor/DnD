@@ -1,1 +1,1 @@
-w show 1
+w show 0
