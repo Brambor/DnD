@@ -14,8 +14,7 @@ else:
 
 
 def separate(splitted_parts):
-	splitted_parts = [part.strip() for part in re.split("|".join("\\%s" % s for s in settings.SEPARATORS), " ".join(splitted_parts))]
-	return splitted_parts
+	return [part.strip() for part in re.split("|".join("\\%s" % s for s in settings.SEPARATORS), " ".join(splitted_parts))]
 
 cmd = (
 	("#", "//"),
