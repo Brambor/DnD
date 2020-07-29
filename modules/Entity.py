@@ -232,7 +232,7 @@ class Entity():
 			self.check_dead()
 
 	def healed(self, heal):
-		healed_for = min(self.get_stat("hp") + heal, self.get_stat("hp_max")) - self.get_stat("hp")
+		healed_for = min(self.get_stat("hp") + normal_round(heal), self.get_stat("hp_max")) - self.get_stat("hp")
 		self.cPrint("%s healed for %d HladinPetroleje\n" % (self, healed_for))
 		self.body["hp"] += healed_for
 		self.check_revived()

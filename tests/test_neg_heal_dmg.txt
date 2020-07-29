@@ -1,0 +1,15 @@
+c pes a
+
+# damages, but doesn't kill
+heal -150 | a
+
+# heals, but kills
+dmg {-1} | a
+
+# heals, but doesn't revive
+dmg {-100} | a
+set a hp
+set a alive
+
+# damages, but revives
+heal -1 | a

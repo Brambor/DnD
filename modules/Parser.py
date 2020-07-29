@@ -230,6 +230,30 @@ class Parser():
 					else:
 						raise DnDException("Second argument of command 'file' with 3 arguments must be one of 'save', 'load' or 'delete'.")
 
+			elif parts[0] == "heal":
+				parts = separate(parts[1:])
+
+				if len(parts) != 2:
+					self.argument_wrong_ammount("heal", (2,), len(parts), separators=True)
+
+				expression = parts[0]
+				dice = dice_parser(expression)
+
+				if dice:
+					threw_crit = self.game.throw_dice(dice)
+					# put the results back into the expression
+					for n, threw in zip(dice, threw_crit):
+						expression = expression.replace("d%d" % n, str(threw[0]), 1)
+				# eval
+				healed_for = eval(expression)
+
+				targets = parts[1].split()
+				if len(targets) == 0:
+					raise DnDException("Command 'heal' after first separator (targets) takes at least 1 argument, %d given." % len(targets))
+
+				for target in [self.game.get_entity(target)[1] for target in targets]:
+					target.healed(healed_for)
+
 			elif parts[0] in ("inventory", "i"):
 				if len(parts) not in (2, 4, 6):
 					self.argument_wrong_ammount("inventory", (2, 4, 6), len(parts))

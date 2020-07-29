@@ -1,0 +1,11 @@
+c pes a
+dmg true {150} | a
+e a BLEED 20
+
+# doesn't remove BLEED
+t
+heal 50 | a
+
+# becomes ALIVE, capped at full hp
+heal 150 | a
+t

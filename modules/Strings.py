@@ -35,6 +35,7 @@ cmd = (
 	("eval",),
 	("exit",),
 	("file",),
+	("heal",),
 	#HISTORY	("history",),
 	("inventory", "i"),
 	("library", "lib", "list", "l"),
@@ -53,6 +54,13 @@ symbol = {
 	"|": "Symbol '|' is separator, required when there are more arguments with '+' or '*'."
 		" Separators are %s set in 'settings.SEPARATORS'.\n" % ", ".join("'%s'" % s for s in settings.SEPARATORS),
 }
+
+math_expression = (
+	"\texpression can contain multiplication, rational numbers, die in form dX where X is number of sides\n"
+	"\tab is not multiplication, a*b is\n"
+	"\t0.5 5 1/3 are all acceptable, '0,5' is not\n"
+	"\tfor each dX one dice is thrown, 3*dX is result of throwing a dice multiplied by 3\n"
+)
 
 strs = {
 #	"cmd": cmd,
@@ -109,10 +117,7 @@ strs = {
 			"\n"
 			"\tdamage_type are listed in 'library damage_types'\n"
 			"\n"
-			"\t{expression} can contain multiplication, rational numbers, die in form dX where X is number of sides\n"
-			"\tab is not multiplication, a*b is\n"
-			"\t0.5 5 1/3 are all acceptable, '0,5' is not\n"
-			"\tfor each dX one dice is thrown, 3*dX is result of throwing a dice multiplied by 3\n"
+			f'{math_expression}'
 			"\n"
 			f'\t{symbol["*"]}'
 			f'\t{symbol["+"]}'
@@ -146,6 +151,17 @@ strs = {
 			"\twarns(!), then deletes game and loads 'saves/file_name'\n"
 			"file delete file_name\n"
 			"\twarns(!), then deletes 'saves/file_name'\n"
+		),
+		"heal": (
+			"heal expression+ | target+\n"
+			"\theals target+ by calculated ammount\n"
+			"\texample:\n"
+			"\theal 45+12+4-2+d8 + (d4+10)*0.5 ... | entity_1 entity_2 ...\n"
+			"\n"
+			f"{math_expression}"
+			"\n"
+			f'\t{symbol["+"]}'
+			f'\t{symbol["|"]}'
 		),
 		"inventory": (
 			"[i]nventory entity\n"
