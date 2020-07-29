@@ -1,6 +1,6 @@
 c pes a
 i a add sword
-dmg | physical {7} | a 
+dmg physical {7} | a 
 file save test_save_A
 
 erase a

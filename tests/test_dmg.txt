@@ -1,11 +1,14 @@
 c pes a
 c Thorbald t
 
-# true dmg
-dmg spear to hart | true {7 + d4 + d8 + d12}| a t
+# true dmg (spear to hart)
+dmg true {7 + d4 + d8 + d12}| a t
 
-# physical dmg
-dmg stepped on mine|p {7 + d20 + d20 + d12 + 12} |a t
+# physical dmg (stepped on mine)
+dmg p {7 + d10 + d20 + d12 + 12} |a t
 
-# magic dmg
-dmg hit by a fireball | magic {8 + 6 * d6 + d12} | a t
+# magic dmg (hit by a fireball)
+dmg magic {2 + 3 * d6 + d12} | a t
+
+# magic & physical & fire dmg (fire punch!)
+dmg magic physical fire {20*d20} | a t

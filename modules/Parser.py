@@ -147,13 +147,11 @@ class Parser():
 			elif parts[0] in ("damage", "dmg", "d"):
 				parts = separate(parts[1:])
 
-				if len(parts) != 3:
+				if len(parts) != 2:
 					self.argument_wrong_ammount("damage", (2,), len(parts), separators=True)
 
-				source_text = parts[0]  # TODO wrong, also, use it somewhere...
-
 				damage_list = []
-				for whole in (type_damage.split("{") for type_damage in parts[1].split("}") if type_damage != ""):
+				for whole in (type_damage.split("{") for type_damage in parts[0].split("}") if type_damage != ""):
 					if len(whole) != 2:
 						raise DnDException("%s is %d long, 2 expected.\nMaybe you forgot '{' ?" % (whole, len(whole)))
 
@@ -174,9 +172,9 @@ class Parser():
 					# eval
 					damage_list.append((types, eval(whole[1])))
 
-				targets = parts[2].split()
+				targets = parts[1].split()
 				if len(targets) == 0:
-					raise DnDException("Command 'dmg' after second separator (targets) takes at least 1 arguments, %d given." % len(targets))
+					raise DnDException("Command 'dmg' after first separator (targets) takes at least 1 argument, %d given." % len(targets))
 
 				for target in [self.game.get_entity(target)[1] for target in targets]:
 					target.damaged(damage_list)

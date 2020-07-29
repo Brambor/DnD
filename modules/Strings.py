@@ -1,19 +1,27 @@
 import re
 
-from library.Main import library
 
-
-if __name__ == "__main__":
+if __name__ != "__main__":
+	from library.Main import library
+	from modules.SettingsLoader import settings
+else:
 	print("[fake settings]")
 	class A():
 		def __init__(self):
 			self.SEPARATORS = ["|", ";", "&"]
 	settings = A()
-else:
-	from modules.SettingsLoader import settings
-
+	library = {
+		"damage_types",
+		"effects",
+		"entities",
+		"items",
+		"spells",
+		"skills",
+	}
 
 def separate(splitted_parts):
+	">>> separate('hello there | my args & how are ya 7?'.split())"
+	"['hello there', 'my args', 'how are ya 7?']"
 	return [part.strip() for part in re.split("|".join("\\%s" % s for s in settings.SEPARATORS), " ".join(splitted_parts))]
 
 cmd = (
@@ -75,14 +83,14 @@ strs = {
 	"commands": {
 		"#": (
 			"# or // command_body\n"
-			"\tcommand_body will be printed. This command does nothing else."
+			"\tcommand_body will be printed. This command does nothing else.\n"
 		),
 		"create": (
 			"[c]reate entity_library nickname*\n"
 			"\t'entity_library' can be listed via command 'library entities' 'l en' for short.\n"
 			"\tif 'nickname' is '_', automatic nickname is used\n"
 			"\tc pes <==> c pes _\n"
-			"\t%s" % symbol["*"]
+			f'\t{symbol["*"]}'
 		),
 		"compare": (
 			"compare/cmp entity1 skill1 val1 entity2 skill2 val2\n"
@@ -94,10 +102,11 @@ strs = {
 			"\tval is either integer or dice in format 'dx' where x is integer\n"
 		),
 		"dmg": (
-			"[d]amage/dmg source_text | (damage_types* {expression})+ | target+\n"
-			"\tdo not write (), only spaces, example:\n"
-			"\tdamage | physical blunt {45+12+4-2+d8} fire elemental {(d4+10)*0.5} ... | entity_1 entity_2 ...\n"
-			"\tsource_text* (optional) words describing the source of the damage\n"  # TODO: hook it up!
+			"[d]amage/dmg (damage_types* {expression})+ | target+\n"
+			"\tdamages target+ by calculated ammount with respective damage_types\n"
+			"\texample:\n"
+			"\tdamage physical blunt {45+12+4-2+d8} fire elemental {(d4+10)*0.5} ... | entity_1 entity_2 ...\n"
+			"\n"
 			"\tdamage_type are listed in 'library damage_types'\n"
 			"\n"
 			"\t{expression} can contain multiplication, rational numbers, die in form dX where X is number of sides\n"
@@ -105,10 +114,9 @@ strs = {
 			"\t0.5 5 1/3 are all acceptable, '0,5' is not\n"
 			"\tfor each dX one dice is thrown, 3*dX is result of throwing a dice multiplied by 3\n"
 			"\n"
-			"\ttarget_entity_1 target_entity_2 ...\n"
-			"\t%s" % symbol["*"]
-			+"\t%s" % symbol["+"]
-			+"\t%s" % symbol["|"]
+			f'\t{symbol["*"]}'
+			f'\t{symbol["+"]}'
+			f'\t{symbol["|"]}'
 		),
 		"effect": (
 			"[e]ffect entity effect dice\n"
@@ -123,7 +131,7 @@ strs = {
 			"eval command\n"
 			"\tbetter not use that!\n"
 		),
-		"exit": "Exits the program.",
+		"exit": "Exits the program.\n",
 		"file": (
 			"WARNING(!): Warnings not yet implemented!\n"
 			"file list\n"
@@ -151,9 +159,8 @@ strs = {
 		),
 		"library": (
 			"[[l]ib]rary/list WHAT\n"
-			"\tWHAT can be [en]tities, [ef]fects, [[s]p]ells, [i]tems, %s\n" % ", ".join(
-				set(library) - {"entities", "effects", "spells", "items"}
-			) +
+			"\tWHAT can be [en]tities, [ef]fects, [[s]p]ells, [i]tems, "
+			f'{", ".join( set(library) - {"entities", "effects", "spells", "items"})}\n'
 			"\tduplicates (a1, a2, a3 are the same, different from b1) are printed in 'a1/a2/a3, b1, c1/c2' form\n"
 		),
 		"move": (
@@ -166,7 +173,7 @@ strs = {
 			"\tprints all effects of entity in numbered order\n"
 			"ef+\n"
 			"\tef are numbers of effects to remove\n"
-			+symbol["+"]
+			f'{symbol["+"]}'
 		),
 		"set": (
 			"set entity\n"

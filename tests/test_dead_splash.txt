@@ -3,7 +3,7 @@ c pes a
 c pes b
 
 # kill b
-dmg | physical {150} | b
+dmg physical {150} | b
 
 # splash
 cast a splash
