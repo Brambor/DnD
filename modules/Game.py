@@ -1,9 +1,8 @@
-from copy import copy
 import os
 import pickle
 
 from modules.Entity import Entity
-from modules.Dice import D, dice_crit, dice_stat
+from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
 from modules.Misc import get_valid_filename
 

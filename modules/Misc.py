@@ -63,8 +63,3 @@ def parse_sequence(sequence, carry_when_crit=False):
 	# raise: sequence longer than needed to be
 	yield "Perfectly right lenght."
 
-def yield_valid(threw_sequence):
-	threw = next(threw_sequence)
-	if type(threw) != int:
-		raise DnDException("Sequence was too short!")
-	return threw

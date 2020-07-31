@@ -2,9 +2,9 @@ from copy import copy
 
 from library.Main import library
 
-from modules.Dice import D, dice_crit, dice_stat
+from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
-from modules.Misc import convert_string_to_bool, normal_round, parse_sequence, yield_valid
+from modules.Misc import convert_string_to_bool, normal_round, parse_sequence
 
 
 class Entity():
