@@ -120,3 +120,5 @@ logs/
 settings/settings_local.py
 library/*_local.py
 saves/
+
+DnDdatabase/out_file.py
