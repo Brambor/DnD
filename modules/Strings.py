@@ -36,7 +36,6 @@ cmd = (
 	("exit",),
 	("file",),
 	("heal",),
-	#HISTORY	("history",),
 	("inventory", "i"),
 	("library", "lib", "list", "l"),
 	("move", "m"),
