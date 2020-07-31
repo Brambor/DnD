@@ -17,6 +17,7 @@ class CustomCurses():
 		self.history = []
 		self.history_commands = []
 		self.history_pointer = 0
+		self.history_pointer_at_end = True
 		self.keys = {
 			10: 7,  # regular enter -> enter
 			459: 7,  # enter on notepad -> enter
@@ -160,7 +161,7 @@ class CustomCurses():
 			self.msg_interrupted = True
 			return 7
 		if x in self.keys:
-			return self.keys[x]
+			x = self.keys[x]
 		#up right down left: 259 261 258 260
 		if x == 259:
 			self.move_in_history = -1
@@ -170,6 +171,9 @@ class CustomCurses():
 			return 7
 		if x == 304:  # alt + f4
 			raise DnDExit("alt + f4")
+		if x == 7:
+			self.history_pointer = len(self.history_commands) - 1
+			self.history_pointer_at_end = True
 		return x
 
 	def send(self, message):
@@ -198,8 +202,17 @@ class CustomCurses():
 				continue
 			if self.move_in_history:
 				if self.history_commands:
-					self.history_pointer = (self.history_pointer + self.move_in_history) % len(self.history_commands)
-					input_command = "%s %s" % (message, self.history_commands[self.history_pointer])
+					self.history_pointer_at_end, self.history_pointer = (
+						self.history_pointer + self.move_in_history == len(self.history_commands),
+						min(
+							max(0, self.history_pointer + self.move_in_history + self.history_pointer_at_end),
+							len(self.history_commands) - 1
+						)
+					)
+					if self.history_pointer_at_end:
+						input_command = f"{message} "
+					else:
+						input_command = f"{message} {self.history_commands[self.history_pointer]}"
 				self.windows["console_input"].clear()
 				self.cPrint.refresh_history_window()
 				self.move_in_history = 0

@@ -121,8 +121,7 @@ class CustomPrint():
 		history_w.clear()
 		for i, line in enumerate(self.cCurses.history_commands[slice_start:slice_end]):
 			i += slice_start
-			history_w.addnstr("%d.%s%s" % (i, [" ", "*"][i==self.cCurses.history_pointer], line), width)
-#		self.windows["history"].addstr("[%d:%d] / %d" % (slice_start, slice_end, len(self.cCurses.history_commands)))
+			history_w.addnstr(f'{i}.{[" ", "*"][i==self.cCurses.history_pointer and not self.cCurses.history_pointer_at_end]}{line}', width)
 		self.windows["history"].refresh()
 
 	def write_to_log(self, message):
