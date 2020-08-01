@@ -20,7 +20,7 @@ class Entity():
 			self.body["mana"] = library_entity["mana_max"]
 		self.body["group"] = library_entity.get("group", "")
 		self.body["inventory"] = library_entity.get("inventory", [])
-		self.body["resistances"] = library_entity.get("resistances", set())
+		self.body["resistances"] = library_entity.get("resistances", {})
 		self.body["effects"] = []
 		self.body["alive"] = True
 		self.game = game
@@ -59,34 +59,45 @@ class Entity():
 			), "basic")
 
 	def setStat(self, stat, value, stat_type=None):
-		body = self.body["skills"] if stat in library["skills"] else self.body
+		type_forced = False
+		if stat in library["skills"]:
+			body = self.body["skills"]
+		elif stat in library["damage_types"]:
+			body = self.body["resistances"]
+			type_forced = True
+			type_required = "float"
+		else:
+			body = self.body
 
 		if stat_type:
+			if type_forced and type_required != stat_type:
+				raise DnDException(f"Stat '{stat}' must be of type '{type_required}', it cannot be '{stat_type}'.")
 			if stat in body:
-				raise DnDException("Entity '%s' already has stat '%s' so it's type cannot be modified, do not try." % (self, stat))
+				raise DnDException(f"Entity '{self}' already has stat '{stat}' so it's type cannot be modified, do not try.")
 			if stat_type == "int":
 				value = int(calculate(value))
+			elif stat_type == "float":
+				value = float(calculate(value))
 			elif stat_type == "bool":
 				value = convert_string_to_bool(value)
 			elif stat_type != "str":
-				raise DnDException("'stat_type' must be one of 'int', 'bool', or 'str', not '%s'." % stat_type)
+				raise DnDException(f"'stat_type' must be one of 'int', 'float', 'bool', or 'str', not '{stat_type}'.")
 			body[stat] = value
 			return
 
 		if ( ( stat in body ) and ( type(body[stat]) == str ) ):
 			body[stat] = value
+		elif ( ( stat in body ) and ( type(body[stat]) == float ) ):
+			body[stat] = float(calculate(value))
 		elif ( ( stat in body ) and ( type(body[stat]) == int ) ):
-			if value.replace("-", "", 1).isdigit():
-				value = int(value)
-				before = body[stat]
-				body[stat] = value
-				if stat == "hp":  # if entity died or rose from dead
-					if before <= 0 and value > 0:
-						self.check_revived()
-					elif before > 0 and value <= 0:
-						self.check_dead()
-			else:
-				raise DnDException("Stat %s is integer, value '%s' is not." % (stat, value))
+			value = int(calculate(value))
+			before = body[stat]
+			body[stat] = value
+			if stat == "hp":  # if entity died or rose from dead
+				if before <= 0 and value > 0:
+					self.check_revived()
+				elif before > 0 and value <= 0:
+					self.check_dead()
 		elif ( ( stat in body ) and ( type(body[stat]) == bool ) ):
 			# b = True if a == "False": False
 			body[stat] = convert_string_to_bool(value)
@@ -224,7 +235,7 @@ class Entity():
 			if damage_resistance != "":
 				damage_resistance = " (%s)" % damage_resistance
 			if self.get_stat("alive"):
-				self.cPrint(f'{str(self)} {statement} {dmg} {" & ".join(damage_types)} dmg{damage_resistance}\n')
+				self.cPrint(f'{self} {statement} {dmg} {" & ".join(damage_types)} dmg{damage_resistance}\n')
 
 			# applying
 			self.body["hp"] -= dmg

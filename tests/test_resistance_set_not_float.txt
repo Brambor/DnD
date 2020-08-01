@@ -1,0 +1,6 @@
+c pes a
+
+# ?!: Stat 'poison' must be of type 'float', it cannot be 'str'.
+set a poison hello str
+
+dmg poison {12} | a
