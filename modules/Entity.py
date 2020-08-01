@@ -4,7 +4,7 @@ from library.Main import library
 
 from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
-from modules.Misc import convert_string_to_bool, normal_round, parse_sequence
+from modules.Misc import calculate, convert_string_to_bool, normal_round, parse_sequence
 
 
 class Entity():
@@ -65,8 +65,7 @@ class Entity():
 			if stat in body:
 				raise DnDException("Entity '%s' already has stat '%s' so it's type cannot be modified, do not try." % (self, stat))
 			if stat_type == "int":
-				if value.replace("-", "", 1).isdigit():
-					value = int(value)
+				value = int(calculate(value))
 			elif stat_type == "bool":
 				value = convert_string_to_bool(value)
 			elif stat_type != "str":

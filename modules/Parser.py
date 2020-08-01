@@ -2,7 +2,7 @@ from library.Main import library
 
 from modules.DnDException import DnDException, DnDExit
 from modules.Dice import D, dice_stat, dice_parser
-from modules.Misc import get_int_from_dice  # imports its own Dice
+from modules.Misc import calculate, get_int_from_dice  # imports its own Dice
 from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
 
@@ -169,8 +169,8 @@ class Parser():
 						for n, threw in zip(dice, threw_crit):
 							whole[1] = whole[1].replace("d%d" % n, str(threw[0]), 1)
 
-					# eval
-					damage_list.append((types, eval(whole[1])))
+					# calculate
+					damage_list.append((types, calculate(whole[1])))
 
 				targets = parts[1].split()
 				if len(targets) == 0:
@@ -244,8 +244,8 @@ class Parser():
 					# put the results back into the expression
 					for n, threw in zip(dice, threw_crit):
 						expression = expression.replace("d%d" % n, str(threw[0]), 1)
-				# eval
-				healed_for = eval(expression)
+				# calculate
+				healed_for = calculate(expression)
 
 				targets = parts[1].split()
 				if len(targets) == 0:

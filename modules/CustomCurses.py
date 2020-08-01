@@ -5,6 +5,7 @@ from time import sleep
 from tempfile import TemporaryFile
 
 from modules.DnDException import DnDException, DnDExit
+from modules.Misc import calculate
 
 
 class CustomCurses():
@@ -142,8 +143,8 @@ class CustomCurses():
 		self.command_textbox = textpad.Textbox(self.windows["console_input"], insert_mode=True)
 
 	def calculate(self, expresion):
-		"expresion is a string that can contain 'x' or 'y' and other mathematical "
-		return eval( expresion.replace("x", str(self.width+1)).replace("y", str(self.height+1)) )
+		"expresion is a string that can contain 'x' or 'y' and other mathematical symbols."
+		return calculate( expresion.replace("x", str(self.width+1)).replace("y", str(self.height+1)) )
 
 	def get_color_pair(self, pair_human):
 		return curses.color_pair(self.color_usage[pair_human])

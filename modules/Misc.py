@@ -5,13 +5,22 @@ from modules.DnDException import DnDException
 from modules.Dice import D
 
 
+def calculate(string):
+	unallowed = set(string) - set("0123456789-+*/.() ")
+	if unallowed:
+		raise DnDException(f"These character(s) '{''.join(unallowed)}' are not allowed in calculation.")
+	try:
+		return eval(string)
+	except SyntaxError:
+		raise DnDException(f"'{string}' is not a valid mathematical expression.")
+
 def convert_string_to_bool(string):
 	if string == "True":
 		return True
 	elif string == "False":
 		return False
 	else:
-		raise DnDException("Unacceptable value '%s' accepting only 'True' and 'False'." % string)
+		raise DnDException(f"Unacceptable value '{string}' accepting only 'True' and 'False'.")
 
 def get_int_from_dice(n_str):
 	if n_str.replace("-", "", 1).isdigit():

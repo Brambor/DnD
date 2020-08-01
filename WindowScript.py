@@ -1,3 +1,4 @@
+from modules.Misc import calculate
 
 
 keywords = {"body", "bottom", "top", "left", "right", "row", "column", "grid", "scrollnotok"}
@@ -59,10 +60,9 @@ class Solver():
 		# break into individual words
 		return out.strip().split()
 
-	def eval_expression(self, expression, window):
-		ret = int(eval(expression.replace("x", str(window["width"])).replace("y", str(window["height"]))))
+	def calc_expression(self, expression, window):
+		return int(calculate(expression.replace("x", str(window["width"])).replace("y", str(window["height"]))))
 #		print("%s = %s" % (expression, ret))
-		return ret
 
 	def solver(self, window):
 		self.depth += 1
@@ -133,7 +133,7 @@ class Solver():
 		return ret
 
 	def window_split_trbl(self, expression, window, from_direction):
-		splitted_size = self.eval_expression(expression, window)
+		splitted_size = self.calc_expression(expression, window)
 		splitted_window = window.copy()
 
 		if from_direction == "left":
@@ -232,7 +232,7 @@ body
 thing_3 = """
 body
 	left 3/4*x "game"
-	bottom min(x,y) "minimap"  # gives a square x*x if x<y else y*x rectangle
+	bottom x "minimap"  # gives a square x*x if x<y else y*x rectangle
 	top 3
 		left 3 "health_status"
 		column 3
