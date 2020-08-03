@@ -35,8 +35,11 @@ translate_skills = {
 }
 
 # RUN SERVER & CHANGE DATA
-server = subprocess.Popen("python manage.py runserver", stdout=subprocess.DEVNULL)
-webbrowser.open("http://localhost:8000/admin/database/entity/")
+server = subprocess.Popen(["python", "manage.py", "runserver"], stdout=subprocess.DEVNULL)
+url = "http://localhost:8000/admin/database/entity/"
+if not webbrowser.open(url):
+	print(f"If no browser opened, just copy paste this url to your browser:\n{url}")
+
 
 input("Once you are done, press enter to terminate Django server and export results to 'out_file.py'.\n"
 	"PRESS ENTER TO EXIT >>>")
