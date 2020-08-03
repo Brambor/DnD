@@ -6,6 +6,7 @@ from modules.Dice import D
 
 
 def calculate(string):
+	string = string.replace("%", "/100")
 	unallowed = set(string) - set("0123456789-+*/.() ")
 	if unallowed:
 		raise DnDException(f"These character(s) '{''.join(unallowed)}' are not allowed in calculation.")
