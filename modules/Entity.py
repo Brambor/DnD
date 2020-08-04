@@ -277,13 +277,12 @@ class Entity():
 				dmg = max(dmg - self.get_stat("magie"), 0)
 				relevant.append("magie %d" % self.get_stat("magie"))
 
-			if "resistances" in self.body:
-				if damage_type in self.body["resistances"]:
-					r = self.body["resistances"][damage_type]
-					if not (-1 <= r <= 1):
-						self.cPrint("Warning! Resistance is not in interval <-100%, 100%>!\n")
-					dmg_mult *= (1 - r)
-					relevant.append("resistance to %s %d%%" % (damage_type, int(100 * r)))
+			if damage_type in self.body["resistances"]:
+				r = self.body["resistances"][damage_type]
+				if not (-1 <= r <= 1):
+					self.cPrint("Warning! Resistance is not in interval <-100%, 100%>!\n")
+				dmg_mult *= (1 - r)
+				relevant.append(f"resistance to {damage_type} {int(100 * r)}%")
 
 			if not(caused_by_effect) and self.turned_by_into(damage_type.upper()):
 				dmg_mult *= 0.5
