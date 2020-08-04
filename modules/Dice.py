@@ -4,9 +4,9 @@ from modules.DnDException import DnDException
 
 def dice_stat(n):
 	if n >= 8:
-		return D(20)
+		return D(20) + n - 8
 	elif n < 0:
-		return D(4)
+		return 0
 	return D(list(all_dice)[n])
 
 def D(n):
