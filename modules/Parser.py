@@ -13,9 +13,11 @@ class Parser():
 		self.cInput = cInput
 		self.cPrint = cPrint
 
-	def argument_wrong_ammount(self, cmd, takes, count, separators=False):
+	def argument_wrong_ammount(self, cmd, takes, count, separators=False, last_at_least=False):
 		count -= 1
-		takes = tuple(t-1 for t in ((1,) + takes))
+		takes = list(t-1 for t in ((1,) + takes))
+		if last_at_least:
+			takes[-1] = f"at least {takes[-1]}"
 		if len(takes) == 1:
 			takes_str = str(takes[0])
 		else:
