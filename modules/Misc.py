@@ -71,7 +71,7 @@ def parse_damage(string, game):
 		for damage_type in whole[0].strip().split():
 			if damage_type not in game.library["damage_types"]:
 				raise DnDException("Invalid damage_type '%s'." % damage_type)
-			types.add(damage_type)
+			types.add(game.library["damage_types"][damage_type])  # a -> acid; acid -> acid	
 
 		dice = dice_parser(whole[1])
 

@@ -1,19 +1,32 @@
 c pes a
 c Thorbald t
 
-d fire {d12} | a t
+dmg fire {d12} | a t
 
 cast t splash
 t
 
-d fire {11} | a t
+dmg fire {11} | a t
 
 c weaping_angel angel
 
-d physical {45} | angel
+dmg physical {45} | angel
 
 # 200% resistance to radiant => deals -12 dmg => restores 12 hp instead
 # but this healing doesn't revive (can be changed, ask your personal developer)
-d radiant {12} | angel
+dmg radiant {12} | angel
 
-d psychic {50} | angel
+dmg psychic {50} | angel
+
+set a acid .51 float
+dmg a {1} | a
+# apply resistance only once
+dmg a a {1} | a
+dmg a acid {1} | a
+
+# sum
+dmg a {1} a {1} | a
+
+# round
+dmg t {1.5} | a
+dmg t {2.5} | a
