@@ -25,9 +25,9 @@ def dice_parser(expression):
 		if i == 0:
 			break
 		cube = ""
-		for c in expression[i:]:
-			if c.isdigit():
-				cube += c
+		for ch in expression[i:]:
+			if ch.isdigit():
+				cube += ch
 				i += 1
 				continue
 			break
