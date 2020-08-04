@@ -2,7 +2,7 @@ from library.Main import library
 
 from modules.DnDException import DnDException, DnDExit
 from modules.Dice import D, dice_stat, dice_parser
-from modules.Misc import calculate, get_int_from_dice  # imports its own Dice
+from modules.Misc import calculate, get_int_from_dice, parse_damage  # imports its own Dice
 from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
 
@@ -150,27 +150,7 @@ class Parser():
 				if len(parts) != 2:
 					self.argument_wrong_ammount("damage", (2,), len(parts), separators=True)
 
-				damage_list = []
-				for whole in (type_damage.split("{") for type_damage in parts[0].split("}") if type_damage != ""):
-					if len(whole) != 2:
-						raise DnDException("%s is %d long, 2 expected.\nMaybe you forgot '{' ?" % (whole, len(whole)))
-
-					types = set()
-					for damage_type in whole[0].strip().split():
-						if damage_type not in library["damage_types"]:
-							raise DnDException("Invalid damage_type '%s'." % damage_type)
-						types.add(damage_type)
-
-					dice = dice_parser(whole[1])
-
-					if dice:
-						threw_crit = self.game.throw_dice(dice)
-						# put the results back into the expression
-						for n, threw in zip(dice, threw_crit):
-							whole[1] = whole[1].replace("d%d" % n, str(threw[0]), 1)
-
-					# calculate
-					damage_list.append((types, calculate(whole[1])))
+				damage_list = parse_damage(parts[0], self.game)
 
 				targets = parts[1].split()
 				if len(targets) == 0:

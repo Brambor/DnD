@@ -2,7 +2,7 @@ import importlib
 import re
 
 from modules.DnDException import DnDException
-from modules.Dice import D
+from modules.Dice import D, dice_parser
 
 
 def calculate(string):
@@ -59,6 +59,32 @@ def local_loader(global_dict, lib, dicts_name):
 def normal_round(f):
 	return int(f) + ( f - int(f) >= 0.5 )
 
+def parse_damage(string, game):
+	"string = 'physical acid {7*d20} acid {7 + d4} acid { d12}'"
+	"returns [{'physical', 'acid'}: 14, {'acid'}: 8, {'acid'}: 5]"
+	damage_list = []
+	for whole in (type_damage.split("{") for type_damage in string.split("}") if type_damage != ""):
+		if len(whole) != 2:
+			raise DnDException("%s is %d long, 2 expected.\nMaybe you forgot '{' ?" % (whole, len(whole)))
+
+		types = set()
+		for damage_type in whole[0].strip().split():
+			if damage_type not in game.library["damage_types"]:
+				raise DnDException("Invalid damage_type '%s'." % damage_type)
+			types.add(damage_type)
+
+		dice = dice_parser(whole[1])
+
+		if dice:
+			threw_crit = game.throw_dice(dice)
+			# put the results back into the expression
+			for n, threw in zip(dice, threw_crit):
+				whole[1] = whole[1].replace("d%d" % n, str(threw[0]), 1)
+
+		# calculate
+		damage_list.append((types, calculate(whole[1])))
+	return damage_list
+
 def parse_sequence(sequence, carry_when_crit=False):
 	"does not process negative integers as integers"
 	sequence = sequence.split()
@@ -72,4 +98,3 @@ def parse_sequence(sequence, carry_when_crit=False):
 		yield int(word)
 	# raise: sequence longer than needed to be
 	yield "Perfectly right lenght."
-
