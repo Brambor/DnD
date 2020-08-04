@@ -18,9 +18,8 @@ class Entity():
 		self.body["hp"] = library_entity["hp_max"]
 		if "mana_max" in library_entity:
 			self.body["mana"] = library_entity["mana_max"]
-		self.body["group"] = library_entity.get("group", "")
-		self.body["inventory"] = library_entity.get("inventory", [])
-		self.body["resistances"] = library_entity.get("resistances", {})
+		for value, default in (("group", ""), ("inventory", []), ("resistances", {})):
+			self.body[value] = library_entity.get(value, default)
 		self.body["effects"] = []
 		self.body["alive"] = True
 		self.game = game
