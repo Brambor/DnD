@@ -2,13 +2,6 @@ from random import randint
 from modules.DnDException import DnDException
 
 
-def dice_stat(n):
-	if n >= 8:
-		return D(20) + n - 8
-	elif n < 0:
-		return 0
-	return D(list(all_dice)[n])
-
 def D(n):
 	return randint(1, n)
 
@@ -43,6 +36,13 @@ def dice_parser(expression):
 		else:
 			dice.append(int(cube))
 	return dice
+
+def dice_stat(n):
+	if n >= 8:
+		return D(20) + n - 8
+	elif n < 0:
+		return 0
+	return D(list(all_dice)[n])
 
 # dice : since which n does it crit
 all_dice = {
