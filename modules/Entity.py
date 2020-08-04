@@ -222,24 +222,37 @@ class Entity():
 	# RECIVE DAMAGE, HEAL
 	def damaged(self, damage_list, statement="", caused_by_effect=False):
 		"damage_list example: [{'physical', 'acid'}: 12, {'acid'}: 8, {'acid'}: 5]"
+		"applies resistances, result rounds to two decimal places"
+		"self.receive sum of results rounded to int"
+		total_dmg = 0
+		dmg_string = []
 		for damage_types, dmg in damage_list:
-
 			# resistance
 			dmg, damage_resistance = self.apply_damage_resistance(
 				damage_types, dmg, caused_by_effect
 			)
+			dmg = round(dmg, 2)
+			total_dmg += dmg
 
-			#printing
-			if statement == "":
-				statement = "recived"
-			if damage_resistance != "":
-				damage_resistance = " (%s)" % damage_resistance
-			if self.get_stat("alive"):
-				self.cPrint(f'{self} {statement} {dmg} {" & ".join(damage_types)} dmg{damage_resistance}\n')
+			# string
+			if dmg == int(dmg):
+				dmg = int(dmg)
+			if (damage_types := " & ".join(damage_types)):
+				damage_types = f" {damage_types}"
+			if damage_resistance:
+				damage_resistance = f" ({damage_resistance})"
+			dmg_string.append(f"{dmg}{damage_types}{damage_resistance}")
+		total_dmg = normal_round(total_dmg)
 
-			# applying
-			self.body["hp"] -= dmg
-			self.check_dead()
+		#printing
+		if not statement:
+			statement = "received"
+		if self.get_stat("alive"):
+			self.cPrint(f'{self} {statement} {total_dmg} dmg: {", ".join(dmg_string)}\n')
+
+		# applying
+		self.body["hp"] -= total_dmg
+		self.check_dead()
 
 	def healed(self, heal):
 		healed_for = min(self.get_stat("hp") + normal_round(heal), self.get_stat("hp_max")) - self.get_stat("hp")
@@ -277,7 +290,7 @@ class Entity():
 				relevant.append("removed effect 50%")
 				self.cPrint("Rule (off screen): Nevýhoda na kostku.\n")
 
-		return (normal_round(dmg * dmg_mult), ", ".join(relevant))
+		return (dmg * dmg_mult, ", ".join(relevant))
 
 	# EFFECTS
 	def get_effect_string(self, effect, sub_value=None):
