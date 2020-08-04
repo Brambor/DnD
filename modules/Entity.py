@@ -4,7 +4,7 @@ from library.Main import library
 
 from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
-from modules.Misc import calculate, convert_string_to_bool, normal_round, parse_sequence
+from modules.Misc import calculate, convert_string_to_bool, normal_round, parse_damage, parse_sequence
 
 
 class Entity():
@@ -173,6 +173,40 @@ class Entity():
 			if not self.body["alive"]:
 				self.cPrint("%s IS ALIVE!\n" % self)
 			self.body["alive"] = True
+
+	# ATTACK
+	def attack(self, attack_str):
+		attack = self.get_attack(attack_str)
+		if "dmg" in attack:
+			damage_list, crits = parse_damage(attack["dmg"], self.game)
+		else:
+			return []
+		for c in crits:
+			if not("on_crit" in attack and c in attack["on_crit"]):
+				raise DnDException(f"{self}'s attack {attack_str} doesn't have 'on_crit' for dice marked '{c}', which just critted.")
+			att = attack["on_crit"][c]
+			if att[0] == "add_attack":
+				damage_list.extend(self.attack(att[1]))
+			elif att[0] == "print":
+				self.cPrint(f"{att[1]} (prints {self}'s attack '{attack_str}' by critting).\n")
+		return damage_list
+
+	def attack_list_print(self):
+		if "attacks" in self.body and self.body["attacks"]:
+			s = "\n".join(f" *{k}" if "reaction" in self.body["attacks"][k] else f"  {k}" for k in self.body["attacks"].keys())
+			if any("reaction" in self.body["attacks"][k] for k in self.body["attacks"].keys()):
+				note = "Attacks starting with * are ment only as reactions and shouldn't be used.\n"
+			else:
+				note = ""
+			self.cPrint(f"{self}'s attacks:\n{s}\n{note}")
+		else:
+			self.cPrint(f"{self} has no attacks\n")
+
+	def get_attack(self, attack_str):
+		if attack_str in self.body["attacks"]:
+			return self.body["attacks"][attack_str]
+		else:
+			raise DnDException(f"Entity {self} does not know {attack_str}.")
 
 	# CAST
 	def cast_spell(self, targets, spell, cInput=False):

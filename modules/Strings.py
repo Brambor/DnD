@@ -26,6 +26,7 @@ def separate(splitted_parts):
 
 cmd = (
 	("#", "//"),
+	("attack", "a"),
 	("help", "h"),
 	("create", "c"),
 	("compare", "cmp"),
@@ -91,6 +92,12 @@ strs = {
 		"#": (
 			"# or // command_body\n"
 			"\tcommand_body will be printed. This command does nothing else.\n"
+		),
+		"attack": (
+			"[a]ttack entity\n"
+			"\tshow attacks list(with details) of entity\n"
+			"[a]ttack entity attack_how target+\n"
+			"\tcalculate 'attack_how', apply dmg to 'target+'\n"
 		),
 		"create": (
 			"[c]reate entity_library nickname*\n"

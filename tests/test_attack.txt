@@ -1,0 +1,8 @@
+c pes a
+c Thorbald t
+
+a a
+a t
+
+a t sword_attack t a
+a t sword_attack t t t

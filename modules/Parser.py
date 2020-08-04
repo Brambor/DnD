@@ -1,7 +1,7 @@
 from library.Main import library
 
 from modules.DnDException import DnDException, DnDExit
-from modules.Dice import D, dice_stat, dice_parser
+from modules.Dice import D, dice_eval, dice_stat, dice_parser
 from modules.Misc import calculate, get_int_from_dice, parse_damage  # imports its own Dice
 from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
@@ -105,6 +105,19 @@ class Parser():
 				else:
 					self.argument_wrong_ammount("help", (2, 3), len(parts))
 
+			elif parts[0] in ("attack", "a"):
+				if len(parts) == 3:
+					self.argument_wrong_ammount("attack", (2, 4), len(parts), last_at_least=True)
+
+				attacker = self.game.get_entity(parts[1])[1]
+				if len(parts) == 2:
+					attacker.attack_list_print()
+				else:
+					damage_list = attacker.attack(parts[2])
+
+					for target in [self.game.get_entity(p)[1] for p in parts[3:]]:
+						target.damaged(damage_list)
+
 			elif parts[0] in ("create", "c"):
 				self.check(parts[1], "entity_library")
 
@@ -152,7 +165,7 @@ class Parser():
 				if len(parts) != 2:
 					self.argument_wrong_ammount("damage", (2,), len(parts), separators=True)
 
-				damage_list = parse_damage(parts[0], self.game)
+				damage_list = parse_damage(parts[0], self.game)[0]
 
 				targets = parts[1].split()
 				if len(targets) == 0:
@@ -218,14 +231,7 @@ class Parser():
 				if len(parts) != 2:
 					self.argument_wrong_ammount("heal", (2,), len(parts), separators=True)
 
-				expression = parts[0]
-				dice = dice_parser(expression)
-
-				if dice:
-					threw_crit = self.game.throw_dice(dice)
-					# put the results back into the expression
-					for n, threw in zip(dice, threw_crit):
-						expression = expression.replace("d%d" % n, str(threw[0]), 1)
+				expression = dice_eval(parts[0], self.game)[0]
 				# calculate
 				healed_for = calculate(expression)
 

@@ -17,6 +17,15 @@ def check_dice_exists(n):
 	if n not in all_dice:
 		raise DnDException("Dice %d doesn't exist. Existing die: %s." % (n, ", ".join(str(d) for d in all_dice)))
 
+def dice_eval(expression, game):
+	if (dice := dice_parser(expression)):
+		threw_crit, crits = game.throw_dice(dice)
+		# put the results back into the expression
+		for n_m, threw in zip(dice, threw_crit):
+			expression = expression.replace(f"d{n_m[0]}{n_m[1]}", str(threw[0]), 1)
+		return expression, crits
+	return expression, set()
+
 def dice_parser(expression):
 	dice = []
 	i = expression.find("d")
@@ -31,10 +40,15 @@ def dice_parser(expression):
 				i += 1
 				continue
 			break
-		if cube == "":
-			raise DnDException("'d' must be directly, withou spaces, followed by number of sides.")
-		else:
-			dice.append(int(cube))
+		mark = ""
+		for ch in expression[i:]:
+			if ch.isalpha():
+				mark += ch
+				i += 1
+				continue
+			break
+		if cube:
+			dice.append((int(cube), mark))
 	return dice
 
 def dice_stat(n):

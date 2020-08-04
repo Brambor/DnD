@@ -41,6 +41,19 @@ entities = {
 		"resistances": {  # how much resistance does this creature have.
 			"fire": 1/3, # 1/3 = 33.3% reduction in incoming damage
 		},
+		"attacks": {
+			"sword_attack": {
+				"dmg": "slash p {50 + d6a + d10b}",
+				"on_crit": {
+					"a": ("add_attack", "sword_attack_a"),  # d6a throws crit
+					"b": ("print", "damages armour"),
+				},
+			},
+			"sword_attack_a": {
+				"reaction": True,  # can be anything, even False, it still is a reaction
+				"dmg": "slash p {10 * d4}",
+			}
+		},
 	},
 }
 

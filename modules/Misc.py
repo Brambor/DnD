@@ -2,7 +2,7 @@ import importlib
 import re
 
 from modules.DnDException import DnDException
-from modules.Dice import D, dice_parser
+from modules.Dice import D, dice_eval, dice_parser
 
 
 def calculate(string):
@@ -63,6 +63,7 @@ def parse_damage(string, game):
 	"string = 'physical acid {7*d20} acid {7 + d4} acid { d12}'"
 	"returns [{'physical', 'acid'}: 14, {'acid'}: 8, {'acid'}: 5]"
 	damage_list = []
+	crits = set()
 	for whole in (type_damage.split("{") for type_damage in string.split("}") if type_damage != ""):
 		if len(whole) != 2:
 			raise DnDException("%s is %d long, 2 expected.\nMaybe you forgot '{' ?" % (whole, len(whole)))
@@ -73,17 +74,12 @@ def parse_damage(string, game):
 				raise DnDException("Invalid damage_type '%s'." % damage_type)
 			types.add(game.library["damage_types"][damage_type])  # a -> acid; acid -> acid	
 
-		dice = dice_parser(whole[1])
-
-		if dice:
-			threw_crit = game.throw_dice(dice)
-			# put the results back into the expression
-			for n, threw in zip(dice, threw_crit):
-				whole[1] = whole[1].replace("d%d" % n, str(threw[0]), 1)
+		whole[1], c = dice_eval(whole[1], game)
+		crits.update(c)
 
 		# calculate
 		damage_list.append((types, calculate(whole[1])))
-	return damage_list
+	return damage_list, crits
 
 def parse_sequence(sequence, carry_when_crit=False):
 	"does not process negative integers as integers"

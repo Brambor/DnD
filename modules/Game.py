@@ -67,16 +67,20 @@ class Game():
 	def throw_dice(self, dice_list):
 		"throws die in list, prints results and returns list of sets (set)((int) threw, (bool)crit)"
 		threw_crit = []
-		for n in dice_list:
+		crits = set()
+		for n, mark in dice_list:
 			threw = D(n)
-			crit = dice_crit(n, threw, self.cPrint)
+			if (crit := dice_crit(n, threw, self.cPrint)) and mark:
+				crits.add(mark)
 			threw_crit.append((threw, crit))
-		complete_string = "".join('D{0: <4}'.format(n) for n in dice_list) + "\n"
+		if not (complete_string := "".join('{0: <4}'.format(mark) for _, mark in dice_list) + "\n").strip():
+			complete_string = ""
+		complete_string += "".join('D{0: <3}'.format(n) for n, _ in dice_list) + "\n"
 		complete_string += "".join(
-				'{1}{0: <4}'.format(threw, "!" if crit else " ") for threw, crit in threw_crit
+				'{1}{0: <3}'.format(threw, "!" if crit else " ") for threw, crit in threw_crit
 		) + "\n"
 		self.cPrint(complete_string)
-		return threw_crit
+		return threw_crit, crits
 
 	# SAVE / LOAD
 	def save(self, file_name=None):
