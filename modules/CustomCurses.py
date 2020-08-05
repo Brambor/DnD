@@ -183,16 +183,14 @@ class CustomCurses():
 		while True:
 			if self.msg_interrupted:
 				input_command = input_command.strip()
-				if input_command.endswith(">>>"):
-					input_command += " "
-				offset = 0
 			else:
 				input_command = message
-				offset = 1
+
+			if input_command.endswith(">>>"):
+				input_command += " "
 
 			self.windows["console_input"].addstr(0, 0, input_command)
 			input_command_s = input_command.split("\n")
-			self.windows["console_input"].move(len(input_command_s)-1, len(input_command_s[-1])+offset)  # TODO: crashes when len(message_s) > 3 or 4
 	#		windows["console_input"].leaveok(False)
 
 			# INPUT
