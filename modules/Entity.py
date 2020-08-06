@@ -52,10 +52,10 @@ class Entity():
 			hp[0] += "\n"
 			yield hp
 		if self.body["effects"]:
-			yield ("%s%s\n" % (
-				" " * (len(self.body["derived_from"]) + 2),
-				", ".join(f'{i["name"]}ϟ{i["value"]}' if i["type"] == "duration" else i["name"] for i in self.body["effects"]),
-			), "basic")
+			spaces = " " * (len(self.body["derived_from"]) + 2)
+			eff = tuple(", ".join(f'{e["name"]}{ch}{e["value"]}' for e in self.body["effects"] if e["type"] == tpe)
+				for ch, tpe in (("ϟ", "duration"), ("ϗ", "dice")))
+			yield f"{spaces}{eff[0]}{', ' if all(eff) else ''}{eff[1]}\n", "basic"
 
 	def setStat(self, stat, value, stat_type=None):
 		type_forced = False
