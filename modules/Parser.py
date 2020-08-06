@@ -131,13 +131,13 @@ class Parser():
 						else:
 							self.game.create(parts[1], nickname)
 					except DnDException as e:
-						self.cPrint("?!: %s\n" % str(e))
+						self.cPrint(f"?!: {e}\n")
 
 			elif parts[0] in ("compare", "cmp"):
 				if len(parts) == 3:
 					val1 = get_int_from_dice(parts[1])
 					val2 = get_int_from_dice(parts[2])
-					self.cPrint("%d %s %d\n" % (val1, ("<" if val1 < val2 else ">" if val1 > val2 else "="), val2))
+					self.cPrint(f'{val1} {"<" if val1 < val2 else ">" if val1 > val2 else "="} {val2}\n')
 				elif len(parts) == 7:
 					e1 = self.game.get_entity(parts[1])[1]
 					e2 = self.game.get_entity(parts[4])[1]
@@ -150,12 +150,11 @@ class Parser():
 					else:
 						val2 = get_int_from_dice(parts[6])
 
-
-					self.cPrint("%s's %s: %d %s %s's %s: %d\n" % (
-						e1, parts[2], val1,
-						("<" if val1 < val2 else ">" if val1 > val2 else "="),
-						e2, parts[5], val2,
-						))
+					self.cPrint((
+						f"{e1}'s {parts[2]}: {val1} "
+						f'{"<" if val1 < val2 else ">" if val1 > val2 else "="} '
+						f"{e2}'s {parts[5]}: {val2}\n"
+					))
 				else:
 					self.argument_wrong_ammount("compare", (3, 7), len(parts))
 
@@ -250,17 +249,16 @@ class Parser():
 				self.cPrint.select_entity_inventory(entity)
 				if len(parts) == 2:
 					if entity.body["inventory"]:
-						self.cPrint("\n".join("%d: %s" % (i, str(item)) for i, item in enumerate(entity.body["inventory"])) + "\n")
+						self.cPrint("\n".join(f"{i}: {item}" for i, item in enumerate(entity.body["inventory"])) + "\n")
 					else:
-						self.cPrint("%s's inventory is empty.\n" % entity)
+						self.cPrint(f"{entity}'s inventory is empty.\n")
 				elif len(parts) == 4:
 					if parts[2] == "add":
-						item = self.game.get("items", parts[3])
-						entity.put_item_into_inventory(item)
+						entity.put_item_into_inventory(self.game.get("items", parts[3]))
 					elif parts[2] == "del":
 						entity.remove_item_from_inventory(parts[3])
 					else:
-						raise DnDException("On 4 arguments, command's 'inventory' third argument should be add/del, %s given." % parts[2])
+						raise DnDException(f"On 4 arguments, command's 'inventory' third argument should be add/del, {parts[2]} given.")
 				elif len(parts) == 6:
 					item, key, value = parts[3], parts[4], parts[5]
 					if value.replace("-", "", 1).isdigit():
@@ -285,7 +283,7 @@ class Parser():
 
 				# print duplicates in 'a1/a2/a3, b1, c1/c2' form
 				if type(lib) in (set, tuple):
-					lib = dict(zip(sorted(lib), (i for i in lib)))
+					lib = dict(zip(sorted(lib), lib))
 				unique = {}
 				for orig in lib:
 					is_unique = True
@@ -313,15 +311,16 @@ class Parser():
 				for p in parts[1:]:
 					try:
 						entity = self.game.get_entity(p)[1]
-						entity.played_this_turn = not entity.played_this_turn
-						changes += ("\n\t%s->%s" % (entity, "played" if entity.played_this_turn else "didn't play"))
 					except DnDException as e:
 						errors += str(e) + "\n"
+						continue
+					entity.played_this_turn = not entity.played_this_turn
+					changes += f"\n\t{entity}->{'played' if entity.played_this_turn else '''didn't play'''}"
 
-				if changes == "":
+				if changes:
+					self.cPrint(f"Toggled:{changes}\n{errors}")
+				elif errors:
 					self.cPrint(errors)
-				else:
-					self.cPrint("Toggled:%s\n%s" % (changes, errors))
 
 			elif parts[0] in ("remove_effect", "remove", "r"):
 				if len(parts) != 2:
@@ -329,16 +328,16 @@ class Parser():
 
 				entity = self.game.get_entity(parts[1])[1]
 				if not entity.body["effects"]:
-					self.cPrint("Entity '%s' has no effects." % entity)
+					self.cPrint(f"Entity '{entity}' has no effects.")
 					return
 
 				self.cPrint(
-						"%s\n" % "\n".join("%d. %s" % (i, entity.get_effect_string(e)) for i, e in enumerate(entity.body["effects"]))
+						"%s\n" % "\n".join(f"{i}. {entity.get_effect_string(e)}" for i, e in enumerate(entity.body["effects"]))
 					)
 				effects_to_remove = self.cInput("effects to remove:\n>>>").split()
 
 				#MUHAHAHAHA
-				indexes = [int(i) if i.isdigit() else DnDException("'%s' is not a non-negative integer." % i) for i in effects_to_remove]
+				indexes = [int(i) if i.isdigit() else DnDException(f"'{i}' is not a non-negative integer.") for i in effects_to_remove]
 
 				entity.remove_effects_by_index(indexes)
 
