@@ -102,23 +102,21 @@ class CustomCurses():
 
 		for w in self.WINDOWS:
 			self.windows[w] = curses.newwin(
-				self.calculate(self.WINDOWS[w]["width_height"][1]),
-				self.calculate(self.WINDOWS[w]["width_height"][0]),
-				self.calculate(self.WINDOWS[w]["left_top"][1]),
-				self.calculate(self.WINDOWS[w]["left_top"][0]),
+				*(self.calculate(self.WINDOWS[w][s][i])
+					for s in ("width_height", "left_top") for i in (1, 0))
 			)
 
 			if self.WINDOWS[w].get("scrollok", True):
 				self.windows[w].scrollok( True )  # on False it crashes
-				for i in range(self.height):
-					self.windows[w].addstr("\n")
+				self.windows[w].addstr("\n"*self.height)
 			if w != "console_input":
 				self.windows[w].addstr("<<%s>>\n" % w)
 			self.windows[w].refresh()  # shouldn't this refresh it after resize?
 
 		if add_history:
-			for msg in self.history[-self.windows["fight"].getmaxyx()[0]:]:
-				self.windows["fight"].addstr(msg)
+			self.windows["fight"].addstr("\n".join(
+				self.history[-self.windows["fight"].getmaxyx()[0]:]
+			))
 
 			for w in self.windows:
 				self.windows[w].refresh()
@@ -153,7 +151,7 @@ class CustomCurses():
 		if window_name in self.windows:
 			return self.windows[window_name]
 		else:
-			raise DnDException("Window '%s' doesn't exist. These do: %s." % (window_name, ", ".join(key for key in self.windows)))
+			raise DnDException(f"Window '{window_name}' doesn't exist. These do: {', '.join(self.windows)}.")
 
 	def enter_is_terminate(self, x):
 		if x == curses.KEY_RESIZE:
@@ -219,18 +217,16 @@ class CustomCurses():
 				continue
 			break
 
-		# each line in regular input is " \n" instead of "\n" (for some reason)
-		input_command = input_command.replace(" \n", "\n")
 		curses.curs_set(False)  # so that it doesn't blink in top left corner. >>> ocasionally blinks thought...
 		return self.serialization(input_command, message)
 
 	def send_test(self, message):
-		input_command = "%s %s\n" % (message, input())
-		input_command = input_command.replace(" \n", "\n")  # for the one special case when input_command == ">>> \n"
-		return self.serialization(input_command, message)
+		return self.serialization(f"{message} {input()}\n", message)
 
 	def serialization(self, input_command, message):
 		"common parts of self.send and self.send_test"
+		# each line in regular input is " \n" instead of "\n" (for some reason)
+		input_command = input_command.replace(" \n", "\n")  # for the one special case when input_command == ">>> \n"
 		# removing >>>
 		input_command_stripped = input_command[len(message)+1:]
 		# if only >>>, then print only \n
@@ -253,8 +249,7 @@ class CustomCurses():
 		if self.history_commands and command == self.history_commands[-1]:
 			return
 
-		if self.history_pointer == len(self.history_commands) - 1:
-			self.history_pointer += 1
+		self.history_pointer += (self.history_pointer == len(self.history_commands) - 1)
 		self.history_commands.append(command)
 
 	def endCurses(self):
@@ -263,16 +258,12 @@ class CustomCurses():
 		curses.endwin()
 
 	def window_get_size(self, window_name):
-		window = self.get_window(window_name)
-		ret_str = "%s is (height, width): %d, %d\n" % (window_name, *window.getmaxyx())
-		self.windows["fight"].addstr(ret_str)
-		self.windows["fight"].refresh()
+		h, w = self.get_window(window_name).getmaxyx()
+		self.cPrint(f"{window_name} is (height, width): {h}, {w}\n")
 
 	def window_get_top_left(self, window_name):
-		window = self.get_window(window_name)
-		ret_str = "%s is at (y, x): %d, %d\n" % (window_name, *window.getbegyx())
-		self.windows["fight"].addstr(ret_str)
-		self.windows["fight"].refresh()
+		y, x = self.get_window(window_name).getbegyx()
+		self.cPrint(f"{window_name} is at (y, x): {y}, {x}\n")
 
 	def window_set_size(self, window, ncols, nlines):
 		"set window size to (ncols, nlines)"
