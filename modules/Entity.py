@@ -447,22 +447,18 @@ class Entity():
 		while i < len(effects):
 			effect = effects[i]
 
-			if effect["name"] == "FIRE":
+			if effect["name"] in {"FIRE", "BLEED"}:
 				threw = D(effect["value"])
-				self.damaged((({"true"}, threw),), "burns for", caused_by_effect=True)
+				self.damaged((({"true"}, threw),), ("burns for" if effect["name"] == "FIRE" else "bleeds for"), caused_by_effect=True)
 				if threw == 1:
-					self.cPrint("\t and stopped %s\n" % self.get_effect_string(effect))
+					self.cPrint(f"\tand stopped {self.get_effect_string(effect)}\n")
 					del effects[i]
 					continue
-
-			if effect["name"] == "BLEED":
-				threw = D(effect["value"])
-				self.damaged((({"true"}, threw),), "bleeds for", caused_by_effect=True)
 
 			if effect["type"] == "duration":
 				effect["value"] -= 1
 				if effect["value"] == 0:
-					self.cPrint("%s is no longer %s\n" % (self, self.get_effect_string(effect)))
+					self.cPrint(f"{self} is no longer {self.get_effect_string(effect)}\n")
 					del effects[i]
 
 			i += 1
