@@ -334,7 +334,7 @@ class Parser():
 				self.cPrint(
 						"%s\n" % "\n".join(f"{i}. {entity.get_effect_string(e)}" for i, e in enumerate(entity.body["effects"]))
 					)
-				effects_to_remove = self.cInput("effects to remove:\n>>>").split()
+				effects_to_remove = self.cInput("effects to remove >>>").split()
 
 				#MUHAHAHAHA
 				indexes = [int(i) if i.isdigit() else DnDException(f"'{i}' is not a non-negative integer.") for i in effects_to_remove]
