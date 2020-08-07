@@ -27,17 +27,17 @@ class Entity():
 		self.played_this_turn = False
 
 	def __str__(self):
-		return "%s_%d" % (self.nickname, self.id)
+		return f"{self.nickname}_{self.id}"
 
 	# RAW STAT MANIPULATION
 	def printStat(self, stat):
 		self.cPrint(f'{stat} = {self.get_stat(stat, False, for_printing=True)}\n')
 
 	def printStats(self):
-		complete_string = "nickname = '%s'\nid = %d\n" % (self.nickname, self.id)
+		complete_string = f"nickname = '{self.nickname}'\nid = {self.id}\n"
 		for stat in sorted(self.body.keys()):
 			complete_string += f'{stat} = {self.get_stat(stat, False, for_printing=True)}\n'
-		complete_string += "played_this_turn = %s\n" % self.played_this_turn
+		complete_string += f"played_this_turn = {self.played_this_turn}\n"
 		self.cPrint(complete_string)
 
 	def get_stats_reduced(self):
@@ -108,7 +108,7 @@ class Entity():
 		#	self.body["weapon = int(value)
 		# remove effect ?
 		else:
-			raise DnDException("Unknown stat '%s'. If you want to set it, give it 'stat_type'." % stat)
+			raise DnDException(f"Unknown stat '{stat}'. If you want to set it, give it 'stat_type'.")
 
 	def set_nickname(self, nickname):
 		if nickname == "":
@@ -118,7 +118,7 @@ class Entity():
 		elif " " in nickname:
 			raise DnDException("Nickname cannot contain space ' '!")
 		elif nickname in (ent.nickname for ent in self.game.entities):
-			raise DnDException("Nickname is already in use by %s" % self.game.get_entity(nickname)[1])
+			raise DnDException(f"Nickname is already in use by {self.game.get_entity(nickname)[1]}")
 		else:
 			self.nickname = nickname
 
@@ -130,7 +130,7 @@ class Entity():
 		elif stat in library["skills"] and "skills" in self.body and stat in self.body["skills"]:
 			value = self.body["skills"][stat]
 		else:
-			raise DnDException("Entity %s does not have stat '%s'." % (self, stat))
+			raise DnDException(f"Entity {self} does not have stat '{stat}'.")
 
 		if for_printing and type(value) == str:
 			return f"'{value}'"
@@ -152,9 +152,10 @@ class Entity():
 				return base + bp["stat_bonus"] - bp["stat_penalty"]
 			else:
 				if bp["stat_bonus"] or bp["stat_penalty"]:
-					bonus_str = " + %d" % bp["stat_bonus"] if bp["stat_bonus"] else ""
-					penalty_str = " - %d" % bp["stat_penalty"] if bp["stat_penalty"] else ""
-					return "%d (%d%s%s)" % (base + bp["stat_bonus"] - bp["stat_penalty"], base, bonus_str, penalty_str)  # 7 (5 + 4 - 2) base + bonus - penalty
+					bonus_str = f' + {bp["stat_bonus"]}' if bp["stat_bonus"] else ""
+					penalty_str = f' - {bp["stat_penalty"]}' if bp["stat_penalty"] else ""
+					# 7 (5 + 4 - 2)
+					return f'{base + bp["stat_bonus"] - bp["stat_penalty"]} ({base}{bonus_str}{penalty_str})'
 				else:
 					return str(base)
 
@@ -165,13 +166,13 @@ class Entity():
 	def check_dead(self):  # not handeled at all
 		if self.get_stat("hp") <= 0:  # get_stat might result in wierd bug
 			if self.body["alive"]:
-				self.cPrint("%s IS DEAD!\n" % self)
+				self.cPrint(f"{self} IS DEAD!\n")
 			self.body["alive"] = False
 
 	def check_revived(self):
 		if self.get_stat("hp") > 0:
 			if not self.body["alive"]:
-				self.cPrint("%s IS ALIVE!\n" % self)
+				self.cPrint(f"{self} IS ALIVE!\n")
 			self.body["alive"] = True
 
 	# ATTACK
@@ -216,7 +217,7 @@ class Entity():
 		if self.get_stat("mana") >= spell_cost:
 			self.body["mana"] -= spell_cost
 		else:
-			self.cPrint("%s does not have enought mana for %s\n" % (self, spell["name"]))
+			self.cPrint(f'{self} does not have enought mana for {spell["name"]}\n')
 			return
 
 		for target in targets:
@@ -289,7 +290,7 @@ class Entity():
 
 	def healed(self, heal):
 		healed_for = min(self.get_stat("hp") + normal_round(heal), self.get_stat("hp_max")) - self.get_stat("hp")
-		self.cPrint("%s healed for %d HladinPetroleje\n" % (self, healed_for))
+		self.cPrint(f"{self} healed for {healed_for} HladinPetroleje\n")
 		self.body["hp"] += healed_for
 		self.check_revived()
 
@@ -297,7 +298,7 @@ class Entity():
 	def apply_damage_resistance(self, damage_types, dmg, caused_by_effect):
 		for damage_type in damage_types:
 			if damage_type not in library["damage_types"]:
-				raise DnDException("Unknown damage type: '%s'.\n" % damage_type)
+				raise DnDException(f"Unknown damage type: '{damage_type}'.\n")
 
 		dmg_mult = 1
 		relevant = []
@@ -305,10 +306,10 @@ class Entity():
 			damage_type = library["damage_types"][damage_type]
 			if damage_type == "physical":
 				dmg = max(dmg - self.get_stat("armor"), 0)
-				relevant.append("armor %d" % self.get_stat("armor"))
+				relevant.append(f'armor {self.get_stat("armor")}')
 			elif damage_type == "magic":
 				dmg = max(dmg - self.get_stat("magie"), 0)
-				relevant.append("magie %d" % self.get_stat("magie"))
+				relevant.append(f'magie {self.get_stat("magie")}')
 
 			if damage_type in self.body["resistances"]:
 				r = self.body["resistances"][damage_type]
@@ -333,20 +334,20 @@ class Entity():
 
 		if value:
 			if effect["type"] == "dice":
-				str_duration = " (D%d)" % value
+				str_duration = f" (D{value})"
 			elif effect["type"] == "duration":
-				str_duration = " (for %d turns)" % value
+				str_duration = f" (for {value} turns)"
 			else:
 				raise  # the programer screwed up!
 		else:
 			str_duration = ""
 
 		if "on_print" in effect:
-			return "%s%s" % (effect["on_print"], str_duration)
+			return f'{effect["on_print"]}{str_duration}'
 		elif effect["type"] == "duration":
-			return "%s%s" % (effect["name"], str_duration)
+			return f'{effect["name"]}{str_duration}'
 		elif effect["type"] == "dice":
-			return "%sing%s" % (effect["name"], str_duration)
+			return f'{effect["name"]}ing{str_duration}'
 		else:
 			raise
 
@@ -361,11 +362,7 @@ class Entity():
 		# by effect
 		immunity_by = self.immune_to_effect(effect)
 		if immunity_by:
-			self.cPrint("%s is immune to %s because they are %s\n" % (
-				self,
-				effect["name"],
-				self.get_effect_string(immunity_by)
-			))
+			self.cPrint(f'{self} is immune to {effect["name"]} because they are {self.get_effect_string(immunity_by)}\n')
 			return
 
 		# turned by into
@@ -390,8 +387,7 @@ class Entity():
 		if effect["on_stack"] == "add":
 			result = "add"
 		elif effect["on_stack"] == "refresh":
-			old_effect = self.get_effect(effect["name"])
-			if old_effect:  # the refreshment
+			if (old_effect := self.get_effect(effect["name"])):  # the refreshment
 				result = "refresh"
 			else:  # effect not yet present
 				result = "add"
@@ -407,7 +403,7 @@ class Entity():
 		else:
 			raise
 
-		self.cPrint("%s is %s now%s\n" % (self, self.get_effect_string(effect), extra_comment))
+		self.cPrint(f"{self} is {self.get_effect_string(effect)} now{extra_comment}\n")
 
 		# Remove effects that entity is now immune to
 		if "prevents" in effect:
@@ -423,7 +419,7 @@ class Entity():
 		while i < len(self.body["effects"]):
 			effect = self.body["effects"][i]
 			if effect["name"] in flags:
-				self.cPrint("%s is no longer %s\n" % (self, self.get_effect_string(effect)))
+				self.cPrint(f"{self} is no longer {self.get_effect_string(effect)}\n")
 				del self.body["effects"][i]
 			else:
 				i += 1
@@ -435,7 +431,7 @@ class Entity():
 				string += f'\t{self.get_effect_string(self.body["effects"][index])}\n'
 				del self.body["effects"][index]
 			else:
-				raise DnDException("%d is too much!" % index)
+				raise DnDException(f"{index} is too much!")
 		if indexes:
 			self.cPrint(string)
 		else:
@@ -490,7 +486,7 @@ class Entity():
 					else:
 						into_str = "nothing"
 
-					self.cPrint("%s's %s turns into %s by %s\n" % ( self, original, into_str, flag ))
+					self.cPrint(f"{self}'s {original} turns into {into_str} by {flag}\n")
 					if turns_into:
 						self.add_effect(effect, value)
 					return True
@@ -508,10 +504,9 @@ class Entity():
 			if cmd < len(self.body["inventory"]):
 				chosen_i = cmd
 			else:
+				l = len(self.body["inventory"])
 				raise DnDException(
-					"There are only %d (indexes from 0 to %d) items in inventory. Invalid index %d." % (
-						len(self.body["inventory"]), len(self.body["inventory"])-1, cmd
-				))
+					f"There are only {l} (indexes from 0 to {l-1}) items in inventory. Invalid index {cmd}.")
 		else:
 			chosen_item = None
 			for i, item in enumerate(self.body["inventory"]):
@@ -520,21 +515,21 @@ class Entity():
 						chosen_item = item
 						chosen_i = i
 					else:
-						raise DnDException("There are more items derived_from %s, please use index notation." % cmd)
+						raise DnDException(f"There are more items derived_from {cmd}, please use index notation.")
 			if chosen_item == None:
-				raise DnDException("Item %s not found in %s's inventory." % (cmd, self))
+				raise DnDException(f"Item {cmd} not found in {self}'s inventory.")
 		return (chosen_i, self.body["inventory"][chosen_i])
 
 	def put_item_into_inventory(self, item):
 		self.body["inventory"].append(copy(item))
-		self.cPrint("%s is now in %s's inventory.\n" % (item, self))
+		self.cPrint(f"{item} is now in {self}'s inventory.\n")
 
 	def remove_item_from_inventory(self, cmd):
 		item_i, item = self.get_item(cmd)
-		self.cPrint("%s vanished from %s's inventory.\n" % (item, self))
+		self.cPrint(f"{item} vanished from {self}'s inventory.\n")
 		del self.body["inventory"][item_i]
 
 	def set_inventory_item(self, cmd, key, value):
 		item_i, item = self.get_item(cmd)
 		self.body["inventory"][item_i][key] = value
-		self.cPrint("%s's item now reads: %s.\n" % (self, item))
+		self.cPrint(f"{self}'s item now reads: {item}.\n")
