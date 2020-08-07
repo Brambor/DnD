@@ -98,6 +98,7 @@ strs = {
 			"\tshow attacks list(with details) of entity\n"
 			"[a]ttack entity attack_how target+\n"
 			"\tcalculate 'attack_how', apply dmg to 'target+'\n"
+			f'\t{symbol["+"]}'
 		),
 		"create": (
 			"[c]reate entity_library nickname*\n"
