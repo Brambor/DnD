@@ -65,7 +65,10 @@ class Game():
 			raise DnDException("Entity '%s' does not exist." % nickname)
 
 	def throw_dice(self, dice_list):
-		"throws die in list, prints results and returns list of sets (set)((int) threw, (bool)crit)"
+		"""throws die in list, prints results
+		returns tuple of
+		\t0: list of sets (set)((int) threw, (bool)crit)
+		\t1: set of marked die (marks only), that crit"""
 		threw_crit = []
 		crits = set()
 		for n, mark in dice_list:
@@ -73,7 +76,7 @@ class Game():
 			if (crit := dice_crit(n, threw, self.cPrint)) and mark:
 				crits.add(mark)
 			threw_crit.append((threw, crit))
-		if not (complete_string := "".join('{0: <4}'.format(mark) for _, mark in dice_list) + "\n").strip():
+		if (complete_string := "".join('{0: <4}'.format(mark) for _, mark in dice_list) + "\n").isspace():
 			complete_string = ""
 		complete_string += "".join('D{0: <3}'.format(n) for n, _ in dice_list) + "\n"
 		complete_string += "".join(
