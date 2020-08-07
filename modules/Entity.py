@@ -189,7 +189,7 @@ class Entity():
 			if att[0] == "add_attack":
 				damage_list.extend(self.attack(att[1]))
 			elif att[0] == "print":
-				self.cPrint(f"{att[1]} (prints {self}'s attack '{attack_str}' by critting).\n")
+				self.cPrint(f"{att[1]} (prints {self}'s attack '{attack_str}' by critting on '{c}').\n")
 		return damage_list
 
 	def attack_list_print(self):

@@ -5,13 +5,12 @@ from modules.DnDException import DnDException
 def D(n):
 	return randint(1, n)
 
-def dice_crit(dice, threw, cPrint):
+def dice_crit(dice, threw, cPrint=None):
+	"pass arg. cPrint to print when crit"
 	check_dice_exists(dice)
-	if threw >= all_dice[dice]:
-		cPrint("Critical on D%d!!\n" % dice)
-		return True
-	else:
-		return False
+	if threw >= all_dice[dice] and cPrint != None:
+		cPrint(f"Critical on D{dice}!!\n")
+	return threw >= all_dice[dice]
 
 def check_dice_exists(n):
 	if n not in all_dice:

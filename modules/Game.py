@@ -73,7 +73,7 @@ class Game():
 		crits = set()
 		for n, mark in dice_list:
 			threw = D(n)
-			if (crit := dice_crit(n, threw, self.cPrint)) and mark:
+			if (crit := dice_crit(n, threw)) and mark:
 				crits.add(mark)
 			threw_crit.append((threw, crit))
 		if (complete_string := "".join('{0: <4}'.format(mark) for _, mark in dice_list) + "\n").isspace():
