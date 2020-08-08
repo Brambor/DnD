@@ -1,5 +1,6 @@
-import importlib
 import re
+
+from library.Main import library
 
 from modules.DnDException import DnDException
 from modules.Dice import D, dice_eval, dice_parser
@@ -43,19 +44,6 @@ def get_valid_filename(s):
 	s = str(s).strip().replace(' ', '_')
 	return re.sub(r'(?u)[^-\w.]', '', s)
 
-def local_loader(global_dict, lib, dicts_name):
-	try:
-		output = []
-		loc_dict = getattr(importlib.import_module(lib), dicts_name)
-		output.append("'%s' loaded" % dicts_name)
-		for e in loc_dict:
-			if e in global_dict:
-				output.append("\t'%s' overrode" % e)
-		global_dict.update(loc_dict)
-		return output
-	except ImportError:
-		return []
-
 def normal_round(f):
 	return int(f) + ( f - int(f) >= 0.5 )
 
@@ -70,9 +58,9 @@ def parse_damage(string, game):
 
 		types = set()
 		for damage_type in whole[0].strip().split():
-			if damage_type not in game.library["damage_types"]:
+			if damage_type not in library["damage_types"]:
 				raise DnDException("Invalid damage_type '%s'." % damage_type)
-			types.add(game.library["damage_types"][damage_type])  # a -> acid; acid -> acid	
+			types.add(library["damage_types"][damage_type])  # a -> acid; acid -> acid	
 
 		whole[1], c = dice_eval(whole[1], game)
 		crits.update(c)

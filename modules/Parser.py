@@ -7,9 +7,8 @@ from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
 
 class Parser():
-	def __init__(self, game, cInput, cPrint, DEBUG):
+	def __init__(self, game, cInput, cPrint):
 		self.game = game
-		self.DEBUG = DEBUG
 		self.cInput = cInput
 		self.cPrint = cPrint
 
@@ -39,7 +38,7 @@ class Parser():
 	def check(self, values, types):
 		for v, t in zip(values.split(), types.split()):
 			if t == "entity_library":
-				if not (v in self.game.library["entities"]):
+				if not (v in library["entities"]):
 					raise DnDException("Entity '%s' not found in library." % v)
 			if t == "dice":
 				if not v.isdigit():
@@ -276,8 +275,8 @@ class Parser():
 					"s": "spells",
 					"sp": "spells",
 				}.get(parts[1], parts[1])
-				if lib in self.game.library:
-					lib = self.game.library[lib]
+				if lib in library:
+					lib = library[lib]
 				else:
 					raise DnDException("No library '%s'." % lib)
 
@@ -430,7 +429,7 @@ class Parser():
 		except DnDExit:
 			raise
 		except Exception as exc:
-			if self.DEBUG:
+			if settings.DEBUG:
 				raise
 			self.cPrint("EXCEPTION: %s\n" % exc)
 			self.cPrint("fcked up\n")
@@ -445,7 +444,7 @@ class Parser():
 		except DnDExit:
 			raise
 		except Exception as exc:
-			if self.DEBUG:
+			if settings.DEBUG:
 				raise
 			self.cPrint("EXCEPTION: %s\n" % exc)
 			self.cPrint("fcked up\n")

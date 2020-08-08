@@ -6,15 +6,15 @@ from tempfile import TemporaryFile
 
 from modules.DnDException import DnDException, DnDExit
 from modules.Misc import calculate
+from modules.SettingsLoader import settings
+
 
 
 class CustomCurses():
-	def __init__(self, settings):
+	def __init__(self):
 		"Needs self.cPrint from outside. Both way dependency."
 		# got self.cPrint = cPrint from outside
 		self.curses = curses
-		self.COLOR_USAGE = settings.COLOR_USAGE
-		self.WINDOWS = settings.WINDOWS
 		self.fight_history = []
 		self.cmd_history = []
 		self.cmd_history_pointer = 0
@@ -70,7 +70,7 @@ class CustomCurses():
 				curses.init_color(le, *settings.COLOR_PALETTE[key])
 				self.color_palette[key] = le
 		else:
-			self.COLOR_USAGE.update(settings.COLOR_USAGE_BASIC)
+			settings.COLOR_USAGE.update(settings.COLOR_USAGE_BASIC)
 			self.color_palette = {
 				"black": 0,
 				"blue": 4,
@@ -100,13 +100,13 @@ class CustomCurses():
 			self.height = starty - 1
 			self.windows.clear()
 
-		for w in self.WINDOWS:
+		for w in settings.WINDOWS:
 			self.windows[w] = curses.newwin(
-				*(self.calculate(self.WINDOWS[w][s][i])
+				*(self.calculate(settings.WINDOWS[w][s][i])
 					for s in ("width_height", "left_top") for i in (1, 0))
 			)
 
-			if self.WINDOWS[w].get("scrollok", True):
+			if settings.WINDOWS[w].get("scrollok", True):
 				self.windows[w].scrollok( True )  # on False it crashes
 				self.windows[w].addstr("\n"*self.height)
 			if w != "console_input":
@@ -131,8 +131,8 @@ class CustomCurses():
 	def init_colors(self):
 		# Color pairs
 		self.color_usage = {}
-		for i, key in enumerate(self.COLOR_USAGE):
-			foreground, background = self.COLOR_USAGE[key]
+		for i, key in enumerate(settings.COLOR_USAGE):
+			foreground, background = settings.COLOR_USAGE[key]
 			foreground, background = self.color_palette[foreground], self.color_palette[background]
 			curses.init_pair(i+1, foreground, background)
 			self.color_usage[key] = i+1

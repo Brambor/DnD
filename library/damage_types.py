@@ -1,4 +1,4 @@
-from modules.Misc import local_loader
+from library.Misc import local_loader
 
 
 damage_types = {

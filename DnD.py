@@ -5,6 +5,8 @@ import sys
 from datetime import datetime
 from time import sleep
 
+from library.Main import output_library
+
 from modules.CustomCurses import CustomCurses
 from modules.CustomInput import CustomInput
 from modules.CustomPrint import CustomPrint
@@ -12,7 +14,6 @@ from modules.Game import Game
 from modules.Parser import Parser
 from modules.SettingsLoader import settings, output_settings
 
-from library.Main import library, output_library
 
 """
 class Effect():
@@ -91,15 +92,15 @@ if not do_tests:
 	else:
 		current_time = None
 
-	cCurses = CustomCurses(settings)
+	cCurses = CustomCurses()
 	windows = cCurses.windows
 
 	cPrint = CustomPrint(path_to_DnD, windows, cCurses, log_file=current_time)
 	cInput = CustomInput(cPrint, cCurses, input_stream=False)
 	cCurses.cPrint = cPrint
 
-	G = Game(library, cPrint, cCurses)
-	P = Parser(G, cInput, cPrint, settings.DEBUG)
+	G = Game(cPrint, cCurses)
+	P = Parser(G, cInput, cPrint)
 	cPrint.game = G
 
 	wrapper(regular_wrap)
@@ -115,7 +116,7 @@ else:
 		current_time = None
 	f1 = sys.stdin
 
-	cCurses = CustomCurses(settings)
+	cCurses = CustomCurses()
 	windows = cCurses.windows
 
 	cPrint = CustomPrint(path_to_DnD, windows, cCurses, log_file=current_time)
@@ -132,8 +133,8 @@ else:
 		f_copy = open(path,'r').read().split("\n")
 		cInput.input_stream = f_copy
 
-		G = Game(library, cPrint, cCurses)
-		P = Parser(G, cInput, cPrint, settings.DEBUG)
+		G = Game(cPrint, cCurses)
+		P = Parser(G, cInput, cPrint)
 		cPrint.game = G
 		sys.stdin = f
 

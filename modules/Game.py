@@ -1,6 +1,8 @@
 import os
 import pickle
 
+from library.Main import library
+
 from modules.Entity import Entity
 from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
@@ -8,17 +10,16 @@ from modules.Misc import get_valid_filename
 
 
 class Game():
-	def __init__(self, library, cPrint, cCurses):
+	def __init__(self, cPrint, cCurses):
 		self.i_entity = 0
 		self.i_turn = 0
-		self.library = library
 		self.entities = []
 		self.cPrint = cPrint
 		self.cCurses = cCurses  # only for library of color usage used in Entity
 		self.save_file_associated = None
 
 	def create(self, entity, nickname=""):
-		e = Entity(self.library["entities"][entity], self.i_entity, self)
+		e = Entity(library["entities"][entity], self.i_entity, self)
 		if nickname != "":
 			e.set_nickname(nickname)
 		self.i_entity += 1
@@ -41,15 +42,15 @@ class Game():
 			self.cPrint("All entities played. New round!\n")
 		self.i_turn += 1
 
-	def get(self, library, thing):
+	def get(self, which_library, thing):
 		"getting things from self.library"
-		if library not in self.library:
-			raise DnDException("Unknown library '%s'." % library)
+		if which_library not in library:
+			raise DnDException("Unknown library '%s'." % which_library)
 		else:
-			ret = self.library[library].get(thing, None)
+			ret = library[which_library].get(thing, None)
 			if ret:
 				return ret
-			raise DnDException("'%s' is not in '%s' library." % (thing, library))
+			raise DnDException("'%s' is not in '%s' library." % (thing, which_library))
 
 	def get_entity(self, nickname):
 		"returns pair (i, entity) from self.entities; i is index in self.entities != id"
