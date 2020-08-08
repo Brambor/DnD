@@ -10,16 +10,15 @@ from modules.Misc import get_valid_filename
 
 
 class Game():
-	def __init__(self, cPrint, cCurses):
+	def __init__(self, Connector):
+		self.C = Connector
 		self.i_entity = 0
 		self.i_turn = 0
 		self.entities = []
-		self.cPrint = cPrint
-		self.cCurses = cCurses  # only for library of color usage used in Entity
 		self.save_file_associated = None
 
 	def create(self, entity, nickname=""):
-		e = Entity(library["entities"][entity], self.i_entity, self)
+		e = Entity(self.C, library["entities"][entity], self.i_entity)
 		if nickname != "":
 			e.set_nickname(nickname)
 		self.i_entity += 1
@@ -28,18 +27,18 @@ class Game():
 
 	def erase(self, cmd):
 		entity_i, entity = self.get_entity(cmd)
-		self.cPrint("Entity %s has been deleted.\n" % entity)
-		self.cPrint.deselect_entity_inventory(entity)
+		self.C.Print("Entity %s has been deleted.\n" % entity)
+		self.C.Print.deselect_entity_inventory(entity)
 		del self.entities[entity_i]
 
 	def turn(self):
 		for e in self.entities:
 			e.apply_effects()
-		self.cPrint("Turn %d\n" % self.i_turn)
+		self.C.Print("Turn %d\n" % self.i_turn)
 		if all(e.played_this_turn for e in self.entities):
 			for e in self.entities:
 				e.played_this_turn = False
-			self.cPrint("All entities played. New round!\n")
+			self.C.Print("All entities played. New round!\n")
 		self.i_turn += 1
 
 	def get_entity(self, nickname):
@@ -73,15 +72,15 @@ class Game():
 		complete_string += "".join(
 				'{1}{0: <3}'.format(threw, "!" if crit else " ") for threw, crit in threw_crit
 		) + "\n"
-		self.cPrint(complete_string)
+		self.C.Print(complete_string)
 		return threw_crit, crits
 
 	# SAVE / LOAD
 	def save(self, file_name=None):
-		saves_path = f'{self.cPrint.path_to_DnD}/saves'
+		saves_path = f'{self.C.path_to_DnD}/saves'
 
 		if file_name in {"test_save_A", "test_save_B"}:
-			self.cPrint(f"WARNING: '{file_name}' is rewritten on each run of 'test/test_save.py', do not use it!\n")
+			self.C.Print(f"WARNING: '{file_name}' is rewritten on each run of 'test/test_save.py', do not use it!\n")
 		elif file_name == None:
 			if self.save_file_associated == None:
 				raise DnDException(f"No save file is yet asscociated with this game.")
@@ -92,47 +91,45 @@ class Game():
 		save_path = f'{saves_path}/{file_name}.pickle'
 
 		if file_name != self.save_file_associated and os.path.exists(save_path):
-			self.cPrint("Saving overwrote non asscociated file!\n")
+			self.C.Print("Saving overwrote non asscociated file!\n")
 			# add date to save
 
-		big_d = {key: self.__dict__[key] for key in self.__dict__ if key not in {"cCurses", "cPrint", "save_file_associated"}}
+		big_d = {key: self.__dict__[key] for key in self.__dict__ if key not in {"save_file_associated", "C"}}
 		for e in big_d["entities"]:
-			e.__dict__ = {key:e.__dict__[key] for key in e.__dict__ if key not in {"game", "cPrint"}}
+			e.__dict__ = {key:e.__dict__[key] for key in e.__dict__ if key != "C"}
 
 		if not os.path.exists(saves_path):
 			os.mkdir(saves_path)
 		with open((save_path), "wb") as save_file:
 			pickle.dump(big_d, save_file)
 		self.save_file_associated = file_name
-		self.cPrint(f"Saved as '{file_name}'.\n")
+		self.C.Print(f"Saved as '{file_name}'.\n")
 
 	def load(self, file_name):
-		save_path = f'{self.cPrint.path_to_DnD}/saves/{file_name}.pickle'
+		save_path = f'{self.C.path_to_DnD}/saves/{file_name}.pickle'
 		if not os.path.exists(save_path):
 			raise DnDException(f"Save file '{file_name}' does not exist.")
 		# warn, then load
 		with open(save_path, "rb") as save_file:
 			big_d = pickle.load(save_file)
-		big_d["cCurses"] = self.cCurses
-		big_d["cPrint"] = self.cPrint
+		big_d["C"] = self.C
 		for e in big_d["entities"]:
-			e.game = self
-			e.cPrint = self.cPrint
-		self.cPrint.inventory_entity = None  # restarting to refresh
+			e.C = self.C
+		self.C.Print.inventory_entity = None  # restarting to refresh
 		self.__dict__ = big_d
 		self.save_file_associated = file_name
-		self.cPrint(f"File '{file_name}' loaded.\n")
+		self.C.Print(f"File '{file_name}' loaded.\n")
 
 	def list_saves(self):
-		saves_path = f'{self.cPrint.path_to_DnD}/saves'
-		self.cPrint("\n".join(f[:-7] for f in os.listdir(saves_path)) + "\n")
+		saves_path = f'{self.C.path_to_DnD}/saves'
+		self.C.Print("\n".join(f[:-7] for f in os.listdir(saves_path)) + "\n")
 
 	def delete(self, file_name):
-		save_path = f'{self.cPrint.path_to_DnD}/saves/{file_name}.pickle'
+		save_path = f'{self.C.path_to_DnD}/saves/{file_name}.pickle'
 		if not os.path.exists(save_path):
 			raise DnDException(f"Save file '{file_name}' does not exist.")
 		os.remove(save_path)
 		if self.save_file_associated == file_name:
 			self.save_file_associated = None
-			self.cPrint(f"This game was associated with '{file_name}', so it is no longer associated.\n")
-		self.cPrint(f"Save '{file_name}' deleted.\n")
+			self.C.Print(f"This game was associated with '{file_name}', so it is no longer associated.\n")
+		self.C.Print(f"Save '{file_name}' deleted.\n")

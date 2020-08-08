@@ -8,7 +8,8 @@ from modules.Misc import calculate, convert_string_to_bool, get_library, normal_
 
 
 class Entity():
-	def __init__(self, library_entity, i, game):
+	def __init__(self, Connector, library_entity, i):
+		self.C = Connector
 		self.id = i
 		self.body = copy(library_entity)
 		del self.body["nickname"]
@@ -22,8 +23,6 @@ class Entity():
 			self.body[value] = library_entity.get(value, default)
 		self.body["effects"] = []
 		self.body["alive"] = True
-		self.game = game
-		self.cPrint = game.cPrint
 		self.played_this_turn = False
 
 	def __str__(self):
@@ -31,14 +30,14 @@ class Entity():
 
 	# RAW STAT MANIPULATION
 	def printStat(self, stat):
-		self.cPrint(f'{stat} = {self.get_stat(stat, False, for_printing=True)}\n')
+		self.C.Print(f'{stat} = {self.get_stat(stat, False, for_printing=True)}\n')
 
 	def printStats(self):
 		complete_string = f"nickname = '{self.nickname}'\nid = {self.id}\n"
 		for stat in sorted(self.body.keys()):
 			complete_string += f'{stat} = {self.get_stat(stat, False, for_printing=True)}\n'
 		complete_string += f"played_this_turn = {self.played_this_turn}\n"
-		self.cPrint(complete_string)
+		self.C.Print(complete_string)
 
 	def get_stats_reduced(self):
 		"yields set(text to be printed, color_pair number)"
@@ -117,8 +116,8 @@ class Entity():
 			raise DnDException("Nickname cannot be an integer!")
 		elif " " in nickname:
 			raise DnDException("Nickname cannot contain space ' '!")
-		elif nickname in (ent.nickname for ent in self.game.entities):
-			raise DnDException(f"Nickname is already in use by {self.game.get_entity(nickname)[1]}")
+		elif nickname in (ent.nickname for ent in self.C.Game.entities):
+			raise DnDException(f"Nickname is already in use by {self.C.Game.get_entity(nickname)[1]}")
 		else:
 			self.nickname = nickname
 
@@ -166,20 +165,20 @@ class Entity():
 	def check_dead(self):  # not handeled at all
 		if self.get_stat("hp") <= 0:  # get_stat might result in wierd bug
 			if self.body["alive"]:
-				self.cPrint(f"{self} IS DEAD!\n")
+				self.C.Print(f"{self} IS DEAD!\n")
 			self.body["alive"] = False
 
 	def check_revived(self):
 		if self.get_stat("hp") > 0:
 			if not self.body["alive"]:
-				self.cPrint(f"{self} IS ALIVE!\n")
+				self.C.Print(f"{self} IS ALIVE!\n")
 			self.body["alive"] = True
 
 	# ATTACK
 	def attack(self, attack_str):
 		attack = self.get_attack(attack_str)
 		if "dmg" in attack:
-			damage_list, crits = parse_damage(attack["dmg"], self.game)
+			damage_list, crits = parse_damage(attack["dmg"], self.C.Game)
 		else:
 			return []
 		for c in crits:
@@ -189,7 +188,7 @@ class Entity():
 			if att[0] == "add_attack":
 				damage_list.extend(self.attack(att[1]))
 			elif att[0] == "print":
-				self.cPrint(f"{att[1]} (prints {self}'s attack '{attack_str}' by critting on '{c}').\n")
+				self.C.Print(f"{att[1]} (prints {self}'s attack '{attack_str}' by critting on '{c}').\n")
 		return damage_list
 
 	def attack_list_print(self):
@@ -199,9 +198,9 @@ class Entity():
 				note = "Attacks starting with * are ment only as reactions and shouldn't be used.\n"
 			else:
 				note = ""
-			self.cPrint(f"{self}'s attacks:\n{s}\n{note}")
+			self.C.Print(f"{self}'s attacks:\n{s}\n{note}")
 		else:
-			self.cPrint(f"{self} has no attacks\n")
+			self.C.Print(f"{self} has no attacks\n")
 
 	def get_attack(self, attack_str):
 		if attack_str in self.body["attacks"]:
@@ -210,14 +209,14 @@ class Entity():
 			raise DnDException(f"Entity {self} does not know {attack_str}.")
 
 	# CAST
-	def cast_spell(self, targets, spell, cInput=False):
+	def cast_spell(self, targets, spell, do_input):
 		spell_cost = spell["mana_consumption"].get("base", 0) \
 					+spell["mana_consumption"].get("per_target", 0) * len(targets)
 
 		if self.get_stat("mana") >= spell_cost:
 			self.body["mana"] -= spell_cost
 		else:
-			self.cPrint(f'{self} does not have enought mana for {spell["name"]}\n')
+			self.C.Print(f'{self} does not have enought mana for {spell["name"]}\n')
 			return
 
 		for target in targets:
@@ -225,19 +224,19 @@ class Entity():
 
 			crit = False
 			if "damages" in spell["effects"]:
-				damage, crit = self.count_spell_hp(spell["effects"]["damages"], cInput)
+				damage, crit = self.count_spell_hp(spell["effects"]["damages"], do_input)
 				target.damaged( (({"magic"}, damage),) )
 				if crit:
-					self.cPrint("Critical spell!!\n")
+					self.C.Print("Critical spell!!\n")
 			if "heals" in spell["effects"]:
-				heal = self.count_spell_hp(spell["effects"]["heals"], cInput)[0]
+				heal = self.count_spell_hp(spell["effects"]["heals"], do_input)[0]
 				target.healed(heal)
 
 			target.add_effects(spell["effects"].get("adds", dict()).get("base", set()))
 			if crit:
 				target.add_effects(spell["effects"].get("adds", dict()).get("on_crit", set()))
 
-	def count_spell_hp(self, spell, cInput):
+	def count_spell_hp(self, spell, do_input):
 		total_hp = spell.get("base", 0)
 		for bonus in spell.get("bonuses", set()):
 			total_hp += self.body.get(bonus, 0) * spell["bonuses"][bonus]  # TODO: if stat is missing, we would like to have QUANTUM_STAT?
@@ -245,11 +244,11 @@ class Entity():
 		# make seq
 		dice = spell.get("dice")
 		if dice:
-			if cInput:
-				threw = next(parse_sequence(cInput("threw >>>")))
+			if do_input:
+				threw = next(parse_sequence(self.C.Input("threw >>>")))
 			else:
 				threw = D(dice)
-			crit = dice_crit(dice, threw, self.cPrint)
+			crit = dice_crit(dice, threw, self.C.Print)
 			total_hp += threw
 		return (total_hp, crit)
 
@@ -282,7 +281,7 @@ class Entity():
 		if not statement:
 			statement = "received"
 		if self.get_stat("alive"):
-			self.cPrint(f'{self} {statement} {total_dmg} dmg: {", ".join(dmg_string)}\n')
+			self.C.Print(f'{self} {statement} {total_dmg} dmg: {", ".join(dmg_string)}\n')
 
 		# applying
 		self.body["hp"] -= total_dmg
@@ -290,7 +289,7 @@ class Entity():
 
 	def healed(self, heal):
 		healed_for = min(self.get_stat("hp") + normal_round(heal), self.get_stat("hp_max")) - self.get_stat("hp")
-		self.cPrint(f"{self} healed for {healed_for} HladinPetroleje\n")
+		self.C.Print(f"{self} healed for {healed_for} HladinPetroleje\n")
 		self.body["hp"] += healed_for
 		self.check_revived()
 
@@ -314,14 +313,14 @@ class Entity():
 			if damage_type in self.body["resistances"]:
 				r = self.body["resistances"][damage_type]
 				if not (-1 <= r <= 1):
-					self.cPrint("Warning! Resistance is not in interval <-100%, 100%>!\n")
+					self.C.Print("Warning! Resistance is not in interval <-100%, 100%>!\n")
 				dmg_mult *= (1 - r)
 				relevant.append(f"resistance to {damage_type} {int(100 * r)}%")
 
 			if not(caused_by_effect) and self.turned_by_into(damage_type.upper()):
 				dmg_mult *= 0.5
 				relevant.append("removed effect 50%")
-				self.cPrint("Rule (off screen): Nevýhoda na kostku.\n")
+				self.C.Print("Rule (off screen): Nevýhoda na kostku.\n")
 
 		return (dmg * dmg_mult, ", ".join(relevant))
 
@@ -362,7 +361,7 @@ class Entity():
 		# by effect
 		immunity_by = self.immune_to_effect(effect)
 		if immunity_by:
-			self.cPrint(f'{self} is immune to {effect["name"]} because they are {self.get_effect_string(immunity_by)}\n')
+			self.C.Print(f'{self} is immune to {effect["name"]} because they are {self.get_effect_string(immunity_by)}\n')
 			return
 
 		# turned by into
@@ -403,7 +402,7 @@ class Entity():
 		else:
 			raise
 
-		self.cPrint(f"{self} is {self.get_effect_string(effect)} now{extra_comment}\n")
+		self.C.Print(f"{self} is {self.get_effect_string(effect)} now{extra_comment}\n")
 
 		# Remove effects that entity is now immune to
 		if "prevents" in effect:
@@ -419,7 +418,7 @@ class Entity():
 		while i < len(self.body["effects"]):
 			effect = self.body["effects"][i]
 			if effect["name"] in flags:
-				self.cPrint(f"{self} is no longer {self.get_effect_string(effect)}\n")
+				self.C.Print(f"{self} is no longer {self.get_effect_string(effect)}\n")
 				del self.body["effects"][i]
 			else:
 				i += 1
@@ -433,9 +432,9 @@ class Entity():
 			else:
 				raise DnDException(f"{index} is too much!")
 		if indexes:
-			self.cPrint(string)
+			self.C.Print(string)
 		else:
-			self.cPrint("Nothing removed.\n")
+			self.C.Print("Nothing removed.\n")
 
 	def apply_effects(self):
 		i = 0
@@ -447,14 +446,14 @@ class Entity():
 				threw = D(effect["value"])
 				self.damaged((({"true"}, threw),), ("burns for" if effect["name"] == "FIRE" else "bleeds for"), caused_by_effect=True)
 				if threw == 1:
-					self.cPrint(f"\tand stopped {self.get_effect_string(effect)}\n")
+					self.C.Print(f"\tand stopped {self.get_effect_string(effect)}\n")
 					del effects[i]
 					continue
 
 			if effect["type"] == "duration":
 				effect["value"] -= 1
 				if effect["value"] == 0:
-					self.cPrint(f"{self} is no longer {self.get_effect_string(effect)}\n")
+					self.C.Print(f"{self} is no longer {self.get_effect_string(effect)}\n")
 					del effects[i]
 
 			i += 1
@@ -486,7 +485,7 @@ class Entity():
 					else:
 						into_str = "nothing"
 
-					self.cPrint(f"{self}'s {original} turns into {into_str} by {flag}\n")
+					self.C.Print(f"{self}'s {original} turns into {into_str} by {flag}\n")
 					if turns_into:
 						self.add_effect(effect, value)
 					return True
@@ -522,14 +521,14 @@ class Entity():
 
 	def put_item_into_inventory(self, item):
 		self.body["inventory"].append(copy(item))
-		self.cPrint(f"{item} is now in {self}'s inventory.\n")
+		self.C.Print(f"{item} is now in {self}'s inventory.\n")
 
 	def remove_item_from_inventory(self, cmd):
 		item_i, item = self.get_item(cmd)
-		self.cPrint(f"{item} vanished from {self}'s inventory.\n")
+		self.C.Print(f"{item} vanished from {self}'s inventory.\n")
 		del self.body["inventory"][item_i]
 
 	def set_inventory_item(self, cmd, key, value):
 		item_i, item = self.get_item(cmd)
 		self.body["inventory"][item_i][key] = value
-		self.cPrint(f"{self}'s item now reads: {item}.\n")
+		self.C.Print(f"{self}'s item now reads: {item}.\n")

@@ -7,6 +7,7 @@ from time import sleep
 
 from library.Main import output_library
 
+from modules.Connector import Connector
 from modules.CustomCurses import CustomCurses
 from modules.CustomInput import CustomInput
 from modules.CustomPrint import CustomPrint
@@ -92,16 +93,14 @@ if not do_tests:
 	else:
 		current_time = None
 
-	cCurses = CustomCurses()
-	windows = cCurses.windows
+	C = Connector(path_to_DnD, log_file=current_time)
+	cCurses = CustomCurses(C)
+	cInput = CustomInput(C, input_stream=False)
+	cPrint = CustomPrint(C)
+	G = Game(C)
+	P = Parser(C)
 
-	cPrint = CustomPrint(path_to_DnD, windows, cCurses, log_file=current_time)
-	cInput = CustomInput(cPrint, cCurses, input_stream=False)
-	cCurses.cPrint = cPrint
-
-	G = Game(cPrint, cCurses)
-	P = Parser(G, cInput, cPrint)
-	cPrint.game = G
+	C.populate(cCurses, cInput, cPrint, G)
 
 	wrapper(regular_wrap)
 
@@ -116,15 +115,13 @@ else:
 		current_time = None
 	f1 = sys.stdin
 
-	cCurses = CustomCurses()
-	windows = cCurses.windows
-
-	cPrint = CustomPrint(path_to_DnD, windows, cCurses, log_file=current_time)
-	cInput = CustomInput(cPrint, cCurses,
+	C = Connector(path_to_DnD, log_file=current_time)
+	cCurses = CustomCurses(C)
+	cInput = CustomInput(C,
 		input_stream=True,  # input_stream latter changed
 		test_environment=True,
 	)
-	cCurses.cPrint = cPrint
+	cPrint = CustomPrint(C)
 
 	for test in tests:
 		cInput.i = 0
@@ -133,9 +130,10 @@ else:
 		f_copy = open(path,'r').read().split("\n")
 		cInput.input_stream = f_copy
 
-		G = Game(cPrint, cCurses)
-		P = Parser(G, cInput, cPrint)
-		cPrint.game = G
+		G = Game(C)
+		P = Parser(C)
+		C.populate(cCurses, cInput, cPrint, G)
+
 		sys.stdin = f
 
 		wrapper(test_wrap, stdin=f1, test=test, len_f_copy=len(f_copy))

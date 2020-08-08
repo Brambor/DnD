@@ -11,9 +11,8 @@ from modules.SettingsLoader import settings
 
 
 class CustomCurses():
-	def __init__(self):
-		"Needs self.cPrint from outside. Both way dependency."
-		# got self.cPrint = cPrint from outside
+	def __init__(self, Connector):
+		self.C = Connector
 		self.curses = curses
 		self.fight_history = []
 		self.cmd_history = []
@@ -120,9 +119,6 @@ class CustomCurses():
 
 			for w in self.windows:
 				self.windows[w].refresh()
-			self.cPrint.refresh_entity_window()
-			self.cPrint.refresh_inventory_window()
-			self.cPrint.refresh_history_window()
 
 		self.init_command_textbox()
 
@@ -211,7 +207,7 @@ class CustomCurses():
 					else:
 						input_command = f"{message} {self.cmd_history[self.cmd_history_pointer]}"
 				self.windows["console_input"].clear()
-				self.cPrint.refresh_history_window()
+				self.C.Print.refresh_history_window()
 				self.move_in_history = 0
 				self.msg_interrupted = True
 				continue
@@ -238,7 +234,7 @@ class CustomCurses():
 		self.fight_history.append(input_command)
 		self.add_to_history_commands(input_command_stripped)
 
-		self.cPrint.refresh_history_window()
+		self.C.Print.refresh_history_window()
 		for w in self.windows:
 			self.windows[w].refresh()
 		return input_command_stripped[:-1]  # removing ending \n
@@ -259,11 +255,11 @@ class CustomCurses():
 
 	def window_get_size(self, window_name):
 		h, w = self.get_window(window_name).getmaxyx()
-		self.cPrint(f"{window_name} is (height, width): {h}, {w}\n")
+		self.C.Print(f"{window_name} is (height, width): {h}, {w}\n")
 
 	def window_get_top_left(self, window_name):
 		y, x = self.get_window(window_name).getbegyx()
-		self.cPrint(f"{window_name} is at (y, x): {y}, {x}\n")
+		self.C.Print(f"{window_name} is at (y, x): {y}, {x}\n")
 
 	def window_set_size(self, window, ncols, nlines):
 		"set window size to (ncols, nlines)"
