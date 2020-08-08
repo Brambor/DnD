@@ -42,16 +42,6 @@ class Game():
 			self.cPrint("All entities played. New round!\n")
 		self.i_turn += 1
 
-	def get(self, which_library, thing):
-		"getting things from self.library"
-		if which_library not in library:
-			raise DnDException("Unknown library '%s'." % which_library)
-		else:
-			ret = library[which_library].get(thing, None)
-			if ret:
-				return ret
-			raise DnDException("'%s' is not in '%s' library." % (thing, which_library))
-
 	def get_entity(self, nickname):
 		"returns pair (i, entity) from self.entities; i is index in self.entities != id"
 		if nickname.isdigit():

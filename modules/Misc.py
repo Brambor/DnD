@@ -31,6 +31,16 @@ def get_int_from_dice(n_str):
 		return D(int(n_str[1:]))
 	raise DnDException("'%s' is not an integer nor in format 'dx'." % n_str)
 
+def get_library(which_library, thing):
+	"getting things from self.library"
+	if which_library not in library:
+		raise DnDException("Unknown library '%s'." % which_library)
+	else:
+		ret = library[which_library].get(thing, None)
+		if ret:
+			return ret
+		raise DnDException("'%s' is not in '%s' library." % (thing, which_library))
+
 def get_valid_filename(s):
 	"""
 	from https://github.com/django/django/blob/master/django/utils/text.py

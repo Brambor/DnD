@@ -4,7 +4,7 @@ from library.Main import library
 
 from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
-from modules.Misc import calculate, convert_string_to_bool, normal_round, parse_damage, parse_sequence
+from modules.Misc import calculate, convert_string_to_bool, get_library, normal_round, parse_damage, parse_sequence
 
 
 class Entity():
@@ -411,7 +411,7 @@ class Entity():
 
 	def add_effects(self, effects):
 		for effect, value in effects:
-			effect = self.game.get("effects", effect)
+			effect = get_library("effects", effect)
 			self.add_effect(effect, value)
 
 	def remove_effects(self, flags):
@@ -481,7 +481,7 @@ class Entity():
 					del self.body["effects"][i_x]
 					if turns_into:
 						effect, value = turns_into
-						effect = self.game.get("effects", effect)
+						effect = get_library("effects", effect)
 						into_str = self.get_effect_string(effect, value)
 					else:
 						into_str = "nothing"

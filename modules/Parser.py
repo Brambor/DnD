@@ -2,7 +2,7 @@ from library.Main import library
 
 from modules.DnDException import DnDException, DnDExit
 from modules.Dice import D, dice_eval, dice_stat, dice_parser
-from modules.Misc import calculate, get_int_from_dice, parse_damage  # imports its own Dice
+from modules.Misc import calculate, get_int_from_dice, get_library, parse_damage  # imports its own Dice
 from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
 
@@ -177,7 +177,7 @@ class Parser():
 					self.argument_wrong_ammount("effect", (4,), len(parts))
 
 				entity = self.game.get_entity(parts[1])[1]
-				effect = self.game.get("effects", parts[2])
+				effect = get_library("effects", parts[2])
 				self.check(parts[3], "dice")
 				dice = int(parts[3])
 				entity.add_effect(effect, dice)
@@ -253,7 +253,7 @@ class Parser():
 						self.cPrint(f"{entity}'s inventory is empty.\n")
 				elif len(parts) == 4:
 					if parts[2] == "add":
-						entity.put_item_into_inventory(self.game.get("items", parts[3]))
+						entity.put_item_into_inventory(get_library("items", parts[3]))
 					elif parts[2] == "del":
 						entity.remove_item_from_inventory(parts[3])
 					else:
@@ -370,7 +370,7 @@ class Parser():
 					self.argument_wrong_ammount("spell", (3, 4), len(parts))
 
 				caster = self.game.get_entity(parts[1])[1]
-				spell = self.game.get("spells", parts[2])
+				spell = get_library("spells", parts[2])
 
 				# targets
 				targets = self.cInput("targets:\n>>>")
