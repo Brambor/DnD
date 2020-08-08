@@ -15,10 +15,10 @@ class CustomCurses():
 		self.curses = curses
 		self.COLOR_USAGE = settings.COLOR_USAGE
 		self.WINDOWS = settings.WINDOWS
-		self.history = []
-		self.history_commands = []
-		self.history_pointer = 0
-		self.history_pointer_at_end = True
+		self.fight_history = []
+		self.cmd_history = []
+		self.cmd_history_pointer = 0
+		self.cmd_history_pointer_at_end = True
 		self.keys = {
 			10: 7,  # regular enter -> enter
 			459: 7,  # enter on notepad -> enter
@@ -115,7 +115,7 @@ class CustomCurses():
 
 		if add_history:
 			self.windows["fight"].addstr("\n".join(
-				self.history[-self.windows["fight"].getmaxyx()[0]:]
+				self.fight_history[-self.windows["fight"].getmaxyx()[0]:]
 			))
 
 			for w in self.windows:
@@ -171,8 +171,8 @@ class CustomCurses():
 		if x == 304:  # alt + f4
 			raise DnDExit("alt + f4")
 		if x == 7:
-			self.history_pointer = len(self.history_commands) - 1
-			self.history_pointer_at_end = True
+			self.cmd_history_pointer = len(self.cmd_history) - 1
+			self.cmd_history_pointer_at_end = True
 		return x
 
 	def send(self, message):
@@ -198,18 +198,18 @@ class CustomCurses():
 			if self.msg_interrupted:
 				continue
 			if self.move_in_history:
-				if self.history_commands:
-					self.history_pointer_at_end, self.history_pointer = (
-						self.history_pointer + self.move_in_history == len(self.history_commands),
+				if self.cmd_history:
+					self.cmd_history_pointer_at_end, self.cmd_history_pointer = (
+						self.cmd_history_pointer + self.move_in_history == len(self.cmd_history),
 						min(
-							max(0, self.history_pointer + self.move_in_history + self.history_pointer_at_end),
-							len(self.history_commands) - 1
+							max(0, self.cmd_history_pointer + self.move_in_history + self.cmd_history_pointer_at_end),
+							len(self.cmd_history) - 1
 						)
 					)
-					if self.history_pointer_at_end:
+					if self.cmd_history_pointer_at_end:
 						input_command = f"{message} "
 					else:
-						input_command = f"{message} {self.history_commands[self.history_pointer]}"
+						input_command = f"{message} {self.cmd_history[self.cmd_history_pointer]}"
 				self.windows["console_input"].clear()
 				self.cPrint.refresh_history_window()
 				self.move_in_history = 0
@@ -235,7 +235,7 @@ class CustomCurses():
 
 		self.windows["console_input"].clear()
 		self.windows["fight"].addstr(input_command)  # fight, but s
-		self.history.append(input_command)
+		self.fight_history.append(input_command)
 		self.add_to_history_commands(input_command_stripped)
 
 		self.cPrint.refresh_history_window()
@@ -246,11 +246,11 @@ class CustomCurses():
 	def add_to_history_commands(self, command):
 		if command in ("",):
 			return
-		if self.history_commands and command == self.history_commands[-1]:
+		if self.cmd_history and command == self.cmd_history[-1]:
 			return
 
-		self.history_pointer += (self.history_pointer == len(self.history_commands) - 1)
-		self.history_commands.append(command)
+		self.cmd_history_pointer += (self.cmd_history_pointer == len(self.cmd_history) - 1)
+		self.cmd_history.append(command)
 
 	def endCurses(self):
 		curses.nocbreak()

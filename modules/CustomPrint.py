@@ -14,7 +14,7 @@ class CustomPrint():
 	def __call__(self, message="", info_type="fight"):
 		if info_type == "fight":
 			self.windows["fight"].addstr(message)  # fight window
-			self.cCurses.history.append(message)
+			self.cCurses.fight_history.append(message)
 			self.windows["fight"].refresh()
 
 		if self.log_file:
@@ -110,18 +110,19 @@ class CustomPrint():
 		# current command in the middle of window
 		height, width = history_w.getmaxyx()
 		height -= 1
-		if len(self.cCurses.history_commands) <= height:
+		if len(self.cCurses.cmd_history) <= height:
 			slice_start = 0
-			slice_end = len(self.cCurses.history_commands)
+			slice_end = len(self.cCurses.cmd_history)
 		else:
-			slice_start = max(0, self.cCurses.history_pointer - height//2)
-			slice_start = min(slice_start, len(self.cCurses.history_commands)-height)
+			slice_start = max(0, self.cCurses.cmd_history_pointer - height//2)
+			slice_start = min(slice_start, len(self.cCurses.cmd_history)-height)
 			slice_end = slice_start + height
 
 		history_w.clear()
-		for i, line in enumerate(self.cCurses.history_commands[slice_start:slice_end]):
+		for i, line in enumerate(self.cCurses.cmd_history[slice_start:slice_end]):
 			i += slice_start
-			history_w.addnstr(f'{i}.{[" ", "*"][i==self.cCurses.history_pointer and not self.cCurses.history_pointer_at_end]}{line}', width)
+			mark = "*" if i==self.cCurses.cmd_history_pointer and not self.cCurses.cmd_history_pointer_at_end else " "
+			history_w.addnstr(f'{i}.{mark}{line}', width)
 		self.windows["history"].refresh()
 
 	def write_to_log(self, message):
