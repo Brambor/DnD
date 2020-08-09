@@ -86,6 +86,7 @@ strs = {
 		"\tWHAT can be: %s\n"
 		"If something doesn't work or you don't understand something TELL ME, please!\n"
 		"\tIt means that something is wrongly implemented or documented!\n"
+		"Use ctrl+z and ctrl+y to move backwards and forwards in history.\n"
 		"Use command 'exit' or press 'alt + f4' to exit.\n"
 	),
 	"commands": {

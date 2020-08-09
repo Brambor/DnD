@@ -1,3 +1,4 @@
+from copy import deepcopy
 import os
 import pickle
 
@@ -15,6 +16,8 @@ class Game():
 		self.i_entity = 0
 		self.i_turn = 0
 		self.entities = []
+		self.entities_history = [[]]
+		self.entities_history_pointer = 0
 		self.save_file_associated = None
 
 	def create(self, entity, nickname=""):
@@ -28,7 +31,6 @@ class Game():
 	def erase(self, cmd):
 		entity_i, entity = self.get_entity(cmd)
 		self.C.Print("Entity %s has been deleted.\n" % entity)
-		self.C.Print.deselect_entity_inventory(entity)
 		del self.entities[entity_i]
 
 	def turn(self):
@@ -54,6 +56,12 @@ class Game():
 					return (i, e)
 			raise DnDException("Entity '%s' does not exist." % nickname)
 
+	def get_entity_by_id(self, i_id):
+		"for nonexistant returns None"
+		for e in self.entities:  # bin search would be faster
+			if e.id == i_id:
+				return e
+
 	def throw_dice(self, dice_list):
 		"""throws die in list, prints results
 		returns tuple of
@@ -74,6 +82,28 @@ class Game():
 		) + "\n"
 		self.C.Print(complete_string)
 		return threw_crit, crits
+
+	# ENTITY HISTORY
+	def history_add(self):
+		if (self.entities_history_pointer +1 < len(self.entities_history)):
+			del self.entities_history[self.entities_history_pointer+1 :]
+		for e in self.entities:
+			e.C = None
+		self.entities_history.append(deepcopy(self.entities))
+		for e in self.entities:
+			e.C = self.C
+		self.entities_history_pointer += 1
+
+	def history_move(self, move_in_history):
+		"move_in_history is typically +1 or -1"
+		if 0 <= self.entities_history_pointer + move_in_history < len(self.entities_history):
+			self.entities_history_pointer += move_in_history
+			self.entities = deepcopy(self.entities_history[self.entities_history_pointer])
+			for e in self.entities:
+				e.C = self.C
+		else:
+			self.C.Print("At history boundary.\n")
+		self.C.Print.refresh_windows()
 
 	# SAVE / LOAD
 	def save(self, file_name=None):
@@ -115,7 +145,6 @@ class Game():
 		big_d["C"] = self.C
 		for e in big_d["entities"]:
 			e.C = self.C
-		self.C.Print.inventory_entity = None  # restarting to refresh
 		self.__dict__ = big_d
 		self.save_file_associated = file_name
 		self.C.Print(f"File '{file_name}' loaded.\n")

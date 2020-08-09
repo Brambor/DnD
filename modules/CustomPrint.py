@@ -3,7 +3,7 @@ import os
 class CustomPrint():
 	def __init__(self, Connector):
 		self.C = Connector
-		self.inventory_entity = None  # which entity is selected for inventory display
+		self.inventory_entity_id = -1  # which entity is selected for inventory display
 
 	def __call__(self, message="", info_type="fight"):
 		if info_type == "fight":
@@ -27,6 +27,8 @@ class CustomPrint():
 		if "entities" not in self.C.Curses.windows:
 			return
 		self.C.Curses.windows["entities"].clear()
+		self.C.Curses.windows["entities"].addstr(
+			f'History {self.C.Game.entities_history_pointer}/{len(self.C.Game.entities_history)-1}\n')
 		if not self.C.Game.entities:
 			self.C.Curses.windows["entities"].addstr("no entities")
 			self.C.Curses.windows["entities"].refresh()
@@ -69,25 +71,26 @@ class CustomPrint():
 		self.C.Curses.windows["entities"].refresh()
 
 	def select_entity_inventory(self, entity):
-		self.inventory_entity = entity
+		self.inventory_entity_id = entity.id
 
 	def deselect_entity_inventory(self, entity):
 		# if given entity's inventory is selected, deselect it
 		# otherwise do nothing
-		if self.inventory_entity == entity:
-			self.inventory_entity = None
+		if self.inventory_entity_id == entity.id:
+			self.inventory_entity_id = -1
 
 	def refresh_inventory_window(self):
 		if "inventory" not in self.C.Curses.windows:
 			return
-		entity = self.inventory_entity
+		entity = self.C.Game.get_entity_by_id(self.inventory_entity_id)
 		self.C.Curses.windows["inventory"].clear()
 		try:
 			if entity == None:
 				header = "%sinventory\n" % self.spaces_to_center("inventory", "inventory")
 				self.C.Curses.windows["inventory"].addstr(header)
+				text = f"Entity with id={self.inventory_entity_id} doesn't exist." if self.inventory_entity_id != -1 else "None entity selected!"
 				self.C.Curses.windows["inventory"].addstr(
-					"None entity selected! Note: select with command 'inventory entity'.\n")
+					f"{text} Note: select with command 'inventory entity'.\n")
 			else:
 				header = "%s's inventory" % entity.nickname
 				header = "%s%s\n" % (self.spaces_to_center("inventory", header), header)

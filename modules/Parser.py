@@ -114,6 +114,7 @@ class Parser():
 
 					for target in [self.C.Game.get_entity(p)[1] for p in parts[3:]]:
 						target.damaged(damage_list)
+				self.C.Game.history_add()
 
 			elif parts[0] in ("create", "c"):
 				self.check(parts[1], "entity_library")
@@ -129,6 +130,7 @@ class Parser():
 							self.C.Game.create(parts[1], nickname)
 					except DnDException as e:
 						self.C.Print(f"?!: {e}\n")
+				self.C.Game.history_add()
 
 			elif parts[0] in ("compare", "cmp"):
 				if len(parts) == 3:
@@ -169,6 +171,7 @@ class Parser():
 
 				for target in [self.C.Game.get_entity(target)[1] for target in targets]:
 					target.damaged(damage_list)
+				self.C.Game.history_add()
 
 			elif parts[0] in ("effect", "e"):
 				if len(parts) != 4:
@@ -179,12 +182,14 @@ class Parser():
 				self.check(parts[3], "dice")
 				dice = int(parts[3])
 				entity.add_effect(effect, dice)
+				self.C.Game.history_add()
 
 			elif parts[0] == "erase":
 				if len(parts) == 2:
 					self.C.Game.erase(parts[1])
 				else:
 					self.argument_wrong_ammount("erase", (2,), len(parts))
+				self.C.Game.history_add()
 
 			elif parts[0] == "eval":
 				parts = " ".join(parts[1:])
@@ -193,6 +198,7 @@ class Parser():
 					eval(parts)
 				except:
 					self.C.Print("eval done wrong\n")
+				self.C.Game.history_add()  # sure, why not?
 
 			elif parts[0] == "exit":
 				if len(parts) == 1:
@@ -237,6 +243,7 @@ class Parser():
 
 				for target in [self.C.Game.get_entity(target)[1] for target in targets]:
 					target.healed(healed_for)
+				self.C.Game.history_add()
 
 			elif parts[0] in ("inventory", "i"):
 				if len(parts) not in (2, 4, 6):
@@ -256,11 +263,13 @@ class Parser():
 						entity.remove_item_from_inventory(parts[3])
 					else:
 						raise DnDException(f"On 4 arguments, command's 'inventory' third argument should be add/del, {parts[2]} given.")
+					self.C.Game.history_add()
 				elif len(parts) == 6:
 					item, key, value = parts[3], parts[4], parts[5]
 					if value.replace("-", "", 1).isdigit():
 						value = int(value)
 					entity.set_inventory_item(item, key, value)
+					self.C.Game.history_add()
 
 			elif parts[0] in ("library", "lib", "list", "l"):
 				if len(parts) != 2:
@@ -318,6 +327,7 @@ class Parser():
 					self.C.Print(f"Toggled:{changes}\n{errors}")
 				elif errors:
 					self.C.Print(errors)
+				self.C.Game.history_add()
 
 			elif parts[0] in ("remove_effect", "remove", "r"):
 				if len(parts) != 2:
@@ -337,6 +347,7 @@ class Parser():
 				indexes = [int(i) if i.isdigit() else DnDException(f"'{i}' is not a non-negative integer.") for i in effects_to_remove]
 
 				entity.remove_effects_by_index(indexes)
+				self.C.Game.history_add()
 
 			elif parts[0] == "set":
 				if len(parts) not in (2, 3, 4, 5):
@@ -358,6 +369,7 @@ class Parser():
 					entity.setStat(stat, value)
 				elif len(parts) == 5:
 					entity.setStat(stat, value, parts[4])
+				self.C.Game.history_add()
 
 			elif parts[0] in ("spell", "s", "cast"):
 				if len(parts) not in (3, 4):
@@ -372,12 +384,14 @@ class Parser():
 				targets = [self.C.Game.get_entity(target)[1] for target in targets.split()]
 
 				caster.cast_spell(targets, spell, do_input)
+				self.C.Game.history_add()
 
 			elif parts[0] in ("turn", "t"):
 				if len(parts) == 1:
 					self.C.Game.turn()
 				else:
 					self.argument_wrong_ammount("turn", tuple(), len(parts))
+				self.C.Game.history_add()
 
 			elif parts[0] in ("window", "w"):
 				if len(parts) >= 2:

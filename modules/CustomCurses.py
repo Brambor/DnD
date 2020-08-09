@@ -170,6 +170,10 @@ class CustomCurses():
 		if x == 7:
 			self.cmd_history_pointer = len(self.cmd_history) - 1
 			self.cmd_history_pointer_at_end = True
+		if x == 26:  # ctrl+z -> move back in history
+			self.C.Game.history_move(-1)
+		if x == 25:  # ctrl+y
+			self.C.Game.history_move(+1)
 		return x
 
 	def send(self, message):
