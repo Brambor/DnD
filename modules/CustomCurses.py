@@ -154,6 +154,7 @@ class CustomCurses():
 			self.init_windows()
 			self.init_colors()
 			self.msg_interrupted = True
+			self.C.Print.refresh_windows()
 			return 7
 		if x in self.keys:
 			x = self.keys[x]

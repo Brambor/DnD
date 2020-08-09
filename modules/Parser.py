@@ -431,9 +431,7 @@ class Parser():
 
 		# entities window refresh
 		try:
-			self.C.Print.refresh_entity_window()
-			self.C.Print.refresh_inventory_window()
-			self.C.Print.refresh_history_window()
+			self.C.Print.refresh_windows()
 		except DnDException as exception:
 			self.C.Print("?!: %s\n" % exception)
 		except DnDExit:

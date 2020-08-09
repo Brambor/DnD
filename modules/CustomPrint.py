@@ -18,6 +18,11 @@ class CustomPrint():
 		# TODO: use str.center
 		return " "*(max(0, self.C.Curses.windows[window_name].getmaxyx()[1] - len(word))//2)
 
+	def refresh_windows(self):
+		self.refresh_entity_window()
+		self.refresh_inventory_window()
+		self.refresh_history_window()
+
 	def refresh_entity_window(self):
 		if "entities" not in self.C.Curses.windows:
 			return
