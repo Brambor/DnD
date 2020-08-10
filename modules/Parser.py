@@ -53,7 +53,7 @@ class Parser():
 		return True
 
 	def print_unrecognized_command(self, parts):
-		self.C.Print("?: Unrecognized command '%s'.%s\n" % (
+		self.C.Print("?!: Unrecognized command '%s'.%s\n" % (
 			parts[0],
 			["", " Maybe you forgot a space between command and first separator?"][any(separator in parts[0] for separator in settings.SEPARATORS)],
 		))

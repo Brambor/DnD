@@ -315,7 +315,8 @@ class Entity():
 				if not (-1 <= r <= 1):
 					self.C.Print("Warning! Resistance is not in interval <-100%, 100%>!\n")
 				dmg_mult *= (1 - r)
-				relevant.append(f"resistance to {damage_type} {int(100 * r)}%")
+				if r:
+					relevant.append(f"resistance to {damage_type} {int(100 * r)}%")
 
 			if not(caused_by_effect) and self.turned_by_into(damage_type.upper()):
 				dmg_mult *= 0.5

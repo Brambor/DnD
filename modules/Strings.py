@@ -106,6 +106,7 @@ strs = {
 			"\t'entity_library' can be listed via command 'library entities' 'l en' for short.\n"
 			"\tif 'nickname' is '_', automatic nickname is used\n"
 			"\tc pes <==> c pes _\n"
+			"\trunning 'c pes' twice <==> c pes _ _\n"
 			f'\t{symbol["*"]}'
 		),
 		"compare": (
