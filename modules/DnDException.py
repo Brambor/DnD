@@ -3,5 +3,6 @@ class DnDException(Exception):
 		super(DnDException, self).__init__(*args)
 		raise self
 
+
 class DnDExit(Exception):
 	pass

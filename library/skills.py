@@ -1,5 +1,6 @@
 from library.Misc import local_loader
 
+
 skills = (  # a tuple so it can be ordered
 	"boj",
 	"síla",

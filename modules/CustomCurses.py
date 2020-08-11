@@ -9,7 +9,6 @@ from modules.Misc import calculate
 from modules.SettingsLoader import settings
 
 
-
 class CustomCurses():
 	def __init__(self, Connector):
 		self.C = Connector

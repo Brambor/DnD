@@ -1,5 +1,6 @@
 import os
 
+
 class CustomInput():
 	"(file)input_stream (if input_stream): given message is printed ('print', not 'CustomPrint') - for purposes of tests"
 	def __init__(self, Connector, input_stream=False, test_environment=False):

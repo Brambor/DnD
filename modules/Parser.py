@@ -6,6 +6,7 @@ from modules.Misc import calculate, get_int_from_dice, get_library, parse_damage
 from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
 
+
 class Parser():
 	def __init__(self, Connector):
 		self.C = Connector

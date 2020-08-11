@@ -8,6 +8,7 @@ import webbrowser
 from django.core.management import call_command
 from tempfile import TemporaryFile
 
+
 def json_from_database(what):
 	tmpfile = TemporaryFile(mode="w+")
 	a = call_command("dumpdata", what, stdout=tmpfile)
