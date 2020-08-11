@@ -139,9 +139,10 @@ strs = {
 			f'\t{symbol["+"]}'
 		),
 		"erase": (
-			"erase entity\n"
+			"erase entity+\n"
 			"\tnot to be confused with 'remove'\n"
-			"\terases entity\n"
+			"\terases all 'entity+'\n"
+			f'\t{symbol["+"]}'
 		),
 		"eval": (
 			"eval command\n"

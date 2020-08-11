@@ -181,10 +181,9 @@ class Parser():
 				self.C.Game.history_add()
 
 			elif parts[0] == "erase":
-				if len(parts) == 2:
-					self.C.Game.erase(parts[1])
-				else:
-					self.argument_wrong_ammount("erase", (2,), len(parts))
+				if len(parts) < 2:
+					self.argument_wrong_ammount("erase", (2,), len(parts), last_at_least=True)
+				self.C.Game.erase(parts[1:])
 				self.C.Game.history_add()
 
 			elif parts[0] == "eval":

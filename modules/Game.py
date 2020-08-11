@@ -28,10 +28,22 @@ class Game():
 		self.entities.append(e)
 		return e
 
-	def erase(self, cmd):
-		entity_i, entity = self.get_entity(cmd)
-		self.C.Print("Entity %s has been deleted.\n" % entity)
-		del self.entities[entity_i]
+	def erase(self, entities):
+		changes = ""
+		errors = ""
+		for e in entities:
+			try:
+				entity_i, entity = self.get_entity(e)
+			except DnDException as e:
+				errors += f"?!: {e}\n"
+				continue
+			del self.entities[entity_i]
+			changes += f"Entity {entity} has been deleted.\n"
+
+		if changes:
+			self.C.Print(f"{changes}\n{errors}")
+		elif errors:
+			self.C.Print(errors)
 
 	def turn(self):
 		for e in self.entities:

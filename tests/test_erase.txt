@@ -1,14 +1,11 @@
+c pes a b c
 
-c pes a
-
-# 2 DnDExceptions
-erase 1
-erase b
+# a_0 b_1 c_2 success, DnDException(a doesn't exist) 
+erase a a 1 c
 
 # successful
-erase 0
 c pes a
-erase 1
+erase 3
 c pes a
 erase a
 c pes a
