@@ -509,7 +509,7 @@ class Entity():
 			else:
 				l = len(self.body["inventory"])
 				raise DnDException(
-					f"There are only {l} (indexes from 0 to {l-1}) items in inventory. Invalid index {cmd}.")
+					f"There are only {l} items in inventory with indexes from 0 to {l-1}. Invalid index {cmd}.")
 		else:
 			chosen_item = None
 			for i, item in enumerate(self.body["inventory"]):
@@ -520,17 +520,29 @@ class Entity():
 					else:
 						raise DnDException(f"There are more items derived_from {cmd}, please use index notation.")
 			if chosen_item == None:
-				raise DnDException(f"Item {cmd} not found in {self}'s inventory.")
+				raise DnDException(f"Item '{cmd}' not found in {self}'s inventory.")
 		return (chosen_i, self.body["inventory"][chosen_i])
 
-	def put_item_into_inventory(self, item):
+	def put_item_into_inventory(self, cmd):
+		item = get_library("items", cmd)
 		self.body["inventory"].append(copy(item))
 		self.C.Print(f"{item} is now in {self}'s inventory.\n")
+
+	def put_items_into_inventory(self, cmds):
+		items = [copy(get_library("items", cmd)) for cmd in cmds]
+		self.body["inventory"].extend(items)
+		self.C.Print(f"These items now are in {self}'s inventory:\n\t%s\n" % "\n\t".join(repr(i) for i in items))
 
 	def remove_item_from_inventory(self, cmd):
 		item_i, item = self.get_item(cmd)
 		self.C.Print(f"{item} vanished from {self}'s inventory.\n")
 		del self.body["inventory"][item_i]
+
+	def remove_items_from_inventory(self, cmds):
+		items = sorted([self.get_item(cmd) for cmd in cmds])
+		for item_i, _ in reversed(items):
+			del self.body["inventory"][item_i]
+		self.C.Print(f"These items vanished form {self}'s inventory:\n\t%s\n" % "\n\t".join(repr(i[1]) for i in items))
 
 	def set_inventory_item(self, cmd, key, value):
 		item_i, item = self.get_item(cmd)

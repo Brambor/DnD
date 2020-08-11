@@ -24,3 +24,20 @@ i a mod 0 mana_restore 75
 # negative integers
 i a mod 0 mana_restore -8
 i a mod 0 history Atracts_dragons!
+
+# 9 10 11, in sorted order
+c pes b
+i b add | mana_potion mana_potion mana_potion mana_potion mana_potion mana_potion mana_potion mana_potion mana_potion mana_potion mana_potion mana_potion
+i b
+i b del | 11 10 9
+i b
+
+# using separators
+c pes c
+i c add | mana_potion mana_potion
+i c del | 0 1
+
+# exceptions
+i what ever |
+i what |
+i c not_add_or_del | a

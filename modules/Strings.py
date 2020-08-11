@@ -179,7 +179,9 @@ strs = {
 			"[i]nventory entity\n"
 			"\tchoose entity's inventory to be listed in inventory window; lists items in inventory\n"
 			"[i]nventory entity add/del item\n"
+			"[i]nventory entity add/del | item+\n"
 			"\titem is from item_library\n"
+			f'\t{symbol["+"]}'
 			"[i]nventory entity mod item key value\n"
 			"\titem is from entity's inventory\n"
 			"\tkey & value are it's key & value respectively\n"

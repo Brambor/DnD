@@ -25,9 +25,13 @@ class Parser():
 			takes_str = f'{", ".join((str(t) for t in takes[:-1]))} or {takes[-1]}'
 
 		if separators:
-			raise DnDException(f"Command '{cmd}' (with arguments!) takes {takes_str} separator{'' if takes[-1] == 1 else 's'}, {count} given.")
+			raise DnDException((
+				f"Command '{cmd}' (with arguments!) takes {takes_str} "
+				f"separator{'' if takes[-1] == 1 else 's'}, {count} given."))
 		else:
-			raise DnDException(f"Command '{cmd}' takes {takes_str} argument{'' if takes[-1] == 1 else 's'}, {count} given.")
+			raise DnDException((
+				f"Command '{cmd}' takes {takes_str} "
+				f"argument{'' if takes[-1] == 1 else 's'}, {count} given."))
 
 	def check(self, values, types):
 		for v, t in zip(values.split(), types.split()):
@@ -49,10 +53,11 @@ class Parser():
 		return True
 
 	def print_unrecognized_command(self, parts):
-		self.C.Print("?!: Unrecognized command '%s'.%s\n" % (
-			parts[0],
-			["", " Maybe you forgot a space between command and first separator?"][any(separator in parts[0] for separator in settings.SEPARATORS)],
-		))
+		if any(separator in parts[0] for separator in settings.SEPARATORS):
+			note = " Maybe you forgot a space between command and first separator?"
+		else:
+			note = ""
+		self.C.Print(f"?!: Unrecognized command '{parts[0]}'.{note}\n")
 		if settings.TEST_CRASH_ON_UNKNOWN_COMMAND and self.C.Input.test_environment:
 			raise ValueError("Unknown command '%s'." % parts[0])
 
@@ -163,7 +168,8 @@ class Parser():
 
 				targets = parts[1].split()
 				if len(targets) == 0:
-					raise DnDException("Command 'dmg' after first separator (targets) takes at least 1 argument, %d given." % len(targets))
+					raise DnDException(
+						f"Command 'dmg' after separator (targets) takes at least 1 argument, {len(targets)} given.")
 
 				for target in [self.C.Game.get_entity(target)[1] for target in targets]:
 					target.damaged(damage_list)
@@ -234,37 +240,67 @@ class Parser():
 
 				targets = parts[1].split()
 				if len(targets) == 0:
-					raise DnDException("Command 'heal' after first separator (targets) takes at least 1 argument, %d given." % len(targets))
+					raise DnDException(
+						f"Command 'heal' after separator (targets) takes at least 1 argument, {len(targets)} given.")
 
 				for target in [self.C.Game.get_entity(target)[1] for target in targets]:
 					target.healed(healed_for)
 				self.C.Game.history_add()
 
 			elif parts[0] in ("inventory", "i"):
-				if len(parts) not in (2, 4, 6):
-					self.argument_wrong_ammount("inventory", (2, 4, 6), len(parts))
+				separated = separate(parts)
+				if len(separated) == 1:
+					if len(parts) not in (2, 4, 6):
+						self.argument_wrong_ammount("inventory", (2, 4, 6), len(parts))
 
-				entity = self.C.Game.get_entity(parts[1])[1]
-				self.C.Print.select_entity_inventory(entity)
-				if len(parts) == 2:
-					if entity.body["inventory"]:
-						self.C.Print("\n".join(f"{i}: {item}" for i, item in enumerate(entity.body["inventory"])) + "\n")
-					else:
-						self.C.Print(f"{entity}'s inventory is empty.\n")
-				elif len(parts) == 4:
+					entity = self.C.Game.get_entity(parts[1])[1]
+					self.C.Print.select_entity_inventory(entity)
+					if len(parts) == 2:
+						if entity.body["inventory"]:
+							self.C.Print(
+								"\n".join(f"{i}: {item}" for i, item in enumerate(entity.body["inventory"])) + "\n")
+						else:
+							self.C.Print(f"{entity}'s inventory is empty.\n")
+					elif len(parts) == 4:
+						if parts[2] == "add":
+							entity.put_item_into_inventory(parts[3])
+						elif parts[2] == "del":
+							entity.remove_item_from_inventory(parts[3])
+						else:
+							raise DnDException((
+								"On 3 arguments, command's 'inventory' second argument "
+								f"should be add/del, {parts[2]} given."))
+						self.C.Game.history_add()
+					elif len(parts) == 6:
+						item, key, value = parts[3], parts[4], parts[5]
+						if value.replace("-", "", 1).isdigit():
+							value = int(value)
+						entity.set_inventory_item(item, key, value)
+						self.C.Game.history_add()
+				elif len(separated) == 2:
+					parts = separated[0].split()
+					if len(parts) != 3:
+						raise DnDException((
+							"With 1 separator, command 'inventory' "
+							f"before the separator takes 2 arguments, {len(parts)-1} given."))
+					if not separated[1]:
+						raise DnDException((
+							"With 1 separator, command 'inventory' "
+							f"after separator (items) takes at least 1 argument, {len(separated[1].split())} given."))
+
+					entity = self.C.Game.get_entity(parts[1])[1]
+					self.C.Print.select_entity_inventory(entity)
 					if parts[2] == "add":
-						entity.put_item_into_inventory(get_library("items", parts[3]))
+						entity.put_items_into_inventory(separated[1].split())
 					elif parts[2] == "del":
-						entity.remove_item_from_inventory(parts[3])
+						entity.remove_items_from_inventory(separated[1].split())
 					else:
-						raise DnDException(f"On 4 arguments, command's 'inventory' third argument should be add/del, {parts[2]} given.")
+						raise DnDException((
+							"With 1 separator and 2 arguments before the separator, "
+							f"command's 'inventory' second argument should be add/del, {parts[2]} given."))
 					self.C.Game.history_add()
-				elif len(parts) == 6:
-					item, key, value = parts[3], parts[4], parts[5]
-					if value.replace("-", "", 1).isdigit():
-						value = int(value)
-					entity.set_inventory_item(item, key, value)
-					self.C.Game.history_add()
+				else:
+					self.argument_wrong_ammount("inventory", (1, 2), len(separated), separators=True)
 
 			elif parts[0] in ("library", "lib", "list", "l"):
 				if len(parts) != 2:
@@ -373,10 +409,12 @@ class Parser():
 				parts[0] = parts[0].split()
 
 				if len(parts[0]) not in (2, 3):
-					raise DnDException(f"Command 'spell' takes 2 or 3 arguments before first separator, {len(parts[0])} given.")
+					raise DnDException(
+						f"Command 'spell' takes 2 or 3 arguments before separator, {len(parts[0])} given.")
 
 				if not (targets := parts[1].split()):
-					raise DnDException(f"Command 'spell' after first separator (targets) takes at least 1 argument, {len(targets)} given.")
+					raise DnDException(
+						f"Command 'spell' after separator (targets) takes at least 1 argument, {len(targets)} given.")
 
 				caster = self.C.Game.get_entity(parts[0][0])[1]
 				spell = get_library("spells", parts[0][1])
