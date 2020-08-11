@@ -169,7 +169,7 @@ class Parser():
 				targets = parts[1].split()
 				if len(targets) == 0:
 					raise DnDException(
-						f"Command 'dmg' after separator (targets) takes at least 1 argument, {len(targets)} given.")
+						f"Command 'dmg' after separator (target+) takes at least 1 argument, {len(targets)} given.")
 
 				for target in [self.C.Game.get_entity(target)[1] for target in targets]:
 					target.damaged(damage_list)
@@ -241,7 +241,7 @@ class Parser():
 				targets = parts[1].split()
 				if len(targets) == 0:
 					raise DnDException(
-						f"Command 'heal' after separator (targets) takes at least 1 argument, {len(targets)} given.")
+						f"Command 'heal' after separator (target+) takes at least 1 argument, {len(targets)} given.")
 
 				for target in [self.C.Game.get_entity(target)[1] for target in targets]:
 					target.healed(healed_for)
@@ -286,7 +286,7 @@ class Parser():
 					if not separated[1]:
 						raise DnDException((
 							"With 1 separator, command 'inventory' "
-							f"after separator (items) takes at least 1 argument, {len(separated[1].split())} given."))
+							f"after separator (item+) takes at least 1 argument, {len(separated[1].split())} given."))
 
 					entity = self.C.Game.get_entity(parts[1])[1]
 					self.C.Print.select_entity_inventory(entity)
@@ -381,26 +381,44 @@ class Parser():
 				self.C.Game.history_add()
 
 			elif parts[0] == "set":
-				if len(parts) not in (2, 3, 4, 5):
-					self.argument_wrong_ammount("set", (2, 3, 4, 5), len(parts))
+				separated = separate(parts)
+				if len(separated) == 1:
+					if len(parts) not in (2, 3, 4, 5):
+						self.argument_wrong_ammount("set", (2, 3, 4, 5), len(parts))
 
-				entity = self.C.Game.get_entity(parts[1])[1]
-				if len(parts) == 2:
-					entity.printStats()
-					return
+					entity = self.C.Game.get_entity(parts[1])[1]
+					if len(parts) == 2:
+						entity.printStats()
+						return
 
-				stat = parts[2]
-				if len(parts) == 3:
-					entity.printStat(stat)
-					return
+					stat = parts[2]
+					if len(parts) == 3:
+						entity.printStat(stat)
+						return
 
-				value = parts[3]
+					value = parts[3]
 
-				if len(parts) == 4:
-					entity.setStat(stat, value)
-				elif len(parts) == 5:
-					entity.setStat(stat, value, parts[4])
-				self.C.Game.history_add()
+					if len(parts) == 4:
+						entity.setStat(stat, value)
+					elif len(parts) == 5:
+						entity.setStat(stat, value, parts[4])
+					self.C.Game.history_add()
+
+				elif len(separated) == 2:
+					parts, stats = (s.split() for s in separated)
+					if len(parts) != 2:
+						raise DnDException(
+							f"With 1 separator, command 'set' before separator takes 1 argument, {len(parts)-1} given.")
+					if not stats:
+						raise DnDException((
+							"With 1 separator, command 'set' "
+							f"after separator (stat+) takes at least 1 argument, {len(stats)} given."))
+
+					entity = self.C.Game.get_entity(parts[1])[1]
+					for stat in stats:
+						entity.printStat(stat)
+				else:
+					self.argument_wrong_ammount("set", (1, 2), len(separated), separators=True)
 
 			elif parts[0] in ("spell", "s", "cast"):
 				if len(parts := separate(parts[1:])) != 2:
@@ -414,7 +432,7 @@ class Parser():
 
 				if not (targets := parts[1].split()):
 					raise DnDException(
-						f"Command 'spell' after separator (targets) takes at least 1 argument, {len(targets)} given.")
+						f"Command 'spell' after separator (target+) takes at least 1 argument, {len(targets)} given.")
 
 				caster = self.C.Game.get_entity(parts[0][0])[1]
 				spell = get_library("spells", parts[0][1])

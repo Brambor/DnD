@@ -210,7 +210,9 @@ strs = {
 			"set entity\n"
 			"\tprints all stats of entity\n"
 			"set entity stat\n"
+			"set entity | stat+\n"
 			"\tprints 'stat' of entity\n"
+			f'\t{symbol["+"]}'
 			"set entity stat to_expression\n"
 			"\tchanges entity's 'stat' to value calculated from 'to_expression'\n"
 			"set entity stat expression stat_type\n"
