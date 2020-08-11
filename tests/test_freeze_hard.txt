@@ -1,67 +1,57 @@
-# prepare
-c pes a
-c pes b
+c pes a b
 set a mana 100
 
 # get chill
-spell a ice_lance1 smdhgp
-b b b
+spell a ice_lance1 smdhgp | b b b
 1
 5
 6
 
 # get wet
-spell a splash
-b b b
-spell a splash
-b
+spell a splash | b b b
+spell a splash | b
 
 # check
-set b
+set b effects
 
 # get frozen, not chill
-spell a ice_lance1 smdhgp
-b b b b
+spell a ice_lance1 smdhgp | b b b b
 1
 2
 3
 5
 
 
-set a
+set a effects
 
 # do not chill or wet
-
-spell a ice_lance1 smdhgp
-b
+spell a ice_lance1 smdhgp | b
 6
 
-spell a splash smdhgp
-b
+spell a splash smdhgp | b
 
 # see if b is properly frozen, not wet, not chill
-set b
+set b effects
 
-spell a ice_lance1 smdhgp
-b
+spell a ice_lance1 smdhgp | b
 6
 
 # see if b is properly frozen, not wet, not chill
-set b
+set b effects
 
 # turn passes
 t
 
-set b
+set b effects
 
 t
 # b should unfreeze now
 t
 
 # b shouldn't be frozen anymore
-set b
+set b effects
 
 # the program shouldn't crash
 t
 
-set b
+set b effects

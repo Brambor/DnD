@@ -1,15 +1,12 @@
-# prepare
-c pes a
-c pes b
+c pes a b
 
 # kill b
 dmg physical {150} | b
 
-# splash
-cast a splash
-b
+cast a splash | b
 
 # info
-set b
+set b alive
+set b effects
 
 t

@@ -51,8 +51,9 @@ cmd = (
 symbol = {
 	"+": "Symbol '+' means at least one, as many as you want.\n",
 	"*": "Symbol '*' means optional (at least zero), as many as you want.\n",
-	"|": "Symbol '|' is separator, required when there are more arguments with '+' or '*'."
-		" Separators are %s set in 'settings.SEPARATORS'.\n" % ", ".join("'%s'" % s for s in settings.SEPARATORS),
+	"?": "Symbol '?' means optional zero or one.\n",
+	"|": "Symbol '|' is a separator."
+		f" Separators are {', '.join(repr(s) for s in settings.SEPARATORS)} set in 'settings.SEPARATORS'.\n",
 }
 
 math_expression = (
@@ -212,10 +213,11 @@ strs = {
 			"\t'stat_type' can be one of 'int', 'float', 'str', or 'bool'\n"
 		),
 		"spell": (
-			"1) [s]pell/cast caster_entity spell manual_dice\n"
+			"[s]pell/cast caster_entity spell manual_dice? | target_entity+\n"
 			"\tspell must be from library.spells\n"
-			"%s"
-			"2) target_entity_1 target_entity_2 ...\n"
+			f'\t{symbol["?"]}'
+			f'\t{symbol["+"]}'
+			f'\t{symbol["|"]}'
 		),
 		"turn": (
 			"For each entity applies all its effects.\n"
@@ -240,14 +242,6 @@ strs = {
 		),
 	},
 }
-
-# adding missing strings
-manual_dice = (
-	"\tif manual_dice, dice are not thrown automatically\n"
-	"\tmanual_dice must be one word\n"
-)
-for command in ("spell",):
-	strs["commands"][command] %= manual_dice
 
 # BEGIN copying
 # copying in help

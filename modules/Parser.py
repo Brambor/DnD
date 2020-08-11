@@ -368,16 +368,21 @@ class Parser():
 				self.C.Game.history_add()
 
 			elif parts[0] in ("spell", "s", "cast"):
-				if len(parts) not in (3, 4):
-					self.argument_wrong_ammount("spell", (3, 4), len(parts))
-				do_input = len(parts) == 4
+				if len(parts := separate(parts[1:])) != 2:
+					self.argument_wrong_ammount("spell", (2,), len(parts), separators=True)
 
-				caster = self.C.Game.get_entity(parts[1])[1]
-				spell = get_library("spells", parts[2])
+				parts[0] = parts[0].split()
 
-				# targets
-				targets = self.C.Input("targets:\n>>>")
-				targets = [self.C.Game.get_entity(target)[1] for target in targets.split()]
+				if len(parts[0]) not in (2, 3):
+					raise DnDException(f"Command 'spell' takes 2 or 3 arguments before first separator, {len(parts[0])} given.")
+
+				if not (targets := parts[1].split()):
+					raise DnDException(f"Command 'spell' after first separator (targets) takes at least 1 argument, {len(targets)} given.")
+
+				caster = self.C.Game.get_entity(parts[0][0])[1]
+				spell = get_library("spells", parts[0][1])
+				do_input = len(parts[0]) == 3
+				targets = [self.C.Game.get_entity(target)[1] for target in targets]
 
 				caster.cast_spell(targets, spell, do_input)
 				self.C.Game.history_add()

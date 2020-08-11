@@ -1,10 +1,5 @@
-c pes a
-c pes b
-c pes c
+c pes a b c
 
-cast a fireball
-b
-cast b heal
-b
-cast c ice_lance1
-b
+cast a fireball | b
+cast b heal | b
+cast c ice_lance1 | b
