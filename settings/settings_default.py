@@ -2,6 +2,8 @@
 # Copy this file, name the copy 'settings_local.py'.
 # The copied file contains personal settings that you should customize.
 
+TAB_WIDTH = 3  # How many spaces is one tab.
+
 DEBUG = False  # True: When something goes wrong, the program prints error, waits for input, then crashes; False: it prints "fcked up" and carries on.
 AUTO_INPUT = False  # True: when DnD is run, DnD asks which tests to run, if any
 LOG = True  # Log while not testing. As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything, inputs are not numbered, unlike with tests)

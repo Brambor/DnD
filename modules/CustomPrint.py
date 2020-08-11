@@ -1,11 +1,15 @@
 import os
 
+from modules.SettingsLoader import settings
+
+
 class CustomPrint():
 	def __init__(self, Connector):
 		self.C = Connector
 		self.inventory_entity_id = -1  # which entity is selected for inventory display
 
 	def __call__(self, message="", info_type="fight"):
+		message = message.expandtabs(settings.TAB_WIDTH)
 		if info_type == "fight":
 			self.C.Curses.windows["fight"].addstr(message)  # fight window
 			self.C.Curses.fight_history.append(message)
