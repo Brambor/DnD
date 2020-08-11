@@ -1,7 +1,7 @@
 c pes a
 
 # give it chills
-e a CHILL 5
+e CHILL 5 a
 
 set a
 

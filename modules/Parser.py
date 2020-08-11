@@ -170,14 +170,14 @@ class Parser():
 				self.C.Game.history_add()
 
 			elif parts[0] in ("effect", "e"):
-				if len(parts) != 4:
-					self.argument_wrong_ammount("effect", (4,), len(parts))
+				if len(parts) < 4:
+					self.argument_wrong_ammount("effect", (4,), len(parts), last_at_least=True)
 
-				entity = self.C.Game.get_entity(parts[1])[1]
-				effect = get_library("effects", parts[2])
-				self.check(parts[3], "dice")
-				dice = int(parts[3])
-				entity.add_effect(effect, dice)
+				effect = get_library("effects", parts[1])
+				self.check(parts[2], "dice")
+				dice = int(parts[2])
+				for entity in [self.C.Game.get_entity(e)[1] for e in parts[3:]]:
+					entity.add_effect(effect, dice)
 				self.C.Game.history_add()
 
 			elif parts[0] == "erase":

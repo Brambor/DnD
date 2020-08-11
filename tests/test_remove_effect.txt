@@ -1,11 +1,11 @@
 c pes a
 
-e a f 4
-e a f 6
-e a f 8
-e a f 10
-e a f 12
-e a f 14
+e f 4 a
+e f 6 a
+e f 8 a
+e f 10 a
+e f 12 a
+e f 14 a
 
 r a
 0 1 2

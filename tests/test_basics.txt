@@ -1,17 +1,14 @@
-# prepare
-c pes e1
-c pes e2
+c pes e1 e2
 
-set e2
+set e2 effects
 # add effects
-e e1 f 4
-e e1 f 6
-e e1 f 4
+e f 4 e1 e1
+e f 6 e1
 
 # e1 should be burning (and maybe stop some)
 turn
 
-set e1
+set e1 effects
 
 turn
 

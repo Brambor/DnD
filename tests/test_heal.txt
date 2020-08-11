@@ -1,6 +1,6 @@
 c pes a
 dmg true {150} | a
-e a BLEED 20
+e BLEED 20 a
 
 # doesn't remove BLEED
 t
