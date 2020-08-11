@@ -12,26 +12,22 @@ class Parser():
 
 	def argument_wrong_ammount(self, cmd, takes, count, separators=False, last_at_least=False):
 		count -= 1
-		takes = list(t-1 for t in ((1,) + takes))
+		if separators:
+			takes = list(t-1 for t in takes)
+		else:
+			takes = list(t-1 for t in ((1,) + takes))
+
 		if last_at_least:
 			takes[-1] = f"at least {takes[-1]}"
 		if len(takes) == 1:
 			takes_str = str(takes[0])
 		else:
-			takes_str = "%s or %s" % (", ".join((str(t) for t in takes[:-1])), takes[-1])
+			takes_str = f'{", ".join((str(t) for t in takes[:-1]))} or {takes[-1]}'
 
 		if separators:
-			raise DnDException(
-				"Command '%s' (with arguments!) takes %s separators, %d given." % (
-					cmd, takes_str, count
-				)
-			)
+			raise DnDException(f"Command '{cmd}' (with arguments!) takes {takes_str} separator{'' if takes[-1] == 1 else 's'}, {count} given.")
 		else:
-			raise DnDException(
-				"Command '%s' takes %s arguments, %d given." % (
-					cmd, takes_str, count
-				)
-			)
+			raise DnDException(f"Command '{cmd}' takes {takes_str} argument{'' if takes[-1] == 1 else 's'}, {count} given.")
 
 	def check(self, values, types):
 		for v, t in zip(values.split(), types.split()):
