@@ -192,8 +192,9 @@ strs = {
 			"\tduplicates (a1, a2, a3 are the same, different from b1) are printed in 'a1/a2/a3, b1, c1/c2' form\n"
 		),
 		"move": (
-			"[m]ove target_entity_1 target_entity_2 ...\n"
-			"\ttoggles all selected entities played_this_turn\n"
+			"[m]ove entity+\n"
+			"\ttoggles all 'entity+' played_this_turn\n"
+			f'\t{symbol["+"]}'
 		),
 		"remove_effect": (
 			"remove_effect entity\n"
