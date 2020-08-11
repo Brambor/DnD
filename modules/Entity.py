@@ -370,6 +370,7 @@ class Entity():
 			return
 
 		effect = copy(effect)
+		causing_comment = ""
 		# Effect stat bonuses / penalties (throwing the dice)
 		for bonus_or_penalty in ("stat_penalty", "stat_bonus"):
 			if bonus_or_penalty in effect:
@@ -381,6 +382,8 @@ class Entity():
 						if not ( (stat_value[0] == "dice") and (type(stat_value[1]) == int) ):
 							raise
 						effect[bonus_or_penalty][stat] = D(stat_value[1])
+						causing_comment += "\tIncreasing" if bonus_or_penalty == "stat_bonus" else "\tLowering"
+						causing_comment += f" {self}'s '{stat}' by {effect[bonus_or_penalty][stat]}.\n"
 
 		# Add/Refresh effect
 		result = ""
@@ -392,10 +395,10 @@ class Entity():
 			else:  # effect not yet present
 				result = "add"
 
-		extra_comment = ""
 		if result == "add":
 			effect["value"] = value
 			self.body["effects"].append(effect)
+			extra_comment = ""
 		elif result == "refresh":
 			old_effect["value"] = max(value, old_effect["value"])
 			effect = old_effect
@@ -403,7 +406,7 @@ class Entity():
 		else:
 			raise
 
-		self.C.Print(f"{self} is {self.get_effect_string(effect)} now{extra_comment}\n")
+		self.C.Print(f"{self} is {self.get_effect_string(effect)} now{extra_comment}\n{causing_comment}")
 
 		# Remove effects that entity is now immune to
 		if "prevents" in effect:
