@@ -78,6 +78,14 @@ effects = {
 		"prevents": ("WET", "CHILL"),
 		"turned_by_into" : { "FIRE": ("WET", 5) },
 	},
+	"STORM": {
+		"type": "dice",  # well, it is not "duration"...
+		# "dice": 0,  # NOT USED, but required
+		"on_stack": "add",
+		"on_print": "in storm",
+		"print_when": "d10 == 10",
+		"print_what": "is STRUCK by lightning!",
+	}
 }
 
 

@@ -4,7 +4,7 @@ from library.Main import library
 
 from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
-from modules.Misc import calculate, convert_string_to_bool, get_library, normal_round, parse_damage, parse_sequence
+from modules.Misc import calculate, convert_string_to_bool, dice_eval, get_library, normal_round, parse_damage, parse_sequence
 
 
 class Entity():
@@ -461,6 +461,13 @@ class Entity():
 			if effect["value"] == 0:
 				self.C.Print(f"{self} is no longer {self.get_effect_string(effect)}\n")
 				return True
+
+		if "print_what" in effect:
+			if "print_when" in effect:
+				if calculate(dice_eval(effect["print_when"], self.C.Game)[0]):
+					self.C.Print(f'{self} {effect["print_what"]} since {effect["print_when"]}.\n')
+			else:
+				self.C.Print(effect["print_what"])
 		return False
 
 	def apply_effects(self):

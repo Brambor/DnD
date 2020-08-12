@@ -8,7 +8,7 @@ from modules.Dice import D, dice_eval, dice_parser
 
 def calculate(string):
 	string = string.replace("%", "/100")
-	unallowed = set(string) - set("0123456789-+*/.() ")
+	unallowed = set(string) - set("0123456789-+*/.() ><=!")
 	if unallowed:
 		raise DnDException(f"These character(s) '{''.join(unallowed)}' are not allowed in calculation.\n'{string}'")
 	try:
