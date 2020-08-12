@@ -134,8 +134,10 @@ strs = {
 			f'\t{symbol["|"]}'
 		),
 		"effect": (
-			"[e]ffect effect dice entity+\n"
+			"[e]ffect add effect dice entity+\n"
 			"\tadds 'effect' with dice 'dice' to all 'entity+'\n"
+			"[e]ffect [exe]cute entity+\n"
+			"\tto all 'entity+' apply their respective effects\n"
 			f'\t{symbol["+"]}'
 		),
 		"erase": (

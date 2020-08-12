@@ -1,11 +1,11 @@
 c pes a
 
-e f 4 a
-e f 6 a
-e f 8 a
-e f 10 a
-e f 12 a
-e f 14 a
+e add f 4 a
+e add f 6 a
+e add f 8 a
+e add f 10 a
+e add f 12 a
+e add f 14 a
 
 r a
 0 1 2
@@ -18,3 +18,6 @@ r a
 
 r a
 -1
+
+# exe a few times
+e exe a a a a a a a a a a

@@ -2,8 +2,8 @@ c pes e1 e2
 
 set e2 effects
 # add effects
-e f 4 e1 e1
-e f 6 e1
+e add f 4 e1 e1
+e add f 6 e1
 
 # e1 should be burning (and maybe stop some)
 turn
