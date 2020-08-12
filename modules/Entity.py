@@ -412,6 +412,11 @@ class Entity():
 		if "prevents" in effect:
 			self.remove_effects(effect["prevents"])
 
+		if "activate_on_acquisition" in effect and effect["activate_on_acquisition"]:
+			if self.apply_effect(effect):
+				i = self.body["effects"].index(effect)
+				del self.body["effects"][i]
+
 	def add_effects(self, effects):
 		for effect, value in effects:
 			effect = get_library("effects", effect)
@@ -440,27 +445,32 @@ class Entity():
 		else:
 			self.C.Print("Nothing removed.\n")
 
+	def apply_effect(self, effect):
+		("applies effect self"
+		"return True if the effect should be removed, False otherwise")
+
+		if effect["name"] in {"FIRE", "BLEED"}:
+			threw = D(effect["value"])
+			self.damaged((({"true"}, threw),), ("burns for" if effect["name"] == "FIRE" else "bleeds for"), caused_by_effect=True)
+			if threw == 1:
+				self.C.Print(f"\tand stopped {self.get_effect_string(effect)}\n")
+				return True
+
+		if effect["type"] == "duration":
+			effect["value"] -= 1
+			if effect["value"] == 0:
+				self.C.Print(f"{self} is no longer {self.get_effect_string(effect)}\n")
+				return True
+		return False
+
 	def apply_effects(self):
 		i = 0
 		effects = self.body["effects"]
 		while i < len(effects):
-			effect = effects[i]
-
-			if effect["name"] in {"FIRE", "BLEED"}:
-				threw = D(effect["value"])
-				self.damaged((({"true"}, threw),), ("burns for" if effect["name"] == "FIRE" else "bleeds for"), caused_by_effect=True)
-				if threw == 1:
-					self.C.Print(f"\tand stopped {self.get_effect_string(effect)}\n")
-					del effects[i]
-					continue
-
-			if effect["type"] == "duration":
-				effect["value"] -= 1
-				if effect["value"] == 0:
-					self.C.Print(f"{self} is no longer {self.get_effect_string(effect)}\n")
-					del effects[i]
-
-			i += 1
+			if self.apply_effect(self.body["effects"][i]):
+				del self.body["effects"][i]
+			else:
+				i += 1
 
 	def immune_to_effect(self, effect):
 		for under_effect in self.body["effects"]:

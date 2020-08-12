@@ -50,6 +50,7 @@ effects = {
 		"on_stack": "add",
 		"on_print": "bleeding",
 		# "dice": 0,  # rewriten on use
+		"activate_on_acquisition": True,
 	},
 	"CHILL": {
 		"type": "duration",
