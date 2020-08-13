@@ -1,5 +1,4 @@
 import os
-import traceback
 import sys
 
 from datetime import datetime
@@ -16,51 +15,12 @@ from modules.Parser import Parser
 from modules.SettingsLoader import settings, output_settings
 
 
-"""
-class Effect():
-	def __init__(self):
-		pass
-"""
-
 path_to_DnD = sys.path[0]
-
-def wrapper(func, stdin=None, **kwargs):
-	try:
-		func(**kwargs)
-	except EOFError:
-		print("EOF happened")
-		cPrint("ERROR EOF happened\n")
-	except Exception as e:
-		cPrint("ERROR Exception happened\n")
-		cCurses.endCurses()
-		print("\n\n")
-		if stdin:
-			sys.stdin = stdin
-		if settings.EXIT_MESSAGE:
-			traceback.print_exc(file=sys.stdout)
-			input("CRASHED, PRESS ENTER")
-		raise
-
-def regular_wrap():
-	for line in (*output_settings, *output_library):
-		cPrint("%s\n" % line)
-	while P.input_command():
-		pass
-
-def test_wrap(test, len_f_copy):
-	cPrint("test name: %s\n" % test)
-	sleep(settings.TEST_WAIT_BETWEEN_TESTS)
-	try:
-		while (cInput.i+1 < len_f_copy) and P.input_command():
-			sleep(settings.TEST_WAIT_BETWEEN_COMMANDS)
-	except ValueError as e:
-		raise Exception("test failed: %s" % test) from e
-	cPrint("\n\n\n\n")
 
 do_tests = False
 if settings.AUTO_INPUT:
-	tests = [f[5:-4] for f in os.listdir("%s/tests" % path_to_DnD)]
-	print("Avaiable tests: %s" % " ".join(tests))
+	tests = [f[5:-4] for f in os.listdir(f"{path_to_DnD}/tests")]
+	print(f'Avaiable tests: {" ".join(tests)}')
 
 	while True:
 		the_input = input("Press enter if you wish to proceed.\n"
@@ -69,60 +29,40 @@ if settings.AUTO_INPUT:
 			"'*' is a symbol\n"
 			">>> "
 		)
-		if the_input == "":
-			break
-		elif the_input in ("test", "t"):
+		if the_input in ("test", "t"):
 			do_tests = True
-			break
-		else:
+		elif the_input:
 			do_tests = True
 			tests_selected = the_input.split()
 			for t in tests_selected:
 				if t not in tests:
-					print("'%s' is not a valid test." % t)
+					print(f"'{t}' is not a valid test.")
 					do_tests = False
 			if not do_tests:
 				continue
 			tests = tests_selected
-			break
+		break
+
+if (not do_tests and settings.LOG) or (do_tests and settings.LOG_TEST):
+	current_time = str(datetime.today()).split(".")[0]
+else:
+	current_time = None
+
+C = Connector(path_to_DnD, log_file=current_time)
+cCurses = CustomCurses(C)
+cInput = CustomInput(C,
+	input_stream=do_tests,  # in TESTING input_stream changed
+	test_environment=do_tests)
+cPrint = CustomPrint(C)
 
 if not do_tests:
 	# REGULAR USE
-	if settings.LOG:
-		current_time = str(datetime.today()).split(".")[0]
-	else:
-		current_time = None
-
-	C = Connector(path_to_DnD, log_file=current_time)
-	cCurses = CustomCurses(C)
-	cInput = CustomInput(C, input_stream=False)
-	cPrint = CustomPrint(C)
 	G = Game(C)
 	P = Parser(C)
-
 	C.populate(cCurses, cInput, cPrint, G)
-
-	wrapper(regular_wrap)
-
-	cCurses.endCurses()
-	if settings.EXIT_MESSAGE:
-		input("You are exiting")
 else:
 	# TESTING
-	if settings.LOG_TEST:
-		current_time = str(datetime.today()).split(".")[0]
-	else:
-		current_time = None
 	f1 = sys.stdin
-
-	C = Connector(path_to_DnD, log_file=current_time)
-	cCurses = CustomCurses(C)
-	cInput = CustomInput(C,
-		input_stream=True,  # input_stream latter changed
-		test_environment=True,
-	)
-	cPrint = CustomPrint(C)
-
 	for test in tests:
 		cInput.i = 0
 		path = '%s/tests/test_%s.txt' % (path_to_DnD, test)
@@ -136,10 +76,16 @@ else:
 
 		sys.stdin = f
 
-		wrapper(test_wrap, stdin=f1, test=test, len_f_copy=len(f_copy))
+		cPrint(f"test name: {test}\n")
+		sleep(settings.TEST_WAIT_BETWEEN_TESTS)
+		try:
+			while (cInput.i+1 < len(f_copy)) and P.input_command():
+				sleep(settings.TEST_WAIT_BETWEEN_COMMANDS)
+		except ValueError as e:
+			raise Exception(f"test failed: {test}") from e
+		cPrint("\n\n\n\n")
 
 		f.close()
-	f.close()
 
 	cPrint("TESTS ARE DONE\n")
 	sys.stdin = f1
@@ -147,8 +93,11 @@ else:
 	cInput.test_environment = False
 	cInput.input_stream = False
 
-	wrapper(regular_wrap)
+for line in (*output_settings, *output_library):
+	cPrint(f"{line}\n")
+while P.input_command():
+	pass
 
-	cCurses.endCurses()
-	if settings.EXIT_MESSAGE:
-		input("You are exiting")
+cCurses.endCurses()
+if settings.EXIT_MESSAGE:
+	input("You are exiting")
