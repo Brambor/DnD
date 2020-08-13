@@ -2,7 +2,7 @@ import os
 import sys
 
 from datetime import datetime
-from time import sleep
+from time import sleep, time
 
 from library.Main import output_library
 
@@ -63,6 +63,7 @@ if not do_tests:
 else:
 	# TESTING
 	f1 = sys.stdin
+	start = time()
 	for test in tests:
 		cInput.i = 0
 		path = '%s/tests/test_%s.txt' % (path_to_DnD, test)
@@ -86,8 +87,22 @@ else:
 		cPrint("\n\n\n\n")
 
 		f.close()
+	total = time() - start
 
-	cPrint("TESTS ARE DONE\n")
+	wait = 0
+	count_cmds = 0
+	for test in tests:
+		path = f'{path_to_DnD}/tests/test_{test}.txt'
+		file_lines = open(path, 'r').read().split("\n")
+		wait += (len(file_lines) - 1) * settings.TEST_WAIT_BETWEEN_COMMANDS
+		count_cmds += (len(file_lines) - 1)
+	wait += len(tests) * settings.TEST_WAIT_BETWEEN_TESTS
+	count_tests = len(tests)
+
+	cPrint("TESTS ARE DONE\n"
+		f"Tests took {round(total, 3)} seconds.\n"
+		f"\tExpected computing {round(total-wait, 2)}s, exp. waiting {round(wait, 2)}s (set in settings).\n"
+		f"\tRan {count_tests} tests with total of {count_cmds} lines.\n")
 	sys.stdin = f1
 
 	cInput.test_environment = False
