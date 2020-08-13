@@ -305,7 +305,9 @@ class CustomCurses():
 			CP = curses.color_pair(i+1)  # +1 to skip "basic" colour
 			window.bkgdset(str(i), CP)
 			window.clear()
-			window.addstr(f"<<{w}>>", CP)
+			he, wi = window.getmaxyx()
+			# doesn't show the he*wi character, but at least wraps
+			window.addnstr(f"<<{w}>>", max(0, he*wi-1), CP)
 			window.refresh()
 		sleep(sleep_for)
 
