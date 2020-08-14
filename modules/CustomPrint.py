@@ -11,7 +11,7 @@ class CustomPrint():
 	def __call__(self, message="", info_type="fight"):
 		message = message.expandtabs(settings.TAB_WIDTH)
 		if info_type == "fight":
-			self.C.Curses.windows["fight"].addstr(message)  # fight window
+			self.C.Curses.addstr("fight", message)  # fight window
 			self.C.Curses.fight_history.append(message)
 			self.C.Curses.windows["fight"].refresh()
 
@@ -31,10 +31,10 @@ class CustomPrint():
 		if "entities" not in self.C.Curses.windows:
 			return
 		self.C.Curses.windows["entities"].clear()
-		self.C.Curses.windows["entities"].addstr(
+		self.C.Curses.addstr("entities",
 			f'History {self.C.Game.entities_history_pointer}/{len(self.C.Game.entities_history)-1}\n')
 		if not self.C.Game.entities:
-			self.C.Curses.windows["entities"].addstr("no entities")
+			self.C.Curses.addstr("entities", "no entities")
 			self.C.Curses.windows["entities"].refresh()
 			return
 

@@ -236,6 +236,8 @@ strs = {
 		),
 		"window": (
 			"w <==> window; ([w]indow)\n"
+			"w [r]esize\n"
+			"\tTriggers resizing the windows, like when you change the size of console.\n"
 			"w show sleep_for\n"
 			"\tdisplays windows (what + size) for sleep_for secs\n\n"  # TODO until enter is pressed
 

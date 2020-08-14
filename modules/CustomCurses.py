@@ -29,7 +29,7 @@ class CustomCurses():
 		}
 
 		self.width = 0
-		stdscr = curses.initscr()
+		stdscr = curses.initscr()  # Crashes when console's height = 1 :(
 		self.COLOR = curses.can_change_color()
 		curses.start_color()
 		self.stdscr = stdscr
@@ -90,7 +90,7 @@ class CustomCurses():
 		else:
 			add_history = True
 
-			curses.resize_term(0, 0)
+			self.clear_terminal()
 			stdscr.clear()
 			stdscr.refresh()
 			starty, startx = stdscr.getmaxyx()
@@ -99,16 +99,13 @@ class CustomCurses():
 			self.windows.clear()
 
 		for w in settings.WINDOWS:
-			self.windows[w] = curses.newwin(
-				*(self.calculate(settings.WINDOWS[w][s][i])
-					for s in ("width_height", "left_top") for i in (1, 0))
-			)
+			self.windows[w] = curses.newwin(*self.calculate_window_size(w))
 
 			if settings.WINDOWS[w].get("scrollok", True):
 				self.windows[w].scrollok( True )  # on False it crashes
 				self.windows[w].addstr("\n"*self.height)
 			if w != "console_input":
-				self.windows[w].addstr("<<%s>>\n" % w)
+				self.addstr(w, "<<%s>>\n" % w)
 			self.windows[w].refresh()  # shouldn't this refresh it after resize?
 
 		if add_history:
@@ -135,9 +132,32 @@ class CustomCurses():
 	def init_command_textbox(self):
 		self.command_textbox = textpad.Textbox(self.windows["console_input"], insert_mode=True)
 
-	def calculate(self, expresion):
+	def addstr(self, window_str, string, *args, **kwargs):
+		try:
+			self.windows[window_str].addstr(string, *args, **kwargs)
+		except curses.error:
+			pass
+
+	def calculate_window_size(self, w):
 		"expresion is a string that can contain 'x' or 'y' and other mathematical symbols."
-		return calculate( expresion.replace("x", str(self.width+1)).replace("y", str(self.height+1)) )
+		max_y, max_x = self.stdscr.getmaxyx()
+		ncols, nlines, begin_x, begin_y = (max(0, calculate(
+			settings.WINDOWS[w][s][i].replace("x", str(self.width+1)).replace("y", str(self.height+1))
+		)) for s in ("width_height", "left_top") for i in (0, 1))
+		return (min(nlines, max_y), min(ncols, max_x), begin_y, begin_x)
+
+	def clear_terminal(self):
+		while True:
+			i = 0
+			try:
+				curses.resize_term(0, 0)
+				return
+			except:
+				print(f"RESIZE ERROR n.{i}", end=" ")
+				sleep(0.01)
+				i += 1
+				if i == 100:
+					return
 
 	def get_color_pair(self, pair_human):
 		return curses.color_pair(self.color_usage[pair_human])
@@ -150,10 +170,8 @@ class CustomCurses():
 
 	def enter_is_terminate(self, x):
 		if x == curses.KEY_RESIZE:
-			self.init_windows()
-			self.init_colors()
+			self.resized_terminal()
 			self.msg_interrupted = True
-			self.C.Print.refresh_windows()
 			return 7
 		if x in self.keys:
 			x = self.keys[x]
@@ -234,7 +252,7 @@ class CustomCurses():
 			input_command = "\n"
 
 		self.windows["console_input"].clear()
-		self.windows["fight"].addstr(input_command)  # fight, but s
+		self.addstr("fight", input_command)  # fight, but s
 		self.fight_history.append(input_command)
 		self.add_to_history_commands(input_command_stripped)
 
@@ -256,6 +274,11 @@ class CustomCurses():
 		curses.nocbreak()
 		curses.echo()
 		curses.endwin()
+
+	def resized_terminal(self):
+		self.init_windows()
+		self.init_colors()
+		self.C.Print.refresh_windows()
 
 	def window_get_size(self, window_name):
 		h, w = self.get_window(window_name).getmaxyx()
@@ -306,8 +329,7 @@ class CustomCurses():
 			window.bkgdset(str(i), CP)
 			window.clear()
 			he, wi = window.getmaxyx()
-			# doesn't show the he*wi character, but at least wraps
-			window.addnstr(f"<<{w}>>", max(0, he*wi-1), CP)
+			self.addstr(w, f"<<{w}>>", CP)
 			window.refresh()
 		sleep(sleep_for)
 

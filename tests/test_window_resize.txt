@@ -1,0 +1,15 @@
+w ss inventory 0 0
+w show 0
+
+w ss inventory 2 2
+w show 0
+
+w ss fight 0 0
+w ss entities 0 0
+w ss inventory 0 0
+w ss history 0 0
+
+c pes a
+i a
+
+w resize

@@ -459,7 +459,11 @@ class Parser():
 
 			elif parts[0] in ("window", "w"):
 				if len(parts) >= 2:
-					if parts[1] in ("show", "s"):
+					if parts[1] in ("resize", "r"):
+						if len(parts) != 2:
+							self.argument_wrong_ammount("window resize", (2,), len(parts))
+						self.C.Curses.resized_terminal()
+					elif parts[1] in ("show", "s"):
 						if len(parts) == 3:
 							if parts[2].isdigit():
 								self.C.Curses.window_show(int(parts[2]))
