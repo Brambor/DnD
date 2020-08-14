@@ -3,6 +3,7 @@
 # The copied file contains personal settings that you should customize.
 
 TAB_WIDTH = 3  # How many spaces is one tab.
+OVERFLOW_INDICATOR = "\\O"  # This text will be print in COLOR_USAGE["error"] color if inventory overflows. It can be multiple characters, the first character should always display, the rest are not guaranteed.
 
 DEBUG = False  # True: When something goes wrong, the program prints error, waits for input, then crashes; False: it prints "fcked up" and carries on.
 AUTO_INPUT = False  # True: when DnD is run, DnD asks which tests to run, if any
@@ -40,6 +41,7 @@ COLOR_PALETTE = {
 # name must be defined in code, fore/back are colors, either baisic or user defined in COLOR_PALETTE
 COLOR_USAGE = {
 	"basic": ("white", "black"),
+	"error": ("red", "white"),
 	"entity_played_this_turn": ("white", "grey300"),  # used for when entity played this turn already
 	"HP": ("green", "black"),  # used for hp/hp_max
 	"mana": ("cyan", "black"),  # used for mana/mana_max ; group names

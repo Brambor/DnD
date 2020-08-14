@@ -193,6 +193,9 @@ class CustomCurses():
 			self.C.Game.history_move(+1)
 		return x
 
+	def indicate_overflow(self, window):
+		self.addstr(window, settings.OVERFLOW_INDICATOR, self.get_color_pair("error"))
+
 	def send(self, message):
 		self.msg_interrupted = False
 		self.move_in_history = 0

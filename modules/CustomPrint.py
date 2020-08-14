@@ -70,7 +70,7 @@ class CustomPrint():
 						for item in e.get_stats_reduced():
 							self.C.Curses.windows["entities"].addstr(item[0], get_color(item[1]))
 		except self.C.Curses.curses.error as e:
-			self("ERR: Window entities overflowed.\n")
+			self.C.Curses.indicate_overflow("entities")
 
 		self.C.Curses.windows["entities"].refresh()
 
@@ -106,7 +106,7 @@ class CustomPrint():
 						{key:item[key] for key in item if key != "derived_from"},  # remove derived_from
 					)
 		except self.C.Curses.curses.error as e:
-			self("ERR: Window inventory overflowed.\n")
+			self.C.Curses.indicate_overflow("inventory")
 		self.C.Curses.windows["inventory"].refresh()
 
 	def refresh_history_window(self):
