@@ -2,7 +2,6 @@ import curses
 from curses import textpad
 
 from time import sleep
-from tempfile import TemporaryFile
 
 from modules.DnDException import DnDException, DnDExit
 from modules.Misc import calculate
@@ -82,11 +81,12 @@ class CustomCurses():
 
 		self.init_colors()
 
-	def init_windows(self):
+	def init_windows(self, do_not_resize=False):
 		stdscr = self.stdscr
 
 		if self.windows == {}:
 			add_history = False
+			do_not_resize = False
 		else:
 			add_history = True
 
@@ -96,10 +96,14 @@ class CustomCurses():
 			starty, startx = stdscr.getmaxyx()
 			self.width = startx - 1
 			self.height = starty - 1
+			old_window_dimensions = {w:(*self.windows[w].getmaxyx(), *self.windows[w].getbegyx()) for w in self.windows}
 			self.windows.clear()
 
 		for w in settings.WINDOWS:
-			self.windows[w] = curses.newwin(*self.calculate_window_size(w))
+			if do_not_resize:
+				self.windows[w] = curses.newwin(*old_window_dimensions[w])
+			else:
+				self.windows[w] = curses.newwin(*self.calculate_window_size(w))
 
 			if settings.WINDOWS[w].get("scrollok", True):
 				self.windows[w].scrollok( True )  # on False it crashes
@@ -278,9 +282,8 @@ class CustomCurses():
 		curses.echo()
 		curses.endwin()
 
-	def resized_terminal(self):
-		self.init_windows()
-		self.init_colors()
+	def resized_terminal(self, do_not_resize=False):
+		self.init_windows(do_not_resize)
 		self.C.Print.refresh_windows()
 
 	def window_get_size(self, window_name):
@@ -319,13 +322,8 @@ class CustomCurses():
 
 	def window_show(self, sleep_for):
 		"displays where are the windows, which are which and their size"
-		tmpfiles = []
 		for i, w in enumerate(self.windows):
-			# save windows
 			window = self.windows[w]
-			tmpfile = TemporaryFile()
-			window.putwin(tmpfile)
-			tmpfiles.append(tmpfile)
 
 			# fill windows up, destroying their content
 			CP = curses.color_pair(i+1)  # +1 to skip "basic" colour
@@ -336,9 +334,4 @@ class CustomCurses():
 			window.refresh()
 		sleep(sleep_for)
 
-		for w, tmpfile in zip(self.windows, tmpfiles):
-			# restore windows
-			tmpfile.seek(0)
-			self.windows[w] = curses.getwin(tmpfile)
-			self.windows[w].refresh()
-		self.init_command_textbox()
+		self.resized_terminal(do_not_resize=True)  # make new windows
