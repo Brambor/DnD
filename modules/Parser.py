@@ -475,8 +475,8 @@ class Parser():
 				elif parts[1] in ("set_size", "ss"):
 					if len(parts) != 5:
 						self.argument_wrong_ammount("window set_size", (5,), len(parts))
-					if not (parts[3].isdigit() and parts[4].isdigit()):
-						raise DnDException(f"height & width must be ints, {parts[3]}, {parts[4]} given.")
+					if not (parts[3].isdigit() and parts[4].isdigit() and int(parts[3]) > 0 and int(parts[4]) > 0):
+						raise DnDException(f"height & width must be positive ints, {parts[3]}, {parts[4]} given.")
 					self.C.Curses.window_set_size(parts[2], int(parts[3]), int(parts[4]))
 				elif parts[1] in ("set_top_left", "stl"):
 					if len(parts) != 5:

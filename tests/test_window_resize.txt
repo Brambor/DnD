@@ -1,13 +1,13 @@
-w ss inventory 0 0
+w ss inventory 1 1
 w show 0
 
 w ss inventory 2 2
 w show 0
 
-w ss fight 0 0
-w ss entities 0 0
-w ss inventory 0 0
-w ss history 0 0
+w ss fight 1 1
+w ss entities 1 1
+w ss inventory 1 1
+w ss history 1 1
 
 c pes a
 i a

@@ -146,10 +146,10 @@ class CustomCurses():
 	def calculate_window_size(self, w):
 		"expresion is a string that can contain 'x' or 'y' and other mathematical symbols."
 		max_y, max_x = self.stdscr.getmaxyx()
-		ncols, nlines, begin_x, begin_y = (max(0, calculate(
+		ncols, nlines, begin_x, begin_y = (calculate(
 			settings.WINDOWS[w][s][i].replace("x", str(self.width+1)).replace("y", str(self.height+1))
-		)) for s in ("width_height", "left_top") for i in (0, 1))
-		return (min(nlines, max_y), min(ncols, max_x), begin_y, begin_x)
+		) for s in ("width_height", "left_top") for i in (0, 1))
+		return (max(1, min(nlines, max_y)), max(1, min(ncols, max_x)), max(0, begin_y), max(0, begin_x))
 
 	def clear_terminal(self):
 		i = 0
