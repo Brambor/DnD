@@ -59,7 +59,7 @@ class Parser():
 		else:
 			note = ""
 		self.C.Print(f"?!: Unrecognized command '{parts[0]}'.{note}\n")
-		if settings.TEST_CRASH_ON_UNKNOWN_COMMAND and self.C.Input.test_environment:
+		if settings.TEST_CRASH_ON_UNKNOWN_COMMAND and self.C.test_environment:
 			raise ValueError("Unknown command '%s'." % parts[0])
 
 	def process(self, cmd):

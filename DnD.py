@@ -48,11 +48,9 @@ if (not do_tests and settings.LOG) or (do_tests and settings.LOG_TEST):
 else:
 	current_time = None
 
-C = Connector(path_to_DnD, log_file=current_time)
+C = Connector(path_to_DnD, log_file=current_time, test_environment=do_tests)
 cCurses = CustomCurses(C)
-cInput = CustomInput(C,
-	input_stream=do_tests,  # in TESTING input_stream changed
-	test_environment=do_tests)
+cInput = CustomInput(C)
 cPrint = CustomPrint(C)
 
 if not do_tests:
@@ -67,9 +65,8 @@ else:
 	for test in tests:
 		cInput.i = 0
 		path = '%s/tests/test_%s.txt' % (path_to_DnD, test)
-		f = open(path,'r')
-		f_copy = open(path,'r').read().split("\n")
-		cInput.input_stream = f_copy
+		f = open(path, 'r')
+		f_lines = open(path, 'r').read().split("\n")
 
 		G = Game(C)
 		P = Parser(C)
@@ -80,7 +77,7 @@ else:
 		cPrint(f"test name: {test}\n")
 		sleep(settings.TEST_WAIT_BETWEEN_TESTS)
 		try:
-			while (cInput.i+1 < len(f_copy)) and P.input_command():
+			while (cInput.i+1 < len(f_lines)) and P.input_command():
 				sleep(settings.TEST_WAIT_BETWEEN_COMMANDS)
 		except ValueError as e:
 			raise Exception(f"test failed: {test}") from e
@@ -105,8 +102,7 @@ else:
 		f"\tRan {count_tests} tests with total of {count_cmds} lines.\n")
 	sys.stdin = f1
 
-	cInput.test_environment = False
-	cInput.input_stream = False
+	C.test_environment = False
 
 for line in (*output_settings, *output_library):
 	cPrint(f"{line}\n")
