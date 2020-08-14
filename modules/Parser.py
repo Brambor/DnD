@@ -195,8 +195,6 @@ class Parser():
 				self.C.Game.history_add()
 
 			elif parts[0] == "erase":
-				if len(parts) < 2:
-					self.argument_wrong_ammount("erase", (2,), len(parts), last_at_least=True)
 				self.C.Game.erase(parts[1:])
 				self.C.Game.history_add()
 
@@ -210,10 +208,9 @@ class Parser():
 				self.C.Game.history_add()  # sure, why not?
 
 			elif parts[0] == "exit":
-				if len(parts) == 1:
-					raise DnDExit("command exit")
-				else:
+				if len(parts) != 1:
 					self.argument_wrong_ammount("exit", tuple(), len(parts))
+				raise DnDExit("command exit")
 
 			elif parts[0] == "file":
 				if len(parts) not in (2, 3):
@@ -451,10 +448,9 @@ class Parser():
 				self.C.Game.history_add()
 
 			elif parts[0] in ("turn", "t"):
-				if len(parts) == 1:
-					self.C.Game.turn()
-				else:
+				if len(parts) != 1:
 					self.argument_wrong_ammount("turn", tuple(), len(parts))
+				self.C.Game.turn()
 				self.C.Game.history_add()
 
 			elif parts[0] in ("window", "w"):
