@@ -458,45 +458,38 @@ class Parser():
 				self.C.Game.history_add()
 
 			elif parts[0] in ("window", "w"):
-				if len(parts) >= 2:
-					if parts[1] in ("resize", "r"):
-						if len(parts) != 2:
-							self.argument_wrong_ammount("window resize", (2,), len(parts))
-						self.C.Curses.resized_terminal()
-					elif parts[1] in ("show", "s"):
-						if len(parts) == 3:
-							if parts[2].isdigit():
-								self.C.Curses.window_show(int(parts[2]))
-							else:
-								raise DnDException("Argument 'sleep_for' of command 'window show' must be integer, '%s' given." % parts[2])
-						else:
-							self.argument_wrong_ammount("window show", (3,), len(parts))
-					elif parts[1] in ("get_size", "gs"):
-						if len(parts) == 3:
-								self.C.Curses.window_get_size(parts[2])
-						else:
-							self.argument_wrong_ammount("window get_size", (3,), len(parts))
-					elif parts[1] in ("get_top_left", "gtl"):
-						if len(parts) == 3:
-								self.C.Curses.window_get_top_left(parts[2])
-						else:
-							self.argument_wrong_ammount("window get_top_left", (3,), len(parts))
-					elif parts[1] in ("set_size", "ss"):
-						if len(parts) == 5:
-							if (parts[3].isdigit() and parts[4].isdigit()):
-								self.C.Curses.window_set_size(parts[2], int(parts[3]), int(parts[4]))
-							else:
-								raise DnDException("ncols & nlines must be ints, %s, %s given." % (parts[3], parts[4]))
-						else:
-							self.argument_wrong_ammount("window set_size", (5,), len(parts))
-					elif parts[1] in ("set_top_left", "stl"):
-						if len(parts) == 5:
-							if (parts[3].isdigit() and parts[4].isdigit()):
-								self.C.Curses.window_set_top_left(parts[2], int(parts[3]), int(parts[4]))
-							else:
-								raise DnDException("y & x must be ints, %s, %s given." % (parts[3], parts[4]))
-						else:
-							self.argument_wrong_ammount("window set_top_left", (5,), len(parts))
+				if parts[1] in ("resize", "r"):
+					if len(parts) != 2:
+						self.argument_wrong_ammount("window resize", (2,), len(parts))
+					self.C.Curses.resized_terminal()
+				elif parts[1] in ("show", "s"):
+					if len(parts) != 3:
+						self.argument_wrong_ammount("window show", (3,), len(parts))
+					if not parts[2].isdigit():
+						raise DnDException(f"Argument 'sleep_for' of command 'window show' must be integer, '{parts[2]}' given.")
+					self.C.Curses.window_show(int(parts[2]))
+				elif parts[1] in ("get_size", "gs"):
+					if len(parts) != 3:
+						self.argument_wrong_ammount("window get_size", (3,), len(parts))
+					self.C.Curses.window_get_size(parts[2])
+				elif parts[1] in ("get_top_left", "gtl"):
+					if len(parts) != 3:
+						self.argument_wrong_ammount("window get_top_left", (3,), len(parts))
+					self.C.Curses.window_get_top_left(parts[2])
+				elif parts[1] in ("set_size", "ss"):
+					if len(parts) != 5:
+						self.argument_wrong_ammount("window set_size", (5,), len(parts))
+					if not (parts[3].isdigit() and parts[4].isdigit()):
+						raise DnDException(f"height & width must be ints, {parts[3]}, {parts[4]} given.")
+					self.C.Curses.window_set_size(parts[2], int(parts[3]), int(parts[4]))
+				elif parts[1] in ("set_top_left", "stl"):
+					if len(parts) != 5:
+						self.argument_wrong_ammount("window set_top_left", (5,), len(parts))
+					if not (parts[3].isdigit() and parts[4].isdigit()):
+						raise DnDException(f"y & x must be ints, {parts[3]}, {parts[4]} given.")
+					self.C.Curses.window_set_top_left(parts[2], int(parts[3]), int(parts[4]))
+				else:
+					raise DnDException(f"Command window first argument '{parts[1]}' is invalid.")
 
 			else:
 				self.print_unrecognized_command(parts)
