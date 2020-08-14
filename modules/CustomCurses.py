@@ -11,6 +11,7 @@ from modules.SettingsLoader import settings
 class CustomCurses():
 	def __init__(self, Connector):
 		self.C = Connector
+		self.resize_error_triggered = False
 		self.curses = curses
 		self.fight_history = []
 		self.cmd_history = []
@@ -151,13 +152,16 @@ class CustomCurses():
 		return (min(nlines, max_y), min(ncols, max_x), begin_y, begin_x)
 
 	def clear_terminal(self):
+		i = 0
 		while True:
-			i = 0
 			try:
 				curses.resize_term(0, 0)
 				return
 			except:
-				print(f"RESIZE ERROR n.{i}", end=" ")
+				if not self.resize_error_triggered:
+					print("RESIZE ERROR n.0", end="")
+				print(f" {i}", end="")
+				self.resize_error_triggered = True
 				sleep(0.01)
 				i += 1
 				if i == 100:
