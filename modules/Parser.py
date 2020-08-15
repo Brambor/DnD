@@ -192,6 +192,8 @@ class Parser():
 				elif parts[1] in ("execute", "exe"):
 					for entity in [self.C.Game.get_entity(e)[1] for e in parts[2:]]:
 						entity.apply_effects()
+				else:
+					raise DnDException(f"Command window first argument '{parts[1]}' is invalid.")
 				self.C.Game.history_add()
 
 			elif parts[0] == "erase":
