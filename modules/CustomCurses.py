@@ -196,10 +196,18 @@ class CustomCurses():
 			self.cmd_history_pointer = len(self.cmd_history) - 1
 			self.cmd_history_pointer_at_end = True
 		if x == 26:  # ctrl+z -> move back in history
-			self.C.Game.history_move(-1)
+			self.press_ctrl("z")
 		if x == 25:  # ctrl+y
-			self.C.Game.history_move(+1)
+			self.press_ctrl("y")
 		return x
+
+	def press_ctrl(self, X):
+		if X == "z":
+			self.C.Game.history_move(-1)
+		elif X == "y":
+			self.C.Game.history_move(+1)
+		else:
+			raise NameError(f"'ctrl+{X}' is not defined.")
 
 	def indicate_overflow(self, window):
 		self.addstr(window, settings.OVERFLOW_INDICATOR, self.get_color_pair("error"))

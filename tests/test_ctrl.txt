@@ -1,0 +1,21 @@
+ctrl z
+ctrl y
+
+c pes a
+i a
+erase a
+c pes a
+ctrl z
+ctrl z
+ctrl y
+c pes b
+i b
+ctrl z
+ctrl z
+ctrl y
+ctrl y
+
+dmg b p {4*d20 + d12} | b
+ctrl z
+ctrl y
+ctrl y

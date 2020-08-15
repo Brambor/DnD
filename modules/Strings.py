@@ -30,6 +30,7 @@ cmd = (
 	("help", "h"),
 	("create", "c"),
 	("compare", "cmp"),
+	("ctrl",),
 	("damage", "dmg", "d"),
 	("effect", "e"),
 	("erase",),
@@ -109,6 +110,13 @@ strs = {
 			"\tc pes <==> c pes _\n"
 			"\trunning 'c pes' twice <==> c pes _ _\n"
 			f'\t{symbol["*"]}'
+		),
+		"ctrl": (
+			"All these are equivalent to pressing ctrl+X.\n"
+			"ctrl z\n"
+			"\tMoves one back in entity history.\n"
+			"ctrl y\n"
+			"\tMoves one forward in entity history.\n"
 		),
 		"compare": (
 			"compare/cmp entity1 skill1 val1 entity2 skill2 val2\n"

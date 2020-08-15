@@ -159,6 +159,14 @@ class Parser():
 				else:
 					self.argument_wrong_ammount("compare", (3, 7), len(parts))
 
+			elif parts[0] == "ctrl":
+				if len(parts) != 2:
+					self.argument_wrong_ammount("ctrl", (2,), len(parts))
+				if parts[1] in {"y", "z"}:
+					self.C.Curses.press_ctrl(parts[1])
+				else:
+					raise DnDException(f"'ctrl+{parts[1]}' is not defined.")
+
 			elif parts[0] in ("damage", "dmg", "d"):
 				parts = separate(parts[1:])
 
