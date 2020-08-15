@@ -40,8 +40,10 @@ class Game():
 			del self.entities[entity_i]
 			changes += f"Entity {entity} has been deleted.\n"
 
-		if changes:
+		if changes and errors:
 			self.C.Print(f"{changes}\n{errors}")
+		elif changes:
+			self.C.Print(changes)
 		elif errors:
 			self.C.Print(errors)
 
