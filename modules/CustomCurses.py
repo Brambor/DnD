@@ -114,7 +114,7 @@ class CustomCurses():
 			self.windows[w].refresh()  # shouldn't this refresh it after resize?
 
 		if add_history:
-			self.windows["fight"].addstr("\n".join(
+			self.windows["fight"].addstr("".join(
 				self.fight_history[-self.windows["fight"].getmaxyx()[0]:]
 			))
 
