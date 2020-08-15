@@ -13,11 +13,12 @@ class CustomInput():
 		else:
 			res = self.C.Curses.send(message)
 
-		if self.C.log_file:
-			self.write_to_log(message, res)
+		self.write_to_log(message, res)
 		return res
 
 	def write_to_log(self, message, res):
+		if not self.C.log_file:
+			return
 		logs_path = "%s/logs" % self.C.path_to_DnD
 		if not os.path.exists(logs_path):
 			os.mkdir(logs_path)

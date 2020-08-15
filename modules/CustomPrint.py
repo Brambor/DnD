@@ -15,8 +15,7 @@ class CustomPrint():
 			self.C.Curses.fight_history.append(message)
 			self.C.Curses.windows["fight"].refresh()
 
-		if self.C.log_file:
-			self.write_to_log(message)
+		self.write_to_log(message)
 
 	def spaces_to_center(self, window_name, word):
 		# TODO: use str.center
@@ -133,6 +132,8 @@ class CustomPrint():
 		self.C.Curses.windows["history"].refresh()
 
 	def write_to_log(self, message):
+		if not self.C.log_file:
+			return
 		logs_path = "%s/logs" % self.C.path_to_DnD
 		if not os.path.exists(logs_path):
 			os.mkdir(logs_path)
