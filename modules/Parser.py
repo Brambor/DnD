@@ -235,11 +235,11 @@ class Parser():
 						raise DnDException("Second argument of command 'file' with 2 arguments must be one of 'save' or 'list'.")
 				else:
 					if parts[1] == "save":
-						self.C.Game.save(file_name=parts[2])
+						self.C.Game.save(filename=parts[2])
 					elif parts[1] == "load":
-						self.C.Game.load(file_name=parts[2])
+						self.C.Game.load(filename=parts[2])
 					elif parts[1] == "delete":
-						self.C.Game.delete(file_name=parts[2])
+						self.C.Game.delete(filename=parts[2])
 					else:
 						raise DnDException("Second argument of command 'file' with 3 arguments must be one of 'save', 'load' or 'delete'.")
 
