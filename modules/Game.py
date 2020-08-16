@@ -140,7 +140,10 @@ class Game():
 		return f"{self.C.path_to_DnD}/saves/{saved_filenames[0]}.pickle"
 
 	def list_same_filenames(self, filename, remove_date=False):
-		for saved_filename in (f[:-7] for f in os.listdir(f'{self.C.path_to_DnD}/saves')):
+		saves_path = f'{self.C.path_to_DnD}/saves'
+		if not os.path.exists(saves_path):
+			return tuple()
+		for saved_filename in (f[:-7] for f in os.listdir(saves_path)):
 			if remove_date_from_filename(saved_filename) == filename:
 				if remove_date:
 					yield remove_date_from_filename(saved_filename)
@@ -148,9 +151,11 @@ class Game():
 					yield saved_filename
 
 	def list_saves(self):
-		self.C.Print("\n".join(
-			pretty_print_filename(f[:-7]) for f in os.listdir(f'{self.C.path_to_DnD}/saves')
-		) + "\n")
+		saves_path = f'{self.C.path_to_DnD}/saves'
+		if os.path.exists(saves_path):
+			self.C.Print("\n".join(
+				pretty_print_filename(f[:-7]) for f in os.listdir(saves_path)
+			) + "\n")
 
 	def load(self, filename):
 		filename_path = self.get_the_one_save_filename(filename)
