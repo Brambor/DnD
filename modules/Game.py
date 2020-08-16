@@ -121,15 +121,20 @@ class Game():
 
 	# SAVE / LOAD
 	def delete(self, filename):
-		filename_path = self.get_the_one_save_filename(filename)
-		os.remove(filename_path)
+		filename_date = self.get_the_one_save_filename(filename)
+		# warning
+		if (ans := self.C.Input(
+				f"Are you sure you wanna delete '{filename}'? 'yes'")) != "yes":
+			raise DnDException(f"Wrote '{ans}' not 'yes', Aborting deleting '{filename}'.")
+
+		os.remove(f"{self.C.path_to_DnD}/saves/{filename_date}.pickle")
 		if self.save_file_associated == filename:
 			self.save_file_associated = None
 			self.C.Print(f"This game was associated with '{filename}', so it is no longer associated.\n")
 		self.C.Print(f"Save '{filename}' deleted.\n")
 
 	def get_the_one_save_filename(self, filename):
-		saved_filenames = list(self.list_same_filenames(filename))
+		saved_filenames = tuple(self.list_same_filenames(filename))
 		if len(saved_filenames) == 0:
 			raise DnDException(f"Save file '{filename}' does not exist.")
 		elif len(saved_filenames) > 1:
@@ -137,7 +142,7 @@ class Game():
 				f"Save file '{filename}' has {len(saved_filenames)} different saves associated.\n"
 				f"Go to '{self.C.path_to_DnD}/saves/' and fix this problem (rename some)"
 				f", then you can load & delete '{filename}'."))
-		return f"{self.C.path_to_DnD}/saves/{saved_filenames[0]}.pickle"
+		return saved_filenames[0]
 
 	def list_same_filenames(self, filename, remove_date=False):
 		saves_path = f'{self.C.path_to_DnD}/saves'
@@ -152,16 +157,21 @@ class Game():
 
 	def list_saves(self):
 		saves_path = f'{self.C.path_to_DnD}/saves'
-		if os.path.exists(saves_path):
+		if os.path.exists(saves_path) and os.listdir(saves_path):
 			self.C.Print("\n".join(
 				pretty_print_filename(f[:-7]) for f in os.listdir(saves_path)
 			) + "\n")
+		else:
+			self.C.Print("No saved files yet.\n")
 
 	def load(self, filename):
-		filename_path = self.get_the_one_save_filename(filename)
-
-		# warn, then load
-		with open(filename_path, "rb") as save_file:
+		filename_date = self.get_the_one_save_filename(filename)
+		# warn
+		if (ans := self.C.Input((f"Are you sure you wanna load '{filename}'? "
+				"All current progress will be lost! 'yes'"))) != "yes":
+			raise DnDException(f"Wrote '{ans}' not 'yes', Aborting loading '{filename}'.")
+		# load
+		with open(f"{self.C.path_to_DnD}/saves/{filename_date}.pickle", "rb") as save_file:
 			big_d = pickle.load(save_file)
 		big_d["C"] = self.C
 		for e in big_d["entities"]:

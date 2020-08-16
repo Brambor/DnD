@@ -6,11 +6,13 @@ file save test_save_A
 erase a
 c pes b
 file load test_save_A
+   yes
 i a
 
 file save
 file delete test_save_A
-# Not associated!
+   yes
+# No longer associated!
 file save
 
 file save test_save_A
@@ -22,7 +24,9 @@ file list
 
 # cleaning
 file delete test_save_A
+   yes
 file delete test_save_B
+   yes
 
 # non existing save to load
 file load test_save_A

@@ -160,7 +160,6 @@ strs = {
 		),
 		"exit": "Exits the program.\n",
 		"file": (
-			"WARNING(!): Warnings not yet implemented!\n"
 			"file list\n"
 			"\tlists currently saved files\n"
 			"file save\n"
@@ -170,9 +169,9 @@ strs = {
 			"\tsaves game to 'saves/filename'\n"
 			"\tto prevent human mistake, it is prefered to use 'file save' to save to associated file\n"
 			"file load filename\n"
-			"\twarns(!), then deletes game and loads 'saves/filename'\n"
+			"\twarns, then deletes game and loads 'saves/filename'\n"
 			"file delete filename\n"
-			"\twarns(!), then deletes 'saves/filename'\n"
+			"\twarns, then deletes 'saves/filename'\n"
 		),
 		"heal": (
 			"heal expression+ | target+\n"
