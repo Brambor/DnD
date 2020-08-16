@@ -46,7 +46,7 @@ class Parser():
 	def input_command(self):
 		"Handles one line of input. Returns True if game while loop should continue. False otherwise."
 		try:
-			command = self.C.Input(">>>")
+			command = self.C.Input()
 			self.process(command)
 		except DnDExit as exception:
 			print("Exiting due to %s\n" % exception)  # for some reason this doesn't print
@@ -387,7 +387,7 @@ class Parser():
 				self.C.Print(
 						"%s\n" % "\n".join(f"{i}. {entity.get_effect_string(e)}" for i, e in enumerate(entity.body["effects"]))
 					)
-				effects_to_remove = self.C.Input("effects to remove >>>").split()
+				effects_to_remove = self.C.Input("effects to remove").split()
 
 				#MUHAHAHAHA
 				indexes = [int(i) if i.isdigit() else DnDException(f"'{i}' is not a non-negative integer.") for i in effects_to_remove]

@@ -264,26 +264,24 @@ class CustomCurses():
 
 	def serialization(self, input_command, message):
 		"common parts of self.send and self.send_test"
-		# each line in regular input is " \n" instead of "\n" (for some reason)
-		input_command = input_command.replace(" \n", "\n")  # for the one special case when input_command == ">>> \n"
 		# removing >>>
-		input_command_stripped = input_command[len(message)+1:]
+		input_command_stripped = input_command[len(message):].strip()
 		# if only >>>, then print only \n
-		if input_command == ">>>\n":
+		if input_command.strip() == ">>>":
 			input_command = "\n"
 
 		self.windows["console_input"].clear()
-		self.addstr("fight", input_command)  # fight, but s
+		self.addstr("fight", input_command)
 		self.fight_history.append(input_command)
 		self.add_to_history_commands(input_command_stripped)
 
 		self.C.Print.refresh_history_window()
 		for w in self.windows:
 			self.windows[w].refresh()
-		return input_command_stripped[:-1]  # removing ending \n
+		return input_command_stripped
 
 	def add_to_history_commands(self, command):
-		if command in ("",):
+		if not command:
 			return
 		if self.cmd_history and command == self.cmd_history[-1]:
 			return

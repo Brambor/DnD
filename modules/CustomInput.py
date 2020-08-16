@@ -6,7 +6,11 @@ class CustomInput():
 		self.C = Connector
 		self.i = 0  # used in DnD.py/test_wrap
 
-	def __call__(self, message):
+	def __call__(self, message=""):
+		if message:
+			message += " >>>"
+		else:
+			message = ">>>"
 		if self.C.test_environment:
 			res = self.C.Curses.send_test(message)
 			self.i += 1

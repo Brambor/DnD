@@ -128,7 +128,7 @@ class CustomPrint():
 		for i, line in enumerate(self.C.Curses.cmd_history[slice_start:slice_end]):
 			i += slice_start
 			mark = "*" if i==self.C.Curses.cmd_history_pointer and not self.C.Curses.cmd_history_pointer_at_end else " "
-			history_w.addnstr(f'{i}.{mark}{line}', width)
+			history_w.addnstr(f'{i}.{mark}{line}\n', width)
 		self.C.Curses.windows["history"].refresh()
 
 	def write_to_log(self, message):

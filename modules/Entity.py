@@ -245,7 +245,7 @@ class Entity():
 		dice = spell.get("dice")
 		if dice:
 			if do_input:
-				threw = next(parse_sequence(self.C.Input("threw >>>")))
+				threw = next(parse_sequence(self.C.Input("threw")))
 			else:
 				threw = D(dice)
 			crit = dice_crit(dice, threw, self.C.Print)
