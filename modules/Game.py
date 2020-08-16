@@ -120,6 +120,34 @@ class Game():
 		self.C.Print.refresh_windows()
 
 	# SAVE / LOAD
+	def delete(self, filename):
+		save_path = f'{self.C.path_to_DnD}/saves/{filename}.pickle'
+		if not os.path.exists(save_path):
+			raise DnDException(f"Save file '{filename}' does not exist.")
+		os.remove(save_path)
+		if self.save_file_associated == filename:
+			self.save_file_associated = None
+			self.C.Print(f"This game was associated with '{filename}', so it is no longer associated.\n")
+		self.C.Print(f"Save '{filename}' deleted.\n")
+
+	def list_saves(self):
+		saves_path = f'{self.C.path_to_DnD}/saves'
+		self.C.Print("\n".join(f[:-7] for f in os.listdir(saves_path)) + "\n")
+
+	def load(self, filename):
+		save_path = f'{self.C.path_to_DnD}/saves/{filename}.pickle'
+		if not os.path.exists(save_path):
+			raise DnDException(f"Save file '{filename}' does not exist.")
+		# warn, then load
+		with open(save_path, "rb") as save_file:
+			big_d = pickle.load(save_file)
+		big_d["C"] = self.C
+		for e in big_d["entities"]:
+			e.C = self.C
+		self.__dict__ = big_d
+		self.save_file_associated = filename
+		self.C.Print(f"File '{filename}' loaded.\n")
+
 	def save(self, filename=None):
 		saves_path = f'{self.C.path_to_DnD}/saves'
 
@@ -148,31 +176,3 @@ class Game():
 			pickle.dump(big_d, save_file)
 		self.save_file_associated = filename
 		self.C.Print(f"Saved as '{filename}'.\n")
-
-	def load(self, filename):
-		save_path = f'{self.C.path_to_DnD}/saves/{filename}.pickle'
-		if not os.path.exists(save_path):
-			raise DnDException(f"Save file '{filename}' does not exist.")
-		# warn, then load
-		with open(save_path, "rb") as save_file:
-			big_d = pickle.load(save_file)
-		big_d["C"] = self.C
-		for e in big_d["entities"]:
-			e.C = self.C
-		self.__dict__ = big_d
-		self.save_file_associated = filename
-		self.C.Print(f"File '{filename}' loaded.\n")
-
-	def list_saves(self):
-		saves_path = f'{self.C.path_to_DnD}/saves'
-		self.C.Print("\n".join(f[:-7] for f in os.listdir(saves_path)) + "\n")
-
-	def delete(self, filename):
-		save_path = f'{self.C.path_to_DnD}/saves/{filename}.pickle'
-		if not os.path.exists(save_path):
-			raise DnDException(f"Save file '{filename}' does not exist.")
-		os.remove(save_path)
-		if self.save_file_associated == filename:
-			self.save_file_associated = None
-			self.C.Print(f"This game was associated with '{filename}', so it is no longer associated.\n")
-		self.C.Print(f"Save '{filename}' deleted.\n")
