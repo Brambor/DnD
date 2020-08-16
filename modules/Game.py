@@ -7,7 +7,7 @@ from library.Main import library
 from modules.Entity import Entity
 from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
-from modules.Misc import get_valid_filename
+from modules.Misc import get_now_str, get_valid_filename, pretty_print_filename, remove_date_from_filename
 
 
 class Game():
@@ -121,25 +121,42 @@ class Game():
 
 	# SAVE / LOAD
 	def delete(self, filename):
-		save_path = f'{self.C.path_to_DnD}/saves/{filename}.pickle'
-		if not os.path.exists(save_path):
-			raise DnDException(f"Save file '{filename}' does not exist.")
-		os.remove(save_path)
+		filename_path = self.get_the_one_save_filename(filename)
+		os.remove(filename_path)
 		if self.save_file_associated == filename:
 			self.save_file_associated = None
 			self.C.Print(f"This game was associated with '{filename}', so it is no longer associated.\n")
 		self.C.Print(f"Save '{filename}' deleted.\n")
 
+	def get_the_one_save_filename(self, filename):
+		saved_filenames = list(self.list_same_filenames(filename))
+		if len(saved_filenames) == 0:
+			raise DnDException(f"Save file '{filename}' does not exist.")
+		elif len(saved_filenames) > 1:
+			raise DnDException((
+				f"Save file '{filename}' has {len(saved_filenames)} different saves associated.\n"
+				f"Go to '{self.C.path_to_DnD}/saves/' and fix this problem (rename some)"
+				f", then you can load & delete '{filename}'."))
+		return f"{self.C.path_to_DnD}/saves/{saved_filenames[0]}.pickle"
+
+	def list_same_filenames(self, filename, remove_date=False):
+		for saved_filename in (f[:-7] for f in os.listdir(f'{self.C.path_to_DnD}/saves')):
+			if remove_date_from_filename(saved_filename) == filename:
+				if remove_date:
+					yield remove_date_from_filename(saved_filename)
+				else:
+					yield saved_filename
+
 	def list_saves(self):
-		saves_path = f'{self.C.path_to_DnD}/saves'
-		self.C.Print("\n".join(f[:-7] for f in os.listdir(saves_path)) + "\n")
+		self.C.Print("\n".join(
+			pretty_print_filename(f[:-7]) for f in os.listdir(f'{self.C.path_to_DnD}/saves')
+		) + "\n")
 
 	def load(self, filename):
-		save_path = f'{self.C.path_to_DnD}/saves/{filename}.pickle'
-		if not os.path.exists(save_path):
-			raise DnDException(f"Save file '{filename}' does not exist.")
+		filename_path = self.get_the_one_save_filename(filename)
+
 		# warn, then load
-		with open(save_path, "rb") as save_file:
+		with open(filename_path, "rb") as save_file:
 			big_d = pickle.load(save_file)
 		big_d["C"] = self.C
 		for e in big_d["entities"]:
@@ -152,7 +169,8 @@ class Game():
 		saves_path = f'{self.C.path_to_DnD}/saves'
 
 		if filename in {"test_save_A", "test_save_B"}:
-			self.C.Print(f"WARNING: '{filename}' is rewritten on each run of 'test/test_save.py', do not use it!\n")
+			self.C.Print((f"WARNING: '{filename}' is rewritten and then deleted "
+				"on each run of 'test/test_save.py', do not use it!\n"))
 		elif filename == None:
 			if self.save_file_associated == None:
 				raise DnDException(f"No save file is yet asscociated with this game.")
@@ -160,11 +178,13 @@ class Game():
 		if filename != get_valid_filename(filename):
 			raise DnDException(f"'{filename}' is not a valid filename.")
 
-		save_path = f'{saves_path}/{filename}.pickle'
-
-		if filename != self.save_file_associated and os.path.exists(save_path):
+		if filename != self.save_file_associated and filename in self.list_same_filenames(filename, remove_date=True):
 			self.C.Print("Saving overwrote non asscociated file!\n")
-			# add date to save
+			new_file = ""
+		elif filename == self.save_file_associated:
+			new_file = ""
+		else:
+			new_file = " (new file)"
 
 		big_d = {key: self.__dict__[key] for key in self.__dict__ if key not in {"save_file_associated", "C"}}
 		for e in big_d["entities"]:
@@ -172,7 +192,11 @@ class Game():
 
 		if not os.path.exists(saves_path):
 			os.mkdir(saves_path)
-		with open((save_path), "wb") as save_file:
+		# delete all old save files, if they exist
+		for old_filename in self.list_same_filenames(filename):
+			os.remove(f"{saves_path}/{old_filename}.pickle")
+		# write file
+		with open(f'{saves_path}/{filename}--{get_now_str()}.pickle', "wb") as save_file:
 			pickle.dump(big_d, save_file)
 		self.save_file_associated = filename
-		self.C.Print(f"Saved as '{filename}'.\n")
+		self.C.Print(f"Saved as '{filename}'{new_file}.\n")
