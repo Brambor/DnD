@@ -264,6 +264,8 @@ class CustomCurses():
 
 	def serialization(self, input_command, message):
 		"common parts of self.send and self.send_test"
+		# fixing multiline inputs
+		input_command = input_command.replace("\n", "") + "\n"
 		# removing >>>
 		input_command_stripped = input_command[len(message):].strip()
 		# if only >>>, then print only \n
