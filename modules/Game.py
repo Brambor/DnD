@@ -8,6 +8,7 @@ from modules.Entity import Entity
 from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
 from modules.Misc import get_now_str, get_valid_filename, pretty_print_filename, remove_date_from_filename
+from modules.SettingsLoader import settings
 
 
 class Game():
@@ -19,6 +20,7 @@ class Game():
 		self.entities_history = [[]]
 		self.entities_history_pointer = 0
 		self.save_file_associated = None
+		self.autosave_slot = 0
 
 	def create(self, entity, nickname=""):
 		e = Entity(self.C, library["entities"][entity], self.i_entity)
@@ -109,6 +111,7 @@ class Game():
 			e.C = self.C
 
 		self.entities_history_pointer += 1
+		self.autosave()
 
 	def history_move(self, move_in_history):
 		"move_in_history is typically +1 or -1"
@@ -122,6 +125,12 @@ class Game():
 		self.C.Print.refresh_windows()
 
 	# SAVE / LOAD
+	def autosave(self):
+		if settings.AUTOSAVE_SLOT_COUNT <= 0:
+			return
+		self.save(f"autosave_{self.autosave_slot}", autosave=True)
+		self.autosave_slot = (self.autosave_slot+1) % settings.AUTOSAVE_SLOT_COUNT
+
 	def delete(self, filename):
 		filename_date = self.get_the_one_save_filename(filename)
 		# warning
@@ -175,14 +184,21 @@ class Game():
 		# load
 		with open(f"{self.C.path_to_DnD}/saves/{filename_date}.pickle", "rb") as save_file:
 			big_d = pickle.load(save_file)
-		big_d["C"] = self.C
-		for e in big_d["entities"]:
-			e.C = self.C
+
+		C, ASS, AFS = self.C, self.autosave_slot, self.save_file_associated
 		self.__dict__ = big_d
-		self.save_file_associated = filename
+		for e in self.entities:
+			e.C = C
+		self.C, self.autosave_slot = C, ASS
+
+		if filename[:9] == "autosave_" and filename[9:].isdigit():
+			self.C.Print(f"File not associated, since {filename} is an autosave. Still associated to {AFS}.\n")
+			self.save_file_associated = AFS
+		else:
+			self.save_file_associated = filename
 		self.C.Print(f"File '{filename}' loaded.\n")
 
-	def save(self, filename=None):
+	def save(self, filename=None, autosave=False):
 		saves_path = f'{self.C.path_to_DnD}/saves'
 
 		if filename in {"test_save_A", "test_save_B"}:
@@ -192,10 +208,14 @@ class Game():
 			if self.save_file_associated == None:
 				raise DnDException(f"No save file is yet asscociated with this game.")
 			filename = self.save_file_associated
+		if not autosave and filename[:9] == "autosave_" and filename[9:].isdigit():
+			self.C.Print(f"WARNING: '{filename}' is overwritten on autosave, do not use it!\n")
 		if filename != get_valid_filename(filename):
 			raise DnDException(f"'{filename}' is not a valid filename.")
 
-		if filename != self.save_file_associated and filename in self.list_same_filenames(filename, remove_date=True):
+		if autosave:
+			pass
+		elif filename != self.save_file_associated and filename in self.list_same_filenames(filename, remove_date=True):
 			self.C.Print("Saving overwrote non asscociated file!\n")
 			new_file = ""
 		elif filename == self.save_file_associated:
@@ -203,14 +223,14 @@ class Game():
 		else:
 			new_file = " (new file)"
 
-		C, SFA = self.C, self.save_file_associated
-		del self.C, self.save_file_associated
+		C, SFA, ASS = self.C, self.save_file_associated, self.autosave_slot
+		del self.C, self.save_file_associated, self.autosave_slot
 		for e in self.entities:
 			del e.C
 		big_d = deepcopy(self.__dict__)
 		for e in self.entities:
 			e.C = C
-		self.C, self.save_file_associated = C, SFA
+		self.C, self.save_file_associated, self.autosave_slot = C, SFA, ASS
 
 		if not os.path.exists(saves_path):
 			os.mkdir(saves_path)
@@ -220,5 +240,6 @@ class Game():
 		# write file
 		with open(f'{saves_path}/{filename}--{get_now_str()}.pickle', "wb") as save_file:
 			pickle.dump(big_d, save_file)
-		self.save_file_associated = filename
-		self.C.Print(f"Saved as '{filename}'{new_file}.\n")
+		if not autosave:
+			self.save_file_associated = filename
+			self.C.Print(f"Saved as '{filename}'{new_file}.\n")
