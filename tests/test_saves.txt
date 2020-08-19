@@ -20,6 +20,10 @@ file save test_save_B
 # Overwriting:
 file save test_save_A
 
+c Thorbald t
+file save
+attack t
+
 file list
 
 # cleaning

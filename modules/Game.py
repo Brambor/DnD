@@ -101,11 +101,13 @@ class Game():
 	def history_add(self):
 		if (self.entities_history_pointer +1 < len(self.entities_history)):
 			del self.entities_history[self.entities_history_pointer+1 :]
+
 		for e in self.entities:
-			e.C = None
+			del e.C
 		self.entities_history.append(deepcopy(self.entities))
 		for e in self.entities:
 			e.C = self.C
+
 		self.entities_history_pointer += 1
 
 	def history_move(self, move_in_history):
@@ -201,9 +203,14 @@ class Game():
 		else:
 			new_file = " (new file)"
 
-		big_d = {key: self.__dict__[key] for key in self.__dict__ if key not in {"save_file_associated", "C"}}
-		for e in big_d["entities"]:
-			e.__dict__ = {key:e.__dict__[key] for key in e.__dict__ if key != "C"}
+		C, SFA = self.C, self.save_file_associated
+		del self.C, self.save_file_associated
+		for e in self.entities:
+			del e.C
+		big_d = deepcopy(self.__dict__)
+		for e in self.entities:
+			e.C = C
+		self.C, self.save_file_associated = C, SFA
 
 		if not os.path.exists(saves_path):
 			os.mkdir(saves_path)
