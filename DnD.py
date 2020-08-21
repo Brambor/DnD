@@ -7,9 +7,6 @@ from time import sleep, time
 from library.Main import output_library
 
 from modules.Connector import Connector
-from modules.CustomCurses import CustomCurses
-from modules.CustomInput import CustomInput
-from modules.CustomPrint import CustomPrint
 from modules.Game import Game
 from modules.Parser import Parser
 from modules.SettingsLoader import settings, output_settings
@@ -49,41 +46,38 @@ else:
 	current_time = None
 
 C = Connector(path_to_DnD, log_file=current_time, test_environment=do_tests)
-cCurses = CustomCurses(C)
-cInput = CustomInput(C)
-cPrint = CustomPrint(C)
 
 if not do_tests:
 	# REGULAR USE
 	G = Game(C)
 	P = Parser(C)
-	C.populate(cCurses, cInput, cPrint, G)
+	C.populate(G)
 else:
 	# TESTING
 	f1 = sys.stdin
 	start = time()
 	for test in tests:
-		cInput.i = 0
+		C.Input.i = 0
 		path = f'{path_to_DnD}/tests/test_{test}.txt'
 		f = open(path, 'r')
 		f_lines = open(path, 'r').read().split("\n")
 
 		G = Game(C)
 		P = Parser(C)
-		C.populate(cCurses, cInput, cPrint, G)
+		C.populate(G)
 
 		sys.stdin = f
 
 		if test == tests[-1] and settings.LOG:
 			C.start_logging(str(datetime.today()).split(".")[0])
-		cPrint(f"test name: {test}\n")
+		C.Print(f"test name: {test}\n")
 		sleep(settings.TEST_WAIT_BETWEEN_TESTS)
 		try:
-			while (cInput.i+1 < len(f_lines)) and P.input_command():
+			while (C.Input.i+1 < len(f_lines)) and P.input_command():
 				sleep(settings.TEST_WAIT_BETWEEN_COMMANDS)
 		except ValueError as e:
 			raise Exception(f"test failed: {test}") from e
-		cPrint("\n\n\n\n")
+		C.Print("\n\n\n\n")
 
 		f.close()
 	total = time() - start
@@ -98,7 +92,7 @@ else:
 	wait += len(tests) * settings.TEST_WAIT_BETWEEN_TESTS
 	count_tests = len(tests)
 
-	cPrint("TESTS ARE DONE\n"
+	C.Print("TESTS ARE DONE\n"
 		f"Tests took {round(total, 3)} seconds.\n"
 		f"\tExpected computing {round(total-wait, 2)}s, exp. waiting {round(wait, 2)}s (set in settings).\n"
 		f"\tRan {count_tests} tests with total of {count_cmds} lines.\n")
@@ -107,10 +101,10 @@ else:
 	C.test_environment = False
 
 for line in (*output_settings, *output_library):
-	cPrint(f"{line}\n")
+	C.Print(f"{line}\n")
 while P.input_command():
 	pass
 
-cCurses.endCurses()
+C.Curses.endCurses()
 if settings.EXIT_MESSAGE:
 	input("You are exiting")
