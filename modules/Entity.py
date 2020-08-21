@@ -177,7 +177,7 @@ class Entity():
 	def attack(self, attack_str):
 		attack = self.get_attack(attack_str)
 		if "dmg" in attack:
-			damage_list, crits = self.C.Dice.parse_damage(attack["dmg"], self.C.Game)
+			damage_list, crits = self.C.Dice.parse_damage(attack["dmg"])
 		else:
 			return []
 		for c in crits:
@@ -463,7 +463,7 @@ class Entity():
 
 		if "print_what" in effect:
 			if "print_when" in effect:
-				if calculate(self.C.Dice.dice_eval(effect["print_when"], self.C.Game)[0]):
+				if calculate(self.C.Dice.dice_eval(effect["print_when"])[0]):
 					self.C.Print(f'{self} {effect["print_what"]} since {effect["print_when"]}.\n')
 			else:
 				self.C.Print(effect["print_what"])

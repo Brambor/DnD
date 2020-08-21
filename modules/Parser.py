@@ -172,7 +172,7 @@ class Parser():
 				if len(parts) != 2:
 					self.argument_wrong_ammount("damage", (2,), len(parts), separators=True)
 
-				damage_list = self.C.Dice.parse_damage(parts[0], self.C.Game)[0]
+				damage_list = self.C.Dice.parse_damage(parts[0])[0]
 
 				targets = parts[1].split()
 				if len(targets) == 0:
@@ -248,7 +248,7 @@ class Parser():
 				if len(parts) != 2:
 					self.argument_wrong_ammount("heal", (2,), len(parts), separators=True)
 
-				expression = self.C.Dice.dice_eval(parts[0], self.C.Game)[0]
+				expression = self.C.Dice.dice_eval(parts[0])[0]
 				# calculate
 				healed_for = calculate(expression)
 

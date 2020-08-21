@@ -25,20 +25,20 @@ class Dice():
 	def D(self, n):
 		return randint(1, n)
 
-	def dice_crit(self, dice, threw, cPrint=None):
+	def dice_crit(self, dice, threw, print_crit=False):
 		"pass arg. cPrint to print when crit"
 		self.check_dice_exists(dice)
-		if threw >= self.all_dice[dice] and cPrint != None:
-			cPrint(f"Critical on D{dice}!!\n")
+		if threw >= self.all_dice[dice] and print_crit:
+			self.C.Print(f"Critical on D{dice}!!\n")
 		return threw >= self.all_dice[dice]
 
 	def check_dice_exists(self, n):
 		if n not in self.all_dice:
 			raise DnDException(f"Dice {n} doesn't exist. Existing die: {', '.join(str(d) for d in self.all_dice)}.")
 
-	def dice_eval(self, expression, game):
+	def dice_eval(self, expression):
 		if (dice := self.dice_parser(expression)):
-			threw_crit, crits = game.throw_dice(dice)
+			threw_crit, crits = self.C.Game.throw_dice(dice)
 			# put the results back into the expression
 			for n_m, threw in zip(dice, threw_crit):
 				expression = expression.replace(f"d{n_m[0]}{n_m[1]}", str(threw[0]), 1)
@@ -84,7 +84,7 @@ class Dice():
 			return self.D(int(n_str[1:]))
 		raise DnDException("'%s' is not an integer nor in format 'dx'." % n_str)
 
-	def parse_damage(self, string, game):
+	def parse_damage(self, string):
 		"string = 'physical acid {7*d20} acid {7 + d4} acid { d12}'"
 		"returns [{'physical', 'acid'}: 14, {'acid'}: 8, {'acid'}: 5]"
 		damage_list = []
@@ -99,7 +99,7 @@ class Dice():
 					raise DnDException("Invalid damage_type '%s'." % damage_type)
 				types.add(library["damage_types"][damage_type])  # a -> acid; acid -> acid	
 
-			whole[1], c = self.dice_eval(whole[1], game)
+			whole[1], c = self.dice_eval(whole[1])
 			crits.update(c)
 
 			# calculate
