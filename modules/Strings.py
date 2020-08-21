@@ -22,7 +22,7 @@ else:
 def separate(splitted_parts):
 	">>> separate('hello there | my args & how are ya 7?'.split())"
 	"['hello there', 'my args', 'how are ya 7?']"
-	return [part.strip() for part in re.split("|".join("\\%s" % s for s in settings.SEPARATORS), " ".join(splitted_parts))]
+	return [part.strip() for part in re.split("|".join(f"\\{s}" for s in settings.SEPARATORS), " ".join(splitted_parts))]
 
 cmd = (
 	("#", "//"),

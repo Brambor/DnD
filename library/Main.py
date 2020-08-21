@@ -24,15 +24,11 @@ for e_name in entities:
 	if "skills" in e:
 		for skill in e["skills"]:
 			if skill not in skills:
-				warnings.append(
-					"Skill '%s' of entity '%s' is not in library of skills." % (
-						skill, e_name))
+				warnings.append(f"Skill '{skill}' of entity '{e_name}' is not in library of skills.")
 	if "resistances" in e:
 		for resistance in e["resistances"]:
 			if resistance not in damage_types:
-				warnings.append(
-					"Resistance '%s' of entity '%s' is not in library"
-					" of damage_types." % (resistance, e_name))
+				warnings.append(f"Resistance '{resistance}' of entity '{e_name}' is not in library of damage_types.")
 
 output_library = chain((
 	*output_df,
@@ -41,5 +37,5 @@ output_library = chain((
 	*output_it,
 	*output_sk,
 	*output_sp,
-	*("WARNING: %s" % w for w in warnings),
+	*(f"WARNING: {w}" for w in warnings),
 ))

@@ -26,7 +26,7 @@ def reverse_index(lst, value):
 		if lst[i] == value:
 			return i
 		i -= 1
-	raise ValueError("'%s' is not in the list.")
+	raise ValueError(f"'{value}' is not in the list.")
 
 class Solver():
 	def __init__(self, string, width, height):
@@ -39,7 +39,7 @@ class Solver():
 		self.windows = {}
 		self.words = self.into_words(string)
 		if self.words[0] != "body":
-			raise ValueError("Unfinished iteration i=%d, your input=%s." % (0, self.words))
+			raise ValueError(f"Unfinished iteration i=0, your input={self.words}.")
 		self.i = 1
 		self.depth = 0
 		self.splitted_depth = 0
@@ -48,9 +48,9 @@ class Solver():
 		self.last_keyword = None
 		self.solver(self.body)
 		assert((self.depth, self.splitted_depth) == (0, 0))
-		print("ending depth: real=%d splitted=%d" % (self.depth, self.splitted_depth))
+		print(f"ending depth: real={self.depth} splitted={self.splitted_depth}")
 		if self.i != len(self.words):
-			raise ValueError("Unfinished iteration i=%d, left from your input %s." % (self.i, self.words[self.i:]))
+			raise ValueError(f"Unfinished iteration i={self.i}, left from your input {self.words[self.i:]}.")
 
 	def into_words(self, string):
 		# remove comments, lines -> spaces
@@ -102,11 +102,11 @@ class Solver():
 #				self.stack.pop()
 				self.solver(window)
 			else:
-				raise ValueError("Unknown keyword %s." % word)
+				raise ValueError(f"Unknown keyword {word}.")
 
 		else:
 			if not(word.startswith('"') and word.endswith('"')):
-				raise ValueError("Window name '%s' doesn't start and end with '\"'." % word)
+				raise ValueError(f"Window name '{word}' doesn't start and end with '\"'.")
 			self.windows[word.strip('"')] = window
 			self.splitted_depth -= 1
 		self.depth -= 1
@@ -114,17 +114,12 @@ class Solver():
 
 	def words_pp(self):
 		if self.i == len(self.words):
-			msg = ("Last keyword '%s'; i=%d => iteration stopped at '%s' in depth %d (splitted %d).\n" % (
-				self.last_keyword,
-				self.i,
-				self.words[self.i-1],
-				self.depth,
-				self.splitted_depth,
-			))
-			msg += "stack = %s\n" % self.stack
+			msg = (f"Last keyword '{self.last_keyword}'; i={self.i} => iteration stopped at '{self.words[self.i-1]}' "
+				f"in depth {self.depth} (splitted {self.splitted_depth}).\n"
+				f"stack = {self.stack}\n")
 			msg += self.tree_str()
 
-			msg += "Ran out of list! Probably unparsed: %s.\n" % self.words[reverse_index(self.words, self.last_keyword):]
+			msg += f"Ran out of list! Probably unparsed: {self.words[reverse_index(self.words, self.last_keyword):]}.\n"
 
 			raise IndexError(msg)
 
@@ -153,7 +148,7 @@ class Solver():
 			splitted_window["top"] = window["top"] + window["height"] - splitted_size
 			window["height"] -= splitted_size
 		else:
-			raise ValueError('Unaceptable from_direction %s, it must be in {"top", "right", "bottom", "left"}.' % from_direction)
+			raise ValueError(f'Unaceptable from_direction {from_direction}, it must be in {{"top", "right", "bottom", "left"}}.')
 
 		return splitted_window
 
@@ -165,7 +160,7 @@ class Solver():
 			size = "width"
 			start = "left"
 		else:
-			raise ValueError('Unaceptable column_row %s, it must be in {"column", "row"}.' % from_direction)
+			raise ValueError(f'Unaceptable column_row {from_direction}, it must be in {{"column", "row"}}.')
 
 
 		splitted_size = window[size] // count
@@ -200,9 +195,9 @@ def m_to_rectangle(m, width, height):
 	for i, obdelnik in enumerate(m):
 		if width < m[obdelnik]["width"] + m[obdelnik]["left"] or any(m[obdelnik][x] < 0 for x in m[obdelnik])\
 			or height < m[obdelnik]["height"] + m[obdelnik]["top"]:
-			print("!%s %d nemá správnou velikost: %s" % (obdelnik, i, m[obdelnik]))
+			print(f"!{obdelnik} {i} nemá správnou velikost: {m[obdelnik]}")
 			continue
-		print(" %s %d" % (obdelnik, i))
+		print(f" {obdelnik} {i}")
 		for row in screen[m[obdelnik]["top"]:m[obdelnik]["top"] + m[obdelnik]["height"]]:
 			for cell in range(m[obdelnik]["width"]):
 				row[m[obdelnik]["left"] + cell] = str(i)

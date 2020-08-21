@@ -51,7 +51,7 @@ class Game():
 	def turn(self):
 		for e in self.entities:
 			e.apply_effects()
-		self.C.Print("Turn %d\n" % self.i_turn)
+		self.C.Print(f"Turn {self.i_turn}\n")
 		if all(e.played_this_turn for e in self.entities):
 			for e in self.entities:
 				e.played_this_turn = False
@@ -64,12 +64,12 @@ class Game():
 			for i, e in enumerate(self.entities):
 				if e.id == int(nickname):
 					return (i, e)
-			raise DnDException("Entity with id '%d' does not exist." % int(nickname))
+			raise DnDException(f"Entity with id '{nickname}' does not exist.")
 		else:
 			for i, e in enumerate(self.entities):
 				if e.nickname == nickname:
 					return (i, e)
-			raise DnDException("Entity '%s' does not exist." % nickname)
+			raise DnDException(f"Entity '{nickname}' does not exist.")
 
 	def get_entity_by_id(self, i_id):
 		"for nonexistant returns None"

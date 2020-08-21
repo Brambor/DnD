@@ -82,7 +82,7 @@ class Dice():
 			return int(n_str)
 		elif n_str.startswith("d") and n_str[1:].isdigit():
 			return self.D(int(n_str[1:]))
-		raise DnDException("'%s' is not an integer nor in format 'dx'." % n_str)
+		raise DnDException(f"'{n_str}' is not an integer nor in format 'dx'.")
 
 	def parse_damage(self, string):
 		"string = 'physical acid {7*d20} acid {7 + d4} acid { d12}'"
@@ -91,12 +91,12 @@ class Dice():
 		crits = set()
 		for whole in (type_damage.split("{") for type_damage in string.split("}") if type_damage != ""):
 			if len(whole) != 2:
-				raise DnDException("%s is %d long, 2 expected.\nMaybe you forgot '{' ?" % (whole, len(whole)))
+				raise DnDException(f"{whole} is {len(whole)} long, 2 expected.\nMaybe you forgot '{{' ?")
 
 			types = set()
 			for damage_type in whole[0].strip().split():
 				if damage_type not in library["damage_types"]:
-					raise DnDException("Invalid damage_type '%s'." % damage_type)
+					raise DnDException(f"Invalid damage_type '{damage_type}'.")
 				types.add(library["damage_types"][damage_type])  # a -> acid; acid -> acid	
 
 			whole[1], c = self.dice_eval(whole[1])

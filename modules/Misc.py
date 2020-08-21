@@ -28,12 +28,12 @@ def convert_string_to_bool(string):
 def get_library(which_library, thing):
 	"getting things from self.library"
 	if which_library not in library:
-		raise DnDException("Unknown library '%s'." % which_library)
+		raise DnDException(f"Unknown library '{which_library}'.")
 	else:
 		ret = library[which_library].get(thing, None)
 		if ret:
 			return ret
-		raise DnDException("'%s' is not in '%s' library." % (thing, which_library))
+		raise DnDException(f"'{thing}' is not in '{which_library}' library.")
 
 def get_now_str():
 	return str(datetime.now())[:-7].replace(" ", "--").replace(":", "-")
@@ -63,7 +63,7 @@ def parse_sequence(sequence, carry_when_crit=False):
 		raise DnDException("Lenght of sequence > 1, when asked only for one number.")
 	for i, word in enumerate(sequence):
 		if not word.isdigit():
-			raise DnDException("Sequence contains non-digit character '%s'." % word)
+			raise DnDException(f"Sequence contains non-digit character '{word}'.")
 		yield int(word)
 	# raise: sequence longer than needed to be
 	yield "Perfectly right lenght."

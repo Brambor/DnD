@@ -110,7 +110,7 @@ class CustomCurses():
 				self.windows[w].scrollok( True )  # on False it crashes
 				self.windows[w].addstr("\n"*self.height)
 			if w != "console_input":
-				self.addstr(w, "<<%s>>\n" % w)
+				self.addstr(w, f"<<{w}>>\n")
 			self.windows[w].refresh()  # shouldn't this refresh it after resize?
 
 		if add_history:

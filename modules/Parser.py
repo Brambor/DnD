@@ -37,10 +37,10 @@ class Parser():
 		for v, t in zip(values.split(), types.split()):
 			if t == "entity_library":
 				if not (v in library["entities"]):
-					raise DnDException("Entity '%s' not found in library." % v)
+					raise DnDException(f"Entity '{v}' not found in library.")
 			if t == "dice":
 				if not v.isdigit():
-					raise DnDException("'%s' is not a valid integer." % v)
+					raise DnDException(f"'{v}' is not a valid integer.")
 
 	def input_command(self):
 		"Handles one line of input. Returns True if game while loop should continue. False otherwise."
@@ -48,7 +48,7 @@ class Parser():
 			command = self.C.Input()
 			self.process(command)
 		except DnDExit as exception:
-			print("Exiting due to %s\n" % exception)  # for some reason this doesn't print
+			print(f"Exiting due to {exception}\n")
 			return False
 		return True
 
@@ -59,7 +59,7 @@ class Parser():
 			note = ""
 		self.C.Print(f"?!: Unrecognized command '{parts[0]}'.{note}\n")
 		if settings.TEST_CRASH_ON_UNKNOWN_COMMAND and self.C.test_environment:
-			raise ValueError("Unknown command '%s'." % parts[0])
+			raise ValueError(f"Unknown command '{parts[0]}'.")
 
 	def process(self, cmd):
 		"processes one command"
@@ -76,7 +76,7 @@ class Parser():
 					self.print_unrecognized_command(parts)
 
 			elif parts[0] in ("#", "//"):
-				self.C.Print("\r# %s\n" % " ".join(parts[1:]))
+				self.C.Print(f'\r# {" ".join(parts[1:])}\n')
 
 			elif parts[0] in ("help", "h"):
 				if len(parts) == 2:
@@ -85,21 +85,21 @@ class Parser():
 						text = ""
 						if type(d) == dict:
 							for key in d:
-								text += "%s" % (d[key])
+								text += d[key]
 						elif type(d) == str:
 							text = d
 						else:
 							raise
 						self.C.Print(text)
 					else:
-						raise DnDException("'%s' is not helped with. These are: %s." % (parts[1], ", ".join(strs["help"])))
+						raise DnDException(f"'{parts[1]}' is not helped with. These are: {', '.join(strs['help'])}.")
 				elif len(parts) == 3:
 					if parts[1] not in ("commands", "cmd"):
 						raise DnDException("Command 'help' with 3 arguments accepts only 'commands'/'cmd' as second argument.")
 					if parts[2] in strs["commands"]:
 						self.C.Print(strs["commands"][parts[2]])
 					else:
-						raise DnDException("Help for command '%s' not found. See 'help commands' for avaiable commands." % parts[2])
+						raise DnDException(f"Help for command '{parts[2]}' not found. See 'help commands' for avaiable commands.")
 				else:
 					self.argument_wrong_ammount("help", (2, 3), len(parts))
 
@@ -330,7 +330,7 @@ class Parser():
 				if lib in library:
 					lib = library[lib]
 				else:
-					raise DnDException("No library '%s'." % lib)
+					raise DnDException(f"No library '{lib}'.")
 
 				# print duplicates in 'a1/a2/a3, b1, c1/c2' form
 				if type(lib) in (set, tuple):
@@ -352,7 +352,7 @@ class Parser():
 					comma = ", "
 					complete_string += u
 					if unique[u]:
-						complete_string += "/%s" % "/".join(unique[u])
+						complete_string += f'/{"/".join(unique[u])}'
 
 				self.C.Print(complete_string + "\n")
 
@@ -384,8 +384,8 @@ class Parser():
 					return
 
 				self.C.Print(
-						"%s\n" % "\n".join(f"{i}. {entity.get_effect_string(e)}" for i, e in enumerate(entity.body["effects"]))
-					)
+						"%s\n" % "\n".join(
+							f"{i}. {entity.get_effect_string(e)}" for i, e in enumerate(entity.body["effects"])))
 				effects_to_remove = self.C.Input("effects to remove").split()
 
 				#MUHAHAHAHA
@@ -500,24 +500,24 @@ class Parser():
 				self.print_unrecognized_command(parts)
 
 		except DnDException as exception:
-			self.C.Print("?!: %s\n" % exception)
+			self.C.Print(f"?!: {exception}\n")
 		except DnDExit:
 			raise
 		except Exception as exc:
 			if settings.DEBUG:
 				raise
-			self.C.Print("EXCEPTION: %s\n" % exc)
+			self.C.Print(f"EXCEPTION: {exc}\n")
 			self.C.Print("fcked up\n")
 
 		# entities window refresh
 		try:
 			self.C.Print.refresh_windows()
 		except DnDException as exception:
-			self.C.Print("?!: %s\n" % exception)
+			self.C.Print(f"?!: {exception}\n")
 		except DnDExit:
 			raise
 		except Exception as exc:
 			if settings.DEBUG:
 				raise
-			self.C.Print("EXCEPTION: %s\n" % exc)
+			self.C.Print(f"EXCEPTION: {exc}\n")
 			self.C.Print("fcked up\n")

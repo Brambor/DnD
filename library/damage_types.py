@@ -60,7 +60,7 @@ for alias, original in (
 	("air", "wind"),
 ):
 	if alias in damage_types:
-		raise ValueError("damage_types already contains %s." % alias)
+		raise ValueError(f"damage_types already contains {alias}.")
 	damage_types[alias] = original
 
 output = local_loader(damage_types, "library.damage_types_local", "damage_types")
