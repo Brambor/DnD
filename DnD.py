@@ -64,7 +64,7 @@ else:
 	start = time()
 	for test in tests:
 		cInput.i = 0
-		path = '%s/tests/test_%s.txt' % (path_to_DnD, test)
+		path = f'{path_to_DnD}/tests/test_{test}.txt'
 		f = open(path, 'r')
 		f_lines = open(path, 'r').read().split("\n")
 
