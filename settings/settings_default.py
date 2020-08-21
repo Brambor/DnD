@@ -5,7 +5,7 @@
 DEBUG = False  # True: When something goes wrong, the program prints error, waits for input, then crashes; False: it prints "fcked up" and carries on.
 
 TAB_WIDTH = 3  # How many spaces is one tab.
-OVERFLOW_INDICATOR = "\\O"  # This text will be print in COLOR_USAGE["error"] color if inventory overflows. It can be multiple characters, the first character should always display, the rest are not guaranteed.
+OVERFLOW_INDICATOR = "\\O"  # This text will be print in COLOR_USAGE["error"] color if window overflows. It can be multiple characters, the first character should always display, the rest are not guaranteed.
 
 AUTOSAVE_SLOT_COUNT = 5  # Determines number of autosave slots, it cycles through them (autosave_0 .. autosave_{n-1}). Any natural number, n <= 0 results in no autosaving.
 
