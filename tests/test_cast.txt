@@ -1,5 +1,6 @@
 c pes a b c
 
 cast a fireball | b
-cast b heal | b
+cast b heal throw_custom | b
+	5
 cast c ice_lance1 | b
