@@ -5,7 +5,6 @@ import pickle
 from library.Main import library
 
 from modules.Entity import Entity
-from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
 from modules.Misc import get_now_str, get_valid_filename, pretty_print_filename, remove_date_from_filename
 from modules.SettingsLoader import settings
@@ -80,14 +79,15 @@ class Game():
 
 	def throw_dice(self, dice_list):
 		"""throws die in list, prints results
+		dice_list contains ((int)die, (str)mark), if mark is unimportant, mark should be ""
 		returns tuple of
 		\t0: list of sets (set)((int) threw, (bool)crit)
 		\t1: set of marked die (marks only), that crit"""
 		threw_crit = []
 		crits = set()
 		for n, mark in dice_list:
-			threw = D(n)
-			if (crit := dice_crit(n, threw)) and mark:
+			threw = self.C.Dice.D(n)
+			if (crit := self.C.Dice.dice_crit(n, threw)) and mark:
 				crits.add(mark)
 			threw_crit.append((threw, crit))
 		if (complete_string := "".join('{0: <4}'.format(mark) for _, mark in dice_list) + "\n").isspace():

@@ -1,8 +1,7 @@
 from library.Main import library
 
 from modules.DnDException import DnDException, DnDExit
-from modules.Dice import D, dice_eval, dice_stat, dice_parser
-from modules.Misc import calculate, get_int_from_dice, get_library, parse_damage  # imports its own Dice
+from modules.Misc import calculate, get_library
 from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
 
@@ -136,20 +135,20 @@ class Parser():
 
 			elif parts[0] in ("compare", "cmp"):
 				if len(parts) == 3:
-					val1 = get_int_from_dice(parts[1])
-					val2 = get_int_from_dice(parts[2])
+					val1 = self.C.Dice.get_int_from_dice(parts[1])
+					val2 = self.C.Dice.get_int_from_dice(parts[2])
 					self.C.Print(f'{val1} {"<" if val1 < val2 else ">" if val1 > val2 else "="} {val2}\n')
 				elif len(parts) == 7:
 					e1 = self.C.Game.get_entity(parts[1])[1]
 					e2 = self.C.Game.get_entity(parts[4])[1]
 					if parts[3] in ("auto", "a"):
-						val1 = dice_stat(e1.get_stat(parts[2], return_as_integer=True))
+						val1 = self.C.Dice.dice_stat(e1.get_stat(parts[2], return_as_integer=True))
 					else:
-						val1 = get_int_from_dice(parts[3])
+						val1 = self.C.Dice.get_int_from_dice(parts[3])
 					if parts[6] in ("auto", "a"):
-						val2 = dice_stat(e2.get_stat(parts[5], return_as_integer=True))
+						val2 = self.C.Dice.dice_stat(e2.get_stat(parts[5], return_as_integer=True))
 					else:
-						val2 = get_int_from_dice(parts[6])
+						val2 = self.C.Dice.get_int_from_dice(parts[6])
 
 					self.C.Print((
 						f"{e1}'s {parts[2]}: {val1} "
@@ -173,7 +172,7 @@ class Parser():
 				if len(parts) != 2:
 					self.argument_wrong_ammount("damage", (2,), len(parts), separators=True)
 
-				damage_list = parse_damage(parts[0], self.C.Game)[0]
+				damage_list = self.C.Dice.parse_damage(parts[0], self.C.Game)[0]
 
 				targets = parts[1].split()
 				if len(targets) == 0:
@@ -249,7 +248,7 @@ class Parser():
 				if len(parts) != 2:
 					self.argument_wrong_ammount("heal", (2,), len(parts), separators=True)
 
-				expression = dice_eval(parts[0], self.C.Game)[0]
+				expression = self.C.Dice.dice_eval(parts[0], self.C.Game)[0]
 				# calculate
 				healed_for = calculate(expression)
 

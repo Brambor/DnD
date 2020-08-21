@@ -2,9 +2,8 @@ from copy import copy
 
 from library.Main import library
 
-from modules.Dice import D, dice_crit
 from modules.DnDException import DnDException
-from modules.Misc import calculate, convert_string_to_bool, dice_eval, get_library, normal_round, parse_damage, parse_sequence
+from modules.Misc import calculate, convert_string_to_bool, get_library, normal_round, parse_sequence
 
 
 class Entity():
@@ -178,7 +177,7 @@ class Entity():
 	def attack(self, attack_str):
 		attack = self.get_attack(attack_str)
 		if "dmg" in attack:
-			damage_list, crits = parse_damage(attack["dmg"], self.C.Game)
+			damage_list, crits = self.C.Dice.parse_damage(attack["dmg"], self.C.Game)
 		else:
 			return []
 		for c in crits:
@@ -247,8 +246,8 @@ class Entity():
 			if do_input:
 				threw = next(parse_sequence(self.C.Input("threw")))
 			else:
-				threw = D(dice)
-			crit = dice_crit(dice, threw, self.C.Print)
+				threw = self.C.Dice.D(dice)
+			crit = self.C.Dice.dice_crit(dice, threw, self.C.Print)
 			total_hp += threw
 		return (total_hp, crit)
 
@@ -381,7 +380,7 @@ class Entity():
 						# check format
 						if not ( (stat_value[0] == "dice") and (type(stat_value[1]) == int) ):
 							raise
-						effect[bonus_or_penalty][stat] = D(stat_value[1])
+						effect[bonus_or_penalty][stat] = self.C.Dice.D(stat_value[1])
 						causing_comment += "\tIncreasing" if bonus_or_penalty == "stat_bonus" else "\tLowering"
 						causing_comment += f" {self}'s '{stat}' by {effect[bonus_or_penalty][stat]}.\n"
 
@@ -450,7 +449,7 @@ class Entity():
 		"return True if the effect should be removed, False otherwise")
 
 		if effect["name"] in {"FIRE", "BLEED"}:
-			threw = D(effect["value"])
+			threw = self.C.Dice.D(effect["value"])
 			self.damaged((({"true"}, threw),), ("burns for" if effect["name"] == "FIRE" else "bleeds for"), caused_by_effect=True)
 			if threw == 1:
 				self.C.Print(f"\tand stopped {self.get_effect_string(effect)}\n")
@@ -464,7 +463,7 @@ class Entity():
 
 		if "print_what" in effect:
 			if "print_when" in effect:
-				if calculate(dice_eval(effect["print_when"], self.C.Game)[0]):
+				if calculate(self.C.Dice.dice_eval(effect["print_when"], self.C.Game)[0]):
 					self.C.Print(f'{self} {effect["print_what"]} since {effect["print_when"]}.\n')
 			else:
 				self.C.Print(effect["print_what"])

@@ -5,7 +5,6 @@ from datetime import datetime
 from library.Main import library
 
 from modules.DnDException import DnDException
-from modules.Dice import D, dice_eval, dice_parser
 
 
 def calculate(string):
@@ -25,13 +24,6 @@ def convert_string_to_bool(string):
 		return False
 	else:
 		raise DnDException(f"Unacceptable value '{string}' accepting only 'True' and 'False'.")
-
-def get_int_from_dice(n_str):
-	if n_str.replace("-", "", 1).isdigit():
-		return int(n_str)
-	elif n_str.startswith("d") and n_str[1:].isdigit():
-		return D(int(n_str[1:]))
-	raise DnDException("'%s' is not an integer nor in format 'dx'." % n_str)
 
 def get_library(which_library, thing):
 	"getting things from self.library"
@@ -61,28 +53,6 @@ def get_valid_filename(s):
 
 def normal_round(f):
 	return int(f) + ( f - int(f) >= 0.5 )
-
-def parse_damage(string, game):
-	"string = 'physical acid {7*d20} acid {7 + d4} acid { d12}'"
-	"returns [{'physical', 'acid'}: 14, {'acid'}: 8, {'acid'}: 5]"
-	damage_list = []
-	crits = set()
-	for whole in (type_damage.split("{") for type_damage in string.split("}") if type_damage != ""):
-		if len(whole) != 2:
-			raise DnDException("%s is %d long, 2 expected.\nMaybe you forgot '{' ?" % (whole, len(whole)))
-
-		types = set()
-		for damage_type in whole[0].strip().split():
-			if damage_type not in library["damage_types"]:
-				raise DnDException("Invalid damage_type '%s'." % damage_type)
-			types.add(library["damage_types"][damage_type])  # a -> acid; acid -> acid	
-
-		whole[1], c = dice_eval(whole[1], game)
-		crits.update(c)
-
-		# calculate
-		damage_list.append((types, calculate(whole[1])))
-	return damage_list, crits
 
 def parse_sequence(sequence, carry_when_crit=False):
 	"does not process negative integers as integers"
