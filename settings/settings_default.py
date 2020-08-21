@@ -64,21 +64,15 @@ WINDOWS = {
 	},
 	"entities": {
 		"left_top": ("(2*x+1)//3", "0"),
-		"width_height": ("(x+1)//3", "(y-1)//3"),
-		"scrollok": False,
-	},
-	"inventory": {
-		"left_top": ("(2*x+1)//3", "(y-1)//3"),
-		"width_height": ("(x+1)//3", "(y-2)//3"),
+		"width_height": ("(x+1)//3", "(y+2)//3 + y//3"),
 		"scrollok": False,
 	},
 	"history": {
-		"left_top": ("(2*x+1)//3", "(y-1)//3 + (y-2)//3"),
-		"width_height": ("(x+1)//3", "(y-3)//3"),
+		"left_top": ("(2*x+1)//3", "(y+2)//3 + y//3"),
+		"width_height": ("(x+1)//3", "(y+1)//3"),
 	},
 	"console_input": {
 		"left_top": ("0", "y-3"),
-		"width_height": ("x", "3"),
+		"width_height": ("(2*x+1)//3", "3"),
 	},
 }
-

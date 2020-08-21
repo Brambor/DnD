@@ -23,7 +23,6 @@ class CustomPrint():
 
 	def refresh_windows(self):
 		self.refresh_entity_window()
-		self.refresh_inventory_window()
 		self.refresh_history_window()
 
 	def refresh_entity_window(self):
@@ -54,7 +53,9 @@ class CustomPrint():
 			del groups["DEAD"]
 
 		get_color = self.C.Curses.get_color_pair
+		entity = self.C.Game.get_entity_by_id(self.inventory_entity_id)
 		try:
+			# entities list
 			for group in groups:
 				group_count = f'{group} (%d)' % sum(len(groups[group][derived_from]) for derived_from in groups[group])
 				spaces = self.spaces_to_center("entities", group_count)
@@ -68,9 +69,25 @@ class CustomPrint():
 						first = False
 						for item in e.get_stats_reduced():
 							self.C.Curses.windows["entities"].addstr(item[0], get_color(item[1]))
+			# inventory
+			if entity == None:
+				header = "%sinventory\n" % self.spaces_to_center("entities", "inventory")
+				self.C.Curses.windows["entities"].addstr(header)
+				text = f"Entity with id={self.inventory_entity_id} doesn't exist." if self.inventory_entity_id != -1 else "None entity selected!"
+				self.C.Curses.windows["entities"].addstr(
+					f"{text} Note: select with command 'inventory entity'.\n")
+			else:
+				header = "%s's inventory" % entity.nickname
+				header = "%s%s\n" % (self.spaces_to_center("entities", header), header)
+				self.C.Curses.windows["entities"].addstr(header)
+				if not entity.body["inventory"]:
+					self.C.Curses.windows["entities"].addstr("empty inventory!")
+				for item in entity.body["inventory"]:
+					self.C.Curses.windows["entities"].addstr(f'{item["derived_from"]}: %s\n' %
+						{key:item[key] for key in item if key != "derived_from"},  # remove derived_from
+					)
 		except self.C.Curses.curses.error as e:
 			self.C.Curses.indicate_overflow("entities")
-
 		self.C.Curses.windows["entities"].refresh()
 
 	def select_entity_inventory(self, entity):
@@ -81,32 +98,6 @@ class CustomPrint():
 		# otherwise do nothing
 		if self.inventory_entity_id == entity.id:
 			self.inventory_entity_id = -1
-
-	def refresh_inventory_window(self):
-		if "inventory" not in self.C.Curses.windows:
-			return
-		entity = self.C.Game.get_entity_by_id(self.inventory_entity_id)
-		self.C.Curses.windows["inventory"].clear()
-		try:
-			if entity == None:
-				header = "%sinventory\n" % self.spaces_to_center("inventory", "inventory")
-				self.C.Curses.windows["inventory"].addstr(header)
-				text = f"Entity with id={self.inventory_entity_id} doesn't exist." if self.inventory_entity_id != -1 else "None entity selected!"
-				self.C.Curses.windows["inventory"].addstr(
-					f"{text} Note: select with command 'inventory entity'.\n")
-			else:
-				header = "%s's inventory" % entity.nickname
-				header = "%s%s\n" % (self.spaces_to_center("inventory", header), header)
-				self.C.Curses.windows["inventory"].addstr(header)
-				if not entity.body["inventory"]:
-					self.C.Curses.windows["inventory"].addstr("empty inventory!")
-				for item in entity.body["inventory"]:
-					self.C.Curses.windows["inventory"].addstr(f'{item["derived_from"]}: %s\n' %
-						{key:item[key] for key in item if key != "derived_from"},  # remove derived_from
-					)
-		except self.C.Curses.curses.error as e:
-			self.C.Curses.indicate_overflow("inventory")
-		self.C.Curses.windows["inventory"].refresh()
 
 	def refresh_history_window(self):
 		if "history" not in self.C.Curses.windows:
