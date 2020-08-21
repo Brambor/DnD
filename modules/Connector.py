@@ -10,3 +10,6 @@ class Connector():
 		self.Input = cInput
 		self.Print = cPrint
 		self.Game = Game
+
+	def start_logging(self, log_file):
+		self.log_file = log_file.replace(":", "_") if log_file else ""

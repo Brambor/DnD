@@ -43,7 +43,7 @@ if settings.AUTO_INPUT:
 			tests = tests_selected
 		break
 
-if (not do_tests and settings.LOG) or (do_tests and settings.LOG_TEST):
+if do_tests and settings.LOG_TEST:
 	current_time = str(datetime.today()).split(".")[0]
 else:
 	current_time = None
@@ -74,6 +74,8 @@ else:
 
 		sys.stdin = f
 
+		if test == tests[-1] and settings.LOG:
+			C.start_logging(str(datetime.today()).split(".")[0])
 		cPrint(f"test name: {test}\n")
 		sleep(settings.TEST_WAIT_BETWEEN_TESTS)
 		try:

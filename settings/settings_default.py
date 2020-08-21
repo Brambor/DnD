@@ -9,8 +9,8 @@ OVERFLOW_INDICATOR = "\\O"  # This text will be print in COLOR_USAGE["error"] co
 
 AUTOSAVE_SLOT_COUNT = 5  # Determines number of autosave slots, it cycles through them (autosave_0 .. autosave_{n-1}). Any natural number, n <= 0 results in no autosaving.
 
-LOG = True  # Log while not testing. As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything, inputs are not numbered, unlike with tests)
-LOG_TEST = False  # Log while testing.
+LOG = True  # Log while not testing. As the program runs, it logs all input and outputs into two files (one for inputs only, the other for everything)
+LOG_TEST = False  # Log while testing. (separate file from LOG, if LOG, then last test is in the LOG file).
 
 EXIT_MESSAGE = True # True: on exit prevent closing terminal right away with exit message requiring enter press
 
