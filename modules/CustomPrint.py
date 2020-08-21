@@ -57,7 +57,7 @@ class CustomPrint():
 		try:
 			# entities list
 			for group in groups:
-				group_count = f'{group} (%d)' % sum(len(groups[group][derived_from]) for derived_from in groups[group])
+				group_count = f'{group} ({sum(len(groups[group][derived_from]) for derived_from in groups[group])})'
 				spaces = self.spaces_to_center("entities", group_count)
 				self.C.Curses.windows["entities"].addstr(f"{spaces}{group_count}\n", get_color("mana"))
 				for derived_from in groups[group]:
@@ -71,21 +71,20 @@ class CustomPrint():
 							self.C.Curses.windows["entities"].addstr(item[0], get_color(item[1]))
 			# inventory
 			if entity == None:
-				header = "%sinventory\n" % self.spaces_to_center("entities", "inventory")
+				header = f'{self.spaces_to_center("entities", "inventory")}inventory\n'
 				self.C.Curses.windows["entities"].addstr(header)
 				text = f"Entity with id={self.inventory_entity_id} doesn't exist." if self.inventory_entity_id != -1 else "None entity selected!"
 				self.C.Curses.windows["entities"].addstr(
 					f"{text} Note: select with command 'inventory entity'.\n")
 			else:
-				header = "%s's inventory" % entity.nickname
-				header = "%s%s\n" % (self.spaces_to_center("entities", header), header)
+				header = f"{entity.nickname}'s inventory"
+				header = f'{self.spaces_to_center("entities", header)}{header}\n'
 				self.C.Curses.windows["entities"].addstr(header)
 				if not entity.body["inventory"]:
 					self.C.Curses.windows["entities"].addstr("empty inventory!")
 				for item in entity.body["inventory"]:
-					self.C.Curses.windows["entities"].addstr(f'{item["derived_from"]}: %s\n' %
-						{key:item[key] for key in item if key != "derived_from"},  # remove derived_from
-					)
+					self.C.Curses.windows["entities"].addstr(
+						f'{item["derived_from"]}: { {key:item[key] for key in item if key != "derived_from"}}\n')
 		except self.C.Curses.curses.error as e:
 			self.C.Curses.indicate_overflow("entities")
 		self.C.Curses.windows["entities"].refresh()
@@ -125,8 +124,8 @@ class CustomPrint():
 	def write_to_log(self, message):
 		if not self.C.log_file:
 			return
-		logs_path = "%s/logs" % self.C.path_to_DnD
+		logs_path = f"{self.C.path_to_DnD}/logs"
 		if not os.path.exists(logs_path):
 			os.mkdir(logs_path)
-		with open(("%s/%s.txt" % (logs_path, self.C.log_file)), "ab") as log_file:
-			log_file.write(("%s" % message).encode("utf8"))
+		with open(f"{logs_path}/{self.C.log_file}.txt", "ab") as log_file:
+			log_file.write(message.encode("utf8"))
