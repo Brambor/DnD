@@ -75,7 +75,7 @@ else:
 		try:
 			while (C.Input.i+1 < len(f_lines)) and P.input_command():
 				sleep(settings.TEST_WAIT_BETWEEN_COMMANDS)
-		except ValueError as e:
+		except Exception as e:
 			raise Exception(f"test failed: {test}") from e
 		C.Print("\n\n\n\n")
 
