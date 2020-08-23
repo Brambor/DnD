@@ -1,7 +1,11 @@
 c pes a b
 
-cast a ice_lance1 THROW | b
-5
+ctrl t
+cast a ice_lance1 b
+	5
+	# stat penalty
+	1
+	2
 
 # check
 set b effects

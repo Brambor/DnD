@@ -3,7 +3,7 @@ from copy import copy
 from library.Main import library
 
 from modules.DnDException import DnDException
-from modules.Misc import calculate, convert_string_to_bool, get_library, normal_round, parse_sequence
+from modules.Misc import calculate, convert_string_to_bool, get_library, normal_round
 
 
 class Entity():
@@ -208,7 +208,7 @@ class Entity():
 			raise DnDException(f"Entity {self} does not know {attack_str}.")
 
 	# CAST
-	def cast_spell(self, targets, spell, do_input):
+	def cast_spell(self, targets, spell):
 		spell_cost = spell["mana_consumption"].get("base", 0) \
 					+spell["mana_consumption"].get("per_target", 0) * len(targets)
 
@@ -223,19 +223,19 @@ class Entity():
 
 			crit = False
 			if "damages" in spell["effects"]:
-				damage, crit = self.count_spell_hp(spell["effects"]["damages"], do_input)
+				damage, crit = self.count_spell_hp(spell["effects"]["damages"])
 				target.damaged( (({"magic"}, damage),) )
 				if crit:
 					self.C.Print("Critical spell!!\n")
 			if "heals" in spell["effects"]:
-				heal = self.count_spell_hp(spell["effects"]["heals"], do_input)[0]
+				heal = self.count_spell_hp(spell["effects"]["heals"])[0]
 				target.healed(heal)
 
 			target.add_effects(spell["effects"].get("adds", dict()).get("base", set()))
 			if crit:
 				target.add_effects(spell["effects"].get("adds", dict()).get("on_crit", set()))
 
-	def count_spell_hp(self, spell, do_input):
+	def count_spell_hp(self, spell):
 		total_hp = spell.get("base", 0)
 		for bonus in spell.get("bonuses", set()):
 			total_hp += self.body.get(bonus, 0) * spell["bonuses"][bonus]  # TODO: if stat is missing, we would like to have QUANTUM_STAT?
@@ -243,11 +243,8 @@ class Entity():
 		# make seq
 		dice = spell.get("dice")
 		if dice:
-			if do_input:
-				threw = next(parse_sequence(self.C.Input("threw")))
-			else:
-				threw = self.C.Dice.D(dice)
-			crit = self.C.Dice.dice_crit(dice, threw, self.C.Print)
+			threw = self.C.Dice.D(dice, show_result=True)
+			crit = self.C.Dice.dice_crit(dice, threw)
 			total_hp += threw
 		return (total_hp, crit)
 
@@ -380,7 +377,8 @@ class Entity():
 						# check format
 						if not ( (stat_value[0] == "dice") and (type(stat_value[1]) == int) ):
 							raise
-						effect[bonus_or_penalty][stat] = self.C.Dice.D(stat_value[1])
+						effect[bonus_or_penalty][stat] = self.C.Dice.D(
+							stat_value[1], message=f'{effect["name"]} {bonus_or_penalty} to {stat}', show_result=True)
 						causing_comment += "\tIncreasing" if bonus_or_penalty == "stat_bonus" else "\tLowering"
 						causing_comment += f" {self}'s '{stat}' by {effect[bonus_or_penalty][stat]}.\n"
 

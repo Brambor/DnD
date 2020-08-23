@@ -2,22 +2,25 @@ c pes a b
 set a mana 100
 
 # get wet
-spell a splash | b
+spell a splash b
 
 # get frozen, not chill
-spell a ice_lance1 smdhgp | b
-5
+ctrl t
+spell a ice_lance1 b
+	5
+ctrl t
 
 # see if b is properly frozen
 set b effects
 
 # burn them
-cast a burn | b b b b
+cast a burn b b b b
 
 # info
 set b effects
 
 # splash and chill them
-cast a splash | b
-spell a ice_lance1 smdhgp | b
-5
+cast a splash b
+ctrl t
+spell a ice_lance1 b
+	5

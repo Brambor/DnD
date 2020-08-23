@@ -22,8 +22,21 @@ class Dice():
 			20: 15,
 		}
 
-	def D(self, n):
-		return randint(1, n)
+	def D(self, n, message="", show_result=False):
+		while self.C.Game.manual_dice:
+			if (d := self.C.Input(f"{message + ' ' if message else ''}D{n} or '[inter]rupt'")).isdigit():
+				if 1 <= int(d) <= n:
+					return int(d)
+				self.C.Print(f"1 <= {d} <= {n} must be true.\n")
+			elif d in {"inter", "interrupt"}:
+				raise DnDException("Throwing interrupted.")
+			else:
+				self.C.Print(f"'{d}' must be integer and 1 <= {d} <= {n} must be true.\n")
+		# not manual
+		d = randint(1, n)
+		if show_result:
+			self.C.Print(f'Threw {d}{" (crit)" if self.dice_crit(n, d) else ""} on D{n}.\n')
+		return d
 
 	def dice_crit(self, dice, threw, print_crit=False):
 		"pass arg. cPrint to print when crit"

@@ -3,8 +3,7 @@ c Thorbald t
 
 dmg fire {d12} | a t
 
-cast t splash
-t
+cast t splash t
 
 dmg fire {11} | a t
 

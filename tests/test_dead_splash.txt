@@ -3,7 +3,7 @@ c pes a b
 # kill b
 dmg physical {150} | b
 
-cast a splash | b
+cast a splash b
 
 # info
 set b alive

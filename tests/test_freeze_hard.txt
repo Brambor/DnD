@@ -2,39 +2,50 @@ c pes a b
 set a mana 100
 
 # get chill
-spell a ice_lance1 smdhgp | b b b
-1
-5
-6
+ctrl t
+spell a ice_lance1 b b b
+	1
+	5
+	# lowering obratnost & boj
+	3
+	4
+
+	6
+	# lowering obratnost & boj
+	1
+	2
+
+ctrl t
 
 # get wet
-spell a splash | b b b
-spell a splash | b
+spell a splash b b b
+spell a splash b
 
 # check
 set b effects
 
 # get frozen, not chill
-spell a ice_lance1 smdhgp | b b b b
-1
-2
-3
-5
+ctrl t
+spell a ice_lance1 b b b b
+	1
+	2
+	3
+	5
 
 
 set a effects
 
 # do not chill or wet
-spell a ice_lance1 smdhgp | b
-6
+spell a ice_lance1 b
+	6
 
-spell a splash smdhgp | b
+spell a splash b
 
 # see if b is properly frozen, not wet, not chill
 set b effects
 
-spell a ice_lance1 smdhgp | b
-6
+spell a ice_lance1 b
+	6
 
 # see if b is properly frozen, not wet, not chill
 set b effects

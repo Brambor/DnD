@@ -161,7 +161,7 @@ class Parser():
 			elif parts[0] == "ctrl":
 				if len(parts) != 2:
 					self.argument_wrong_ammount("ctrl", (2,), len(parts))
-				if parts[1] in {"y", "z"}:
+				if parts[1] in {"t", "y", "z"}:
 					self.C.Curses.press_ctrl(parts[1])
 				else:
 					raise DnDException(f"'ctrl+{parts[1]}' is not defined.")
@@ -435,25 +435,14 @@ class Parser():
 					self.argument_wrong_ammount("set", (1, 2), len(separated), separators=True)
 
 			elif parts[0] in ("spell", "s", "cast"):
-				if len(parts := separate(parts[1:])) != 2:
-					self.argument_wrong_ammount("spell", (2,), len(parts), separators=True)
+				if len(parts) < 4:
+					self.argument_wrong_ammount("spell", (4,), len(parts), last_at_least=True)
 
-				parts[0] = parts[0].split()
+				caster = self.C.Game.get_entity(parts[1])[1]
+				spell = get_library("spells", parts[2])
+				targets = [self.C.Game.get_entity(target)[1] for target in parts[3:]]
 
-				if len(parts[0]) not in (2, 3):
-					raise DnDException(
-						f"Command 'spell' takes 2 or 3 arguments before separator, {len(parts[0])} given.")
-
-				if not (targets := parts[1].split()):
-					raise DnDException(
-						f"Command 'spell' after separator (target+) takes at least 1 argument, {len(targets)} given.")
-
-				caster = self.C.Game.get_entity(parts[0][0])[1]
-				spell = get_library("spells", parts[0][1])
-				do_input = len(parts[0]) == 3
-				targets = [self.C.Game.get_entity(target)[1] for target in targets]
-
-				caster.cast_spell(targets, spell, do_input)
+				caster.cast_spell(targets, spell)
 				self.C.Game.history_add()
 
 			elif parts[0] in ("turn", "t"):

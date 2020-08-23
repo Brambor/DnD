@@ -229,11 +229,9 @@ strs = {
 			"\t'stat_type' can be one of 'int', 'float', 'str', or 'bool'\n"
 		),
 		"spell": (
-			"[s]pell/cast caster_entity spell manual_dice? | target_entity+\n"
+			"[s]pell/cast caster_entity spell target_entity+\n"
 			"\tspell must be from library.spells\n"
-			f'\t{symbol["?"]}'
 			f'\t{symbol["+"]}'
-			f'\t{symbol["|"]}'
 		),
 		"turn": (
 			"For each entity applies all its effects.\n"

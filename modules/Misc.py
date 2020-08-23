@@ -54,20 +54,6 @@ def get_valid_filename(s):
 def normal_round(f):
 	return int(f) + ( f - int(f) >= 0.5 )
 
-def parse_sequence(sequence, carry_when_crit=False):
-	"does not process negative integers as integers"
-	sequence = sequence.split()
-	if len(sequence) == 0:  # or 'not sequence'
-		raise DnDException("The sequence contains nothing! WtF?")
-	if (len(sequence) > 1) and (carry_when_crit == False):
-		raise DnDException("Lenght of sequence > 1, when asked only for one number.")
-	for i, word in enumerate(sequence):
-		if not word.isdigit():
-			raise DnDException(f"Sequence contains non-digit character '{word}'.")
-		yield int(word)
-	# raise: sequence longer than needed to be
-	yield "Perfectly right lenght."
-
 def pretty_print_filename(filename_date):
 	("'my_save--2020-08-16--10-15-08' -> 'my_save\t| 2020-08-16 10:15:08'"
 	"but only if appendix looks like valid datetime, otherwise '{filename_date}\t| ?'")

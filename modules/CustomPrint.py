@@ -29,8 +29,13 @@ class CustomPrint():
 		if "entities" not in self.C.Curses.windows:
 			return
 		self.C.Curses.windows["entities"].clear()
+		get_color = self.C.Curses.get_color_pair
 		self.C.Curses.addstr("entities",
-			f'History {self.C.Game.entities_history_pointer}/{len(self.C.Game.entities_history)-1}\n')
+			f'History {self.C.Game.entities_history_pointer}/{len(self.C.Game.entities_history)-1} Dice ')
+		if self.C.Game.manual_dice:
+			self.C.Curses.addstr("entities", "M\n", get_color("dice_manual"))
+		else:
+			self.C.Curses.addstr("entities", "A\n", get_color("dice_automatic"))
 		if not self.C.Game.entities:
 			self.C.Curses.addstr("entities", "no entities")
 			self.C.Curses.windows["entities"].refresh()
@@ -52,7 +57,6 @@ class CustomPrint():
 		if not groups["DEAD"]:
 			del groups["DEAD"]
 
-		get_color = self.C.Curses.get_color_pair
 		entity = self.C.Game.get_entity_by_id(self.inventory_entity_id)
 		try:
 			# entities list
