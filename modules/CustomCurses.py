@@ -287,6 +287,8 @@ class CustomCurses():
 			return
 		if self.cmd_history and command == self.cmd_history[-1]:
 			return
+		if settings.HISTORY_IGNORE_NUMBERS and command.isdigit():
+			return
 
 		self.cmd_history_pointer += (self.cmd_history_pointer == len(self.cmd_history) - 1)
 		self.cmd_history.append(command)

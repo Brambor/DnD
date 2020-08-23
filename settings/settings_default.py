@@ -4,6 +4,8 @@
 
 DEBUG = False  # True: When something goes wrong, the program prints error, waits for input, then crashes; False: it prints "fcked up" and carries on.
 
+HISTORY_IGNORE_NUMBERS = True  # True: when something is send to history and it is positive integer, it is not put into history.
+
 TAB_WIDTH = 3  # How many spaces is one tab.
 OVERFLOW_INDICATOR = "\\O"  # This text will be print in COLOR_USAGE["error"] color if window overflows. It can be multiple characters, the first character should always display, the rest are not guaranteed.
 
