@@ -109,7 +109,6 @@ class CustomPrint():
 		history_w = self.C.Curses.windows["history"]
 		# current command in the middle of window
 		height, width = history_w.getmaxyx()
-		height -= 1
 		if len(self.C.Curses.cmd_history) <= height:
 			slice_start = 0
 			slice_end = len(self.C.Curses.cmd_history)
@@ -120,9 +119,10 @@ class CustomPrint():
 
 		history_w.clear()
 		for i, line in enumerate(self.C.Curses.cmd_history[slice_start:slice_end]):
+			history_w.move(i, 0)
 			i += slice_start
 			mark = "*" if i==self.C.Curses.cmd_history_pointer and not self.C.Curses.cmd_history_pointer_at_end else " "
-			history_w.addnstr(f'{i}.{mark}{line}\n', width)
+			history_w.insstr(f'{i}.{mark}{line}\n')
 		self.C.Curses.windows["history"].refresh()
 
 	def write_to_log(self, message):
