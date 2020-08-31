@@ -66,3 +66,4 @@ for e in entities:
 	entities[e]["derived_from"] = e
 
 output = local_loader(entities, "library.entities_local", "entities")
+output = local_loader(entities, "library.entities_database", "entities")

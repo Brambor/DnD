@@ -119,6 +119,6 @@ TODO/
 logs/
 settings/settings_local.py
 library/*_local.py
+library/*_database.py
 saves/
 
-DnDdatabase/out_file.py

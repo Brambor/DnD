@@ -13,8 +13,7 @@ def json_from_database(what):
 	tmpfile = TemporaryFile(mode="w+")
 	a = call_command("dumpdata", what, stdout=tmpfile)
 	tmpfile.seek(0)
-	data = json.load(tmpfile)
-	return data
+	return json.load(tmpfile)
 
 # CONSTANTS
 translate_skills = {
@@ -82,10 +81,11 @@ for pk in tuple(entities.keys()):
 	del entities[pk]
 
 # OUT
-with open("out_file.py", "w") as out_file:
-	out_file.write(json.dumps(entities, indent="\t", ensure_ascii=False))
+with open("../library/templates/entities_database.py", "r") as template:
+	with open("../library/entities_database.py", "w") as out_file:
+		out_file.write(template.read().replace("%%DATA%%", json.dumps(entities, indent="\t", ensure_ascii=False)))
+		
 print("Output exported.")
 
 # EXIT
 server.send_signal(signal.CTRL_BREAK_EVENT)
-
