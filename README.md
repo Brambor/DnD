@@ -12,4 +12,6 @@ Make file `settings/settings_local.py` and put there your preferences. These ove
 Look into `settings/settings_default.py` for inspiration.
 
 ## Custom entities
-See `DnDdatabase/README.md`.
+1) Run `DatabaseManager.py`.
+2) Make changes you want in the opened browser.
+3) When you are satisfied, press enter in the console running `DatabaseManager.py`. This closes the program and exports the data to `library/entities_database.py`.

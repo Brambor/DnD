@@ -6,6 +6,7 @@ import subprocess
 import webbrowser
 
 from django.core.management import call_command
+from sys import path
 from tempfile import TemporaryFile
 
 
@@ -36,6 +37,7 @@ translate_skills = {
 
 
 # DATA PROCESS
+path.append("DnDdatabase")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "DnDdatabase.settings")
 django.setup()
 
@@ -43,7 +45,7 @@ call_command("makemigrations", "--verbosity", "0")
 call_command("migrate", "--verbosity", "0")
 
 # RUN SERVER & CHANGE DATA
-server = subprocess.Popen(["python", "manage.py", "runserver"], stdout=subprocess.DEVNULL)
+server = subprocess.Popen(["python", "DnDDatabase/manage.py", "runserver"], stdout=subprocess.DEVNULL)
 url = "http://localhost:8000/admin/database/entity/"
 if not webbrowser.open(url):
 	print(f"If no browser opened, just copy paste this url to your browser:\n{url}")
@@ -85,8 +87,8 @@ for pk in tuple(entities.keys()):
 	del entities[pk]
 
 # OUT
-with open("../library/templates/entities_database.py", "r") as template:
-	with open("../library/entities_database.py", "w") as out_file:
+with open("library/templates/entities_database.py", "r") as template:
+	with open("library/entities_database.py", "w") as out_file:
 		out_file.write(template.read().replace("%%DATA%%", json.dumps(entities, indent="\t", ensure_ascii=False)))
 		
 print("Output exported.")
