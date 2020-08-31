@@ -34,6 +34,14 @@ translate_skills = {
 	"charisma": "charisma",
 }
 
+
+# DATA PROCESS
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "DnDdatabase.settings")
+django.setup()
+
+call_command("makemigrations", "--verbosity", "0")
+call_command("migrate", "--verbosity", "0")
+
 # RUN SERVER & CHANGE DATA
 server = subprocess.Popen(["python", "manage.py", "runserver"], stdout=subprocess.DEVNULL)
 url = "http://localhost:8000/admin/database/entity/"
@@ -43,10 +51,6 @@ if not webbrowser.open(url):
 
 input("Once you are done, press enter to terminate Django server and export results to 'out_file.py'.\n"
 	"PRESS ENTER TO EXIT >>>")
-
-# DATA PROCESS
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "DnDdatabase.settings")
-django.setup()
 
 # Entity
 entities = {}

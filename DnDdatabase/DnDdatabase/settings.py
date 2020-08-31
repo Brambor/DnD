@@ -45,7 +45,10 @@ MIDDLEWARE = [
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
 	'django.middleware.csrf.CsrfViewMiddleware',
-	'django.contrib.auth.middleware.AuthenticationMiddleware',
+	
+	'django.contrib.auth.middleware.AuthenticationMiddleware',  # have to keep (otherwise error rises)
+	'database.middleware.AuthenticationMiddleware',  # overwrites the previous
+
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
