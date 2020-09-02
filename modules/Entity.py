@@ -209,6 +209,7 @@ class Entity():
 
 	# CAST
 	def cast_spell(self, targets, spell):
+		"returns True if succesful, False otherwise"
 		spell_cost = spell["mana_consumption"].get("base", 0) \
 					+spell["mana_consumption"].get("per_target", 0) * len(targets)
 
@@ -216,7 +217,7 @@ class Entity():
 			self.body["mana"] -= spell_cost
 		else:
 			self.C.Print(f'{self} does not have enought mana for {spell["name"]}\n')
-			return
+			return False
 
 		for target in targets:
 			target.remove_effects(spell["effects"].get("removes", set()))
@@ -234,6 +235,7 @@ class Entity():
 			target.add_effects(spell["effects"].get("adds", dict()).get("base", set()))
 			if crit:
 				target.add_effects(spell["effects"].get("adds", dict()).get("on_crit", set()))
+		return True
 
 	def count_spell_hp(self, spell):
 		total_hp = spell.get("base", 0)
@@ -430,6 +432,7 @@ class Entity():
 				i += 1
 
 	def remove_effects_by_index(self, indexes):
+		"returns False if no effects were removed, True otherwise"
 		string = f"{self} is no longer:\n"
 		for index in sorted(indexes, reverse=True):
 			if index < len(self.body["effects"]):
@@ -439,8 +442,10 @@ class Entity():
 				raise DnDException(f"{index} is too much!")
 		if indexes:
 			self.C.Print(string)
+			return True
 		else:
 			self.C.Print("Nothing removed.\n")
+			return False
 
 	def apply_effect(self, effect):
 		("applies effect self"

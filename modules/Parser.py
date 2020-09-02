@@ -123,15 +123,18 @@ class Parser():
 				if len(parts) == 2:
 					parts.append("_")
 
+				created = False
 				for nickname in parts[2:]:
 					try:
 						if nickname == "_":
 							self.C.Game.create(parts[1])
 						else:
 							self.C.Game.create(parts[1], nickname)
+						created = True
 					except DnDException as e:
 						self.C.Print(f"?!: {e}\n")
-				self.C.Game.history_add()
+				if created:
+					self.C.Game.history_add()
 
 			elif parts[0] in ("compare", "cmp"):
 				if len(parts) == 3:
@@ -370,9 +373,9 @@ class Parser():
 
 				if changes:
 					self.C.Print(f"Toggled:{changes}\n{errors}")
+					self.C.Game.history_add()
 				elif errors:
 					self.C.Print(errors)
-				self.C.Game.history_add()
 
 			elif parts[0] in ("remove_effect", "remove", "r"):
 				if len(parts) != 2:
@@ -391,8 +394,8 @@ class Parser():
 				#MUHAHAHAHA
 				indexes = [int(i) if i.isdigit() else DnDException(f"'{i}' is not a non-negative integer.") for i in effects_to_remove]
 
-				entity.remove_effects_by_index(indexes)
-				self.C.Game.history_add()
+				if entity.remove_effects_by_index(indexes):
+					self.C.Game.history_add()
 
 			elif parts[0] == "set":
 				separated = separate(parts)
@@ -442,8 +445,8 @@ class Parser():
 				spell = get_library("spells", parts[2])
 				targets = [self.C.Game.get_entity(target)[1] for target in parts[3:]]
 
-				caster.cast_spell(targets, spell)
-				self.C.Game.history_add()
+				if caster.cast_spell(targets, spell):
+					self.C.Game.history_add()
 
 			elif parts[0] in ("turn", "t"):
 				if len(parts) != 1:
