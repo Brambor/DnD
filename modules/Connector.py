@@ -20,4 +20,6 @@ class Connector():
 		self.Game = Game
 
 	def start_logging(self, log_file):
-		self.log_file = log_file.replace(":", "_") if log_file else ""
+		"if didn't log already, start logging"
+		if not self.log_file:
+			self.log_file = log_file.replace(":", "_")

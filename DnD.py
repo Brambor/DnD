@@ -52,6 +52,8 @@ if not do_tests:
 	G = Game(C)
 	P = Parser(C)
 	C.populate(G)
+	if settings.LOG:
+		C.start_logging(str(datetime.today()).split(".")[0])
 else:
 	# TESTING
 	f1 = sys.stdin
