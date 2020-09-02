@@ -383,7 +383,7 @@ class Parser():
 
 				entity = self.C.Game.get_entity(parts[1])[1]
 				if not entity.body["effects"]:
-					self.C.Print(f"Entity '{entity}' has no effects.")
+					self.C.Print(f"Entity '{entity}' has no effects.\n")
 					return
 
 				self.C.Print(
@@ -413,12 +413,10 @@ class Parser():
 						entity.printStat(stat)
 						return
 
-					value = parts[3]
-
 					if len(parts) == 4:
-						entity.setStat(stat, value)
+						entity.setStat(stat, parts[3])
 					elif len(parts) == 5:
-						entity.setStat(stat, value, parts[4])
+						entity.setStat(stat, parts[3], parts[4])
 					self.C.Game.history_add()
 
 				elif len(separated) == 2:
