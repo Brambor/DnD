@@ -31,7 +31,8 @@ class CustomPrint():
 		self.C.Curses.windows["entities"].clear()
 		get_color = self.C.Curses.get_color_pair
 		self.C.Curses.addstr("entities",
-			f'History {self.C.Game.entities_history_pointer}/{len(self.C.Game.entities_history)-1} Dice ')
+			f'History {self.C.Game.entities_history_pointer}/{len(self.C.Game.entities_history)-1} Dice ',
+			restart=True)
 		if self.C.Game.manual_dice:
 			self.C.Curses.addstr("entities", "M\n", get_color("dice_manual"))
 		else:
@@ -58,39 +59,37 @@ class CustomPrint():
 			del groups["DEAD"]
 
 		entity = self.C.Game.get_entity_by_id(self.inventory_entity_id)
-		try:
-			# entities list
-			for group in groups:
-				group_count = f'{group} ({sum(len(groups[group][derived_from]) for derived_from in groups[group])})'
-				spaces = self.spaces_to_center("entities", group_count)
-				self.C.Curses.windows["entities"].addstr(f"{spaces}{group_count}\n", get_color("mana"))
-				for derived_from in groups[group]:
-					self.C.Curses.windows["entities"].addstr(f"{derived_from} ", get_color("derived_from"))
-					first = True
-					for e in groups[group][derived_from]:
-						if not first:
-							self.C.Curses.windows["entities"].addstr(" " * (len(derived_from) + 1))
-						first = False
-						for item in e.get_stats_reduced():
-							self.C.Curses.windows["entities"].addstr(item[0], get_color(item[1]))
-			# inventory
-			if entity == None:
-				header = f'{self.spaces_to_center("entities", "inventory")}inventory\n'
-				self.C.Curses.windows["entities"].addstr(header)
-				text = f"Entity with id={self.inventory_entity_id} doesn't exist." if self.inventory_entity_id != -1 else "None entity selected!"
-				self.C.Curses.windows["entities"].addstr(
-					f"{text} Note: select with command 'inventory entity'.\n")
-			else:
-				header = f"{entity.nickname}'s inventory"
-				header = f'{self.spaces_to_center("entities", header)}{header}\n'
-				self.C.Curses.windows["entities"].addstr(header)
-				if not entity.body["inventory"]:
-					self.C.Curses.windows["entities"].addstr("empty inventory!")
-				for item in entity.body["inventory"]:
-					self.C.Curses.windows["entities"].addstr(
-						f'{item["derived_from"]}: { {key:item[key] for key in item if key != "derived_from"}}\n')
-		except self.C.Curses.curses.error as e:
-			self.C.Curses.indicate_overflow("entities")
+		# entities list
+		for group in groups:
+			group_count = f'{group} ({sum(len(groups[group][derived_from]) for derived_from in groups[group])})'
+			spaces = self.spaces_to_center("entities", group_count)
+			self.C.Curses.addstr("entities", f"{spaces}{group_count}\n", get_color("mana"))
+			for derived_from in groups[group]:
+				self.C.Curses.addstr("entities", f"{derived_from} ", get_color("derived_from"))
+				first = True
+				for e in groups[group][derived_from]:
+					if not first:
+						self.C.Curses.addstr("entities", " " * (len(derived_from) + 1))
+					first = False
+					for item in e.get_stats_reduced():
+						self.C.Curses.addstr("entities", item[0], get_color(item[1]))
+		# inventory
+		if entity == None:
+			header = f'{self.spaces_to_center("entities", "inventory")}inventory\n'
+			self.C.Curses.addstr("entities", header)
+			text = f"Entity with id={self.inventory_entity_id} doesn't exist." if self.inventory_entity_id != -1 else "None entity selected!"
+			self.C.Curses.addstr("entities", 
+				f"{text} Note: select with command 'inventory entity'.\n")
+		else:
+			header = f"{entity.nickname}'s inventory"
+			header = f'{self.spaces_to_center("entities", header)}{header}\n'
+			self.C.Curses.addstr("entities", header)
+			if not entity.body["inventory"]:
+				self.C.Curses.addstr("entities", "empty inventory!")
+			for item in entity.body["inventory"]:
+				self.C.Curses.addstr("entities", 
+					f'{item["derived_from"]}: { {key:item[key] for key in item if key != "derived_from"}}\n')
+
 		self.C.Curses.windows["entities"].refresh()
 
 	def select_entity_inventory(self, entity):

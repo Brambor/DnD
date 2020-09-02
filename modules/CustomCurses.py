@@ -47,6 +47,7 @@ class CustomCurses():
 		self.width = startx - 1
 		self.height = starty - 1
 		self.windows = {}
+		self.window_newline_buffer = {}
 
 		self.init_windows()
 
@@ -137,11 +138,23 @@ class CustomCurses():
 	def init_command_textbox(self):
 		self.command_textbox = textpad.Textbox(self.windows["console_input"], insert_mode=True)
 
-	def addstr(self, window_str, string, *args, **kwargs):
+	def addstr(self, window_str, string, *args, restart=False, only_print_if_possible=False, **kwargs):
 		try:
+			if restart or (window_str not in self.window_newline_buffer):
+				self.window_newline_buffer[window_str] = (False, None, None)
+
+			should_print, saved_args, saved_kwargs = self.window_newline_buffer[window_str]
+			if should_print:
+				self.windows[window_str].addstr("\n", *saved_args, **saved_kwargs)
+				self.window_newline_buffer[window_str] = (False, None, None)
+
+			if string.endswith("\n"):
+				string = string[:-1]
+				self.window_newline_buffer[window_str] = (True, args, kwargs)
 			self.windows[window_str].addstr(string, *args, **kwargs)
 		except curses.error:
-			pass
+			if not only_print_if_possible:
+				self.indicate_overflow(window_str)
 
 	def calculate_window_size(self, w):
 		"expresion is a string that can contain 'x' or 'y' and other mathematical symbols."
@@ -216,7 +229,7 @@ class CustomCurses():
 			self.C.Input.write_to_log(">>>", f"ctrl {X}")			
 
 	def indicate_overflow(self, window):
-		self.addstr(window, settings.OVERFLOW_INDICATOR, self.get_color_pair("error"))
+		self.addstr(window, settings.OVERFLOW_INDICATOR, self.get_color_pair("error"), restart=True, only_print_if_possible=True)
 
 	def send(self, message):
 		self.msg_interrupted = False
@@ -350,7 +363,7 @@ class CustomCurses():
 			window.bkgdset(str(i), CP)
 			window.clear()
 			he, wi = window.getmaxyx()
-			self.addstr(w, f"<<{w}>>", CP)
+			self.addstr(w, f"<<{w}>>", CP, restart=True)
 			window.refresh()
 		sleep(sleep_for)
 
