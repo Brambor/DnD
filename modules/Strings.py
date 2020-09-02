@@ -127,7 +127,7 @@ strs = {
 			"\tprobably throws a die to see what is more\n"
 			"\tval is either integer or dice in format 'dx' where x is integer\n"
 		),
-		"dmg": (
+		"damage": (
 			"[d]amage/dmg (damage_types* {expression})+ | target+\n"
 			"\tdamages target+ by calculated ammount with respective damage_types\n"
 			"\texample:\n"
