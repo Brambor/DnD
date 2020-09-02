@@ -49,6 +49,7 @@ class Parser():
 			self.process(command)
 		except DnDExit as exception:
 			print(f"Exiting due to {exception}\n")
+			self.C.DatabaseManager.stopserver(silent=True)
 			return False
 		return True
 
@@ -185,6 +186,23 @@ class Parser():
 				for target in [self.C.Game.get_entity(target)[1] for target in targets]:
 					target.damaged(damage_list)
 				self.C.Game.history_add()
+
+			elif parts[0] == "django":
+				if len(parts) not in (2, 3):
+					self.argument_wrong_ammount("django", (2, 3), len(parts))
+
+				if parts[1] == "start":
+					self.C.DatabaseManager.runserver(len(parts) == 2)
+				elif parts[1] == "download":
+					if len(parts) != 2:
+						raise DnDException(f"Command 'django' with 'download' takes 2 arguments, {len(parts)-1} given.")
+					self.C.DatabaseManager.download()
+				elif parts[1] == "stop":
+					if len(parts) != 2:
+						raise DnDException(f"Command 'django' with 'stop' takes 2 arguments, {len(parts)-1} given.")
+					self.C.DatabaseManager.stopserver()
+				else:
+					raise DnDException("Second argument of command 'django' must be one of 'start', 'download', or 'stop'.")
 
 			elif parts[0] in ("effect", "e"):
 				if len(parts) < 3:

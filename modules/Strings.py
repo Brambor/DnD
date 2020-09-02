@@ -32,6 +32,7 @@ cmd = (
 	("compare", "cmp"),
 	("ctrl",),
 	("damage", "dmg", "d"),
+	("django",),
 	("effect", "e"),
 	("erase",),
 	("eval",),
@@ -140,6 +141,22 @@ strs = {
 			f'\t{symbol["*"]}'
 			f'\t{symbol["+"]}'
 			f'\t{symbol["|"]}'
+		),
+		"django": (
+			"django start dont_open_webbrowser?\n"
+			"\tif server is not running yet, start it\n"
+			"\ttell the address in case it doesn't auto open\n"
+			"\tif not 'dont_open_webbrowser' open webbrowser at said address\n"
+			"django download\n"
+			"\tdownloads current data from the server\n"
+			"\t(updates library file [and reimports all libraries NOT IMPLEMENTED])\n"
+			"django stop\n"
+			"\tstops the server, if it's running\n"
+			"\n"
+			"Note: If you made changes whilst not running the server, don't close the browser. "
+			"Just run the program, start the server, then saving changes on the web will work again. "
+			'On 404, "go to the previous page" aka. "←" will work too.\n'
+			f'\t{symbol["?"]}'
 		),
 		"effect": (
 			"[e]ffect add effect dice entity+\n"

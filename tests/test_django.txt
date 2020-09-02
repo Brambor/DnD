@@ -1,0 +1,18 @@
+# ?!: Server is not running, unable to download.
+django download
+
+django start _
+
+# Server was running already.
+django start _
+
+django download
+django stop
+
+# ?!: Server is not running, so you cannot stop it.
+django stop
+
+django start _
+django download
+django download
+django stop

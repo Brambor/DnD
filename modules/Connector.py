@@ -1,6 +1,7 @@
 from modules.CustomCurses import CustomCurses
 from modules.CustomInput import CustomInput
 from modules.CustomPrint import CustomPrint
+from modules.DatabaseManager import DatabaseManager
 from modules.Dice import Dice
 
 
@@ -12,6 +13,7 @@ class Connector():
 		self.test_environment = test_environment
 
 		self.Curses = CustomCurses(self)
+		self.DatabaseManager = DatabaseManager(self)
 		self.Dice = Dice(self)
 		self.Input = CustomInput(self)
 		self.Print = CustomPrint(self)
