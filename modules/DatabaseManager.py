@@ -58,8 +58,6 @@ class DatabaseManager():
 			self.C.Print(f"If no browser opened, just copy paste this url to your browser:\n{url}\n")
 
 	def download(self):
-		if not self.server_is_running:
-			raise DnDException("Server is not running, unable to download.\n")
 		# Entity
 		entities = {}
 		for d in self.json_from_database("database.Entity"):

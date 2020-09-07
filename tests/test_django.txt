@@ -1,6 +1,4 @@
-# ?!: Server is not running, unable to download.
 django download
-
 django start _
 
 # Server was running already.
