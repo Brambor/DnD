@@ -47,9 +47,9 @@ COLOR_PALETTE = {
 COLOR_USAGE = {
 	"basic": ("white", "black"),
 	"error": ("red", "white"),
-	"dice_automatic": ("red", "white"),
-	"dice_manual": ("blue", "white"),
 	"entity_played_this_turn": ("white", "grey300"),  # used for when entity played this turn already
+	"indicator_running": ("blue", "white"),
+	"indicator_stopped": ("red", "white"),
 	"HP": ("green", "black"),  # used for hp/hp_max
 	"mana": ("cyan", "black"),  # used for mana/mana_max ; group names
 	"derived_from": ("yellow", "black"),  # used in "entities window" for derived from (such as "pes" in "pes a_0 100/1...")

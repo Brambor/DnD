@@ -33,10 +33,17 @@ class CustomPrint():
 		self.C.Curses.addstr("entities",
 			f'History {self.C.Game.entities_history_pointer}/{len(self.C.Game.entities_history)-1} Dice ',
 			restart=True)
-		if self.C.Game.manual_dice:
-			self.C.Curses.addstr("entities", "M\n", get_color("dice_manual"))
-		else:
-			self.C.Curses.addstr("entities", "A\n", get_color("dice_automatic"))
+
+		state, color = (
+			"M", get_color("indicator_running")) if self.C.Game.manual_dice else ("A", get_color("indicator_stopped"))
+		self.C.Curses.addstr("entities", state, color)
+
+		self.C.Curses.addstr("entities", f' Django ')
+		state, color = (
+			"running", get_color("indicator_running")
+			) if self.C.DatabaseManager.server_is_running else ("stopped", get_color("indicator_stopped"))
+		self.C.Curses.addstr("entities", f"{state}\n", color)
+
 		if not self.C.Game.entities:
 			self.C.Curses.addstr("entities", "no entities")
 			self.C.Curses.windows["entities"].refresh()
