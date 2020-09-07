@@ -90,6 +90,7 @@ strs = {
 		"If something doesn't work or you don't understand something TELL ME, please!\n"
 		"\tIt means that something is wrongly implemented or documented!\n"
 		"Use ctrl+z and ctrl+y to move backwards and forwards in history.\n"
+		"Use ctrl+t to toggle automatic dice.\n"
 		"Use command 'exit' or press 'alt + f4' to exit.\n"
 	),
 	"commands": {
@@ -118,6 +119,8 @@ strs = {
 			"\tMoves one back in entity history.\n"
 			"ctrl y\n"
 			"\tMoves one forward in entity history.\n"
+			"ctrl t\n"
+			"\tToggles automatic dice.\n"
 		),
 		"compare": (
 			"compare/cmp entity1 skill1 val1 entity2 skill2 val2\n"
