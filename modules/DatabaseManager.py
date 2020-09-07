@@ -99,13 +99,18 @@ class DatabaseManager():
 	def stopserver(self, silent=False):
 		if silent:
 			if self.server_is_running:
-				subprocess.Popen(f"TASKKILL /F /PID {self.server.pid} /T", stdout=subprocess.DEVNULL)
-				self.server_is_running = False
+				self.killserver()
 			return
 
 		if not self.server_is_running:
 			raise DnDException("Server is not running, so you cannot stop it.\n")
 #		os.killpg(os.getpgid(self.server.pid), signal.SIGTERM)
-		subprocess.Popen(f"TASKKILL /F /PID {self.server.pid} /T", stdout=subprocess.DEVNULL)
-		self.server_is_running = False
+		self.killserver()
 		self.C.Print("Server stopped.\n")
+
+	def killserver(self):
+		if os.name == 'nt':  # windows
+			subprocess.Popen(f"TASKKILL /F /PID {self.server.pid} /T", stdout=subprocess.DEVNULL)
+		else:  # 'postix' or 'java'
+			subprocess.Popen(f"kill {self.server.pid}".split(), stdout=subprocess.DEVNULL)
+		self.server_is_running = False
