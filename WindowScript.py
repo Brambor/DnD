@@ -47,7 +47,7 @@ class Solver():
 		self.tree = []
 		self.last_keyword = None
 		self.solver(self.body)
-		assert((self.depth, self.splitted_depth) == (0, 0))
+		#assert((self.depth, self.splitted_depth) == (0, 0))
 		print(f"ending depth: real={self.depth} splitted={self.splitted_depth}")
 		if self.i != len(self.words):
 			raise ValueError(f"Unfinished iteration i={self.i}, left from your input {self.words[self.i:]}.")
@@ -78,8 +78,9 @@ class Solver():
 				self.splitted_depth -= 1
 				self.solver(window)
 			elif word in {"column", "row"}:
-				count = int(self.words_pp())
-				splitted_windows = self.window_split_column_row(count, window, word)
+				ratio = self.words_pp(give_ratio=True)
+				count = len(ratio)
+				splitted_windows = self.window_split_column_row(ratio, window, word)
 				for splitted_window in splitted_windows:
 					self.solver(splitted_window)
 					count -= 1
@@ -112,7 +113,8 @@ class Solver():
 		self.depth -= 1
 		self.stack.pop()
 
-	def words_pp(self):
+	def words_pp(self, give_ratio=False):
+		"if give_ratio, return list of ratios instead of a word"
 		if self.i == len(self.words):
 			msg = (f"Last keyword '{self.last_keyword}'; i={self.i} => iteration stopped at '{self.words[self.i-1]}' "
 				f"in depth {self.depth} (splitted {self.splitted_depth}).\n"
@@ -122,10 +124,43 @@ class Solver():
 			msg += f"Ran out of list! Probably unparsed: {self.words[reverse_index(self.words, self.last_keyword):]}.\n"
 
 			raise IndexError(msg)
-
-		ret = self.words[self.i]
-		self.i += 1
+		if give_ratio:
+			return self.pop_ratio()
+		else:
+			ret = self.words[self.i]
+			self.i += 1
 		return ret
+
+	def pop_ratio(self):
+		s = " ".join(self.words[self.i:])
+		ratios = []
+		intg = ""
+		for used, ch in enumerate(s):
+			if ch.isdigit():
+				intg += ch
+				continue
+			if ch.isspace(): #maybe merge?
+				continue
+			if ch != ":":
+				break
+			ratios.append(int(intg))
+			intg = ""
+		else:
+			s = ""
+			used += 1
+		if intg:
+			ratios.append(int(intg))
+
+		catch = 0
+		for i, w in enumerate(self.words[self.i:]):
+			if catch < used:
+				catch += len(w) + 1  # +1 for join space
+			else:
+				self.i += i
+				break
+		else:
+			self.i = len(self.words)
+		return ratios
 
 	def window_split_trbl(self, expression, window, from_direction):
 		splitted_size = self.calc_expression(expression, window)
@@ -152,7 +187,7 @@ class Solver():
 
 		return splitted_window
 
-	def window_split_column_row(self, count, window, column_row):
+	def window_split_column_row(self, ratio, window, column_row):
 		if column_row == "column":
 			size = "height"
 			start = "top"
@@ -160,21 +195,20 @@ class Solver():
 			size = "width"
 			start = "left"
 		else:
-			raise ValueError(f'Unaceptable column_row {from_direction}, it must be in {{"column", "row"}}.')
+			raise ValueError(f'Unaceptable column_row {column_row}, it must be in {{"column", "row"}}.')
+		if any(r <= 0 for r in ratio):
+			raise ValueError(f"Ratio must consist of positive integers, {ratio} given.")
 
-
-		splitted_size = window[size] // count
-		size_left = window[size] % count
+		sizes = [int(r * window[size] / sum(ratio)) for r in ratio]
+		for i in range(window[size] - sum(sizes)):
+			sizes[i] += 1
 
 		current_start = window[start]
-		for _ in range(count):
+		for splitted_size in sizes:
 			splitted_window = window.copy()
 			splitted_window[start] = current_start
 			splitted_window[size] = splitted_size
-			if size_left:
-				splitted_window[size] += 1
-				size_left -= 1
-			current_start += splitted_window[size]
+			current_start += splitted_size
 			yield splitted_window
 
 	def tree_str(self):
@@ -212,37 +246,49 @@ def m_to_rectangle(m, width, height):
 	return "\n".join(rectangle)
 
 
+things = []
+things.append('body "fight"')
 
-thing_0 = 'body "fight"'
-
-thing_1 = """
+things.append("""
 # typical windows
 body
 	bottom 3 "console_input"
 	left 2/3*x "fight"
-	column 3 "entities" "inventory" "history"
-"""
+	column 1:1:1 "entities" "inventory" "history"
+""")
+
+# without row 2:1 cannot do typical windows with two columns of unequal size
+things.append("""
+# typical windows
+body
+	row 2:1
+		bottom 3 "console_input"
+		"fight"
+
+		column 2:1 "entities" "history"
+""")
 
 # because of partily supported min(x,y) doesn't work for (120, 30), works for (60, 30)
-thing_3 = """
+things.append("""
 body
 	left 3/4*x "game"
 	bottom x "minimap"  # gives a square x*x if x<y else y*x rectangle
 	top 3
 		left 3 "health_status"
-		column 3
+		column 1:1:1
 			"date"
 			"mood_phase"
-			row 2 "hunger"
+			row 1:1 "hunger" "thirst"
 	top 1 "Zombols_or_Z's"
 	"log"
-"""
+""")
+
 import json
 
 x, y = 60, 30
 
-for string in (thing_0, thing_1, thing_3):
-	solution = Solver(string, x, y)
+for thing in things:
+	solution = Solver(thing, x, y)
 #	print(json.dumps(solution.windows, indent=4))
 	print(m_to_rectangle(solution.windows, x, y))
 
