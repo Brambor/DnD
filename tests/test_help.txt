@@ -2,13 +2,21 @@ help
 help commands
 help entity_reference
 help symbol
+
+help cmd #
+attack
+help cmd help
 create
 compare
+ctrl
 damage
+django
 effect
 erase
 eval
 help cmd exit
+file
+heal
 inventory
 library
 move
