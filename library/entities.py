@@ -50,9 +50,55 @@ entities = {
 				},
 			},
 			"sword_attack_a": {
+				# reaction is indicated in attacks_list by *
+				# an attack that is a reaction should be called only by other attack's add_attack, not by user
 				"reaction": True,  # can be anything, even False, it still is a reaction
 				"dmg": "slash p {10 * d4}",
-			}
+			},
+		},
+	},
+	"MikroElf": {
+		"nickname": "MikroElf",
+		"group": "players",
+		"hp_max": 25,
+		"mana_max": 20,
+		"armor": 2,
+		"skills": {
+			"magie": 12,
+			"víra": 2,
+		},
+		"attacks": {
+			"burn": {
+				"mana_consumption": { "per_target": 1 },
+				"add_effects": ( ("FIRE", 4), ),
+			},
+
+			"fireball": {
+				"mana_consumption": { "per_target": 1 },
+				"dmg": "fire magic {d6a + 2*magie}",  # 'magie' must be a skill defined in library.skills
+				"on_crit": {
+					"a": ("add_effects", ( ("FIRE", 4), )),
+				},
+			},
+
+			"heal": {
+				"mana_consumption": { "per_target": 1 },
+				"heal": "d6 + 2*magie + 2*víra",
+				"removes": {"BLEED"},
+			},
+
+			"ice_lance1": {
+				"mana_consumption": { "per_target": 1 },
+				"dmg": "ice magic {d6a + 2*magie}",
+				"on_crit": {
+					"a": ("add_effects", ( ("CHILL", 5), )),
+				},
+			},
+
+			"splash": {
+				"mana_consumption": { "base": 1 },
+				"add_effects": ( ("WET", 5), ),
+			},
 		},
 	},
 }
