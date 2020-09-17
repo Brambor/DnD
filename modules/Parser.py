@@ -344,8 +344,6 @@ class Parser():
 					"ef": "effects",
 					"en": "entities",
 					"i": "items",
-					"s": "spells",
-					"sp": "spells",
 				}.get(parts[1], parts[1])
 				if lib in library:
 					lib = library[lib]
@@ -451,17 +449,6 @@ class Parser():
 						entity.printStat(stat)
 				else:
 					self.argument_wrong_ammount("set", (1, 2), len(separated), separators=True)
-
-			elif parts[0] in ("spell", "s", "cast"):
-				if len(parts) < 4:
-					self.argument_wrong_ammount("spell", (4,), len(parts), last_at_least=True)
-
-				caster = self.C.Game.get_entity(parts[1])[1]
-				spell = get_library("spells", parts[2])
-				targets = [self.C.Game.get_entity(target)[1] for target in parts[3:]]
-
-				if caster.cast_spell(targets, spell):
-					self.C.Game.history_add()
 
 			elif parts[0] in ("turn", "t"):
 				if len(parts) != 1:

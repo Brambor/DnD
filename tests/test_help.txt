@@ -22,6 +22,5 @@ library
 move
 remove_effect
 set
-spell
 help cmd turn
 window

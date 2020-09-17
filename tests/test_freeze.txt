@@ -1,12 +1,11 @@
-c pes a b
-set a mana 10
+c MikroElf a b
 
 # get wet
-spell a splash b
+attack a splash b
 
 # get frozen, not chill
 ctrl t
-spell a ice_lance1 b
+attack a ice_lance1 b
 	5
 
 # see if b is properly frozen

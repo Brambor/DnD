@@ -1,7 +1,6 @@
 l
 l en
 l ef
-l s
 l i
 l damage_types
 l skills

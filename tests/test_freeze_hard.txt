@@ -1,50 +1,51 @@
-c pes a b
-set a mana 100
+c MikroElf a b
 
 # get chill
 ctrl t
-spell a ice_lance1 b b b
+attack a ice_lance1 b
 	1
+attack a ice_lance1 b
 	5
 	# lowering obratnost & boj
 	3
 	4
 
+attack a ice_lance1 b
 	6
 	# lowering obratnost & boj
 	1
 	2
 
-ctrl t
 
 # get wet
-spell a splash b b b
-spell a splash b
+attack a splash b b b
+attack a splash b
 
 # check
 set b effects
 
-# get frozen, not chill
-ctrl t
-spell a ice_lance1 b b b b
+attack a ice_lance1 b
 	1
+attack a ice_lance1 b
 	2
+attack a ice_lance1 b
 	3
+# get frozen, not chill
+attack a ice_lance1 b
 	5
 
 
-set a effects
+set b effects
 
-# do not chill or wet
-spell a ice_lance1 b
+# b is immune to CHILL & WET
+attack a ice_lance1 b
 	6
-
-spell a splash b
+attack a splash b
 
 # see if b is properly frozen, not wet, not chill
 set b effects
 
-spell a ice_lance1 b
+attack a ice_lance1 b
 	6
 
 # see if b is properly frozen, not wet, not chill

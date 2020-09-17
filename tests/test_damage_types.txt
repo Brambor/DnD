@@ -3,7 +3,7 @@ c Thorbald t
 
 dmg fire {d12} | a t
 
-cast t splash t
+e add WET 5 t
 
 dmg fire {11} | a t
 

@@ -1,8 +1,36 @@
 c pes a
 c Thorbald t
+c MikroElf e
 
 a a
 a t
+a e
 
-a t sword_attack t a
-a t sword_attack t t t
+ctrl t
+a t sword_attack a t e
+	5
+	8
+	4
+
+a e heal e e e e t
+	2
+
+a e fireball t
+	5
+a e burn t
+
+a e splash t
+
+# 3 & 4 are for "CHILL stat_penalty to obratnost, boj"
+a e ice_lance1 t t
+	5
+	# stat penalty
+	3
+	4
+
+# freeze them
+a e splash t
+a e ice_lance1 t
+	5
+
+ctrl t

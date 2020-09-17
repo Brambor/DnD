@@ -1,12 +1,11 @@
-c pes a b
-set a mana 100
+c MikroElf a b
 
 # get wet
-spell a splash b
+attack a splash b
 
 # get frozen, not chill
 ctrl t
-spell a ice_lance1 b
+attack a ice_lance1 b
 	5
 ctrl t
 
@@ -14,13 +13,13 @@ ctrl t
 set b effects
 
 # burn them
-cast a burn b b b b
+attack a burn b b b b
 
 # info
 set b effects
 
 # splash and chill them
-cast a splash b
+attack a splash b
 ctrl t
-spell a ice_lance1 b
+attack a ice_lance1 b
 	5

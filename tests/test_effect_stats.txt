@@ -1,7 +1,7 @@
-c pes a b
+c MikroElf a b
 
 ctrl t
-cast a ice_lance1 b
+a a ice_lance1 b
 	5
 	# stat penalty
 	1

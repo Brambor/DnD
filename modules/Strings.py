@@ -15,7 +15,6 @@ else:
 		"effects",
 		"entities",
 		"items",
-		"spells",
 		"skills",
 	}
 
@@ -44,7 +43,6 @@ cmd = (
 	("move", "m"),
 	("remove_effect", "remove", "r"),
 	("set",),
-	("spell", "s", "cast"),
 	("turn", "t"),
 	("window", "w"),
 )
@@ -218,8 +216,8 @@ strs = {
 		),
 		"library": (
 			"[[l]ib]rary/list WHAT\n"
-			"\tWHAT can be [en]tities, [ef]fects, [[s]p]ells, [i]tems, "
-			f'{", ".join( set(library) - {"entities", "effects", "spells", "items"})}\n'
+			"\tWHAT can be [en]tities, [ef]fects, [i]tems, "
+			f'{", ".join( set(library) - {"entities", "effects", "items"})}\n'
 			"\tduplicates (a1, a2, a3 are the same, different from b1) are printed in 'a1/a2/a3, b1, c1/c2' form\n"
 		),
 		"move": (
@@ -247,11 +245,6 @@ strs = {
 			"set entity stat expression stat_type\n"
 			"\tmakes new 'stat' for 'entity' with value calculated from 'expression' of type 'stat_type'\n"
 			"\t'stat_type' can be one of 'int', 'float', 'str', or 'bool'\n"
-		),
-		"spell": (
-			"[s]pell/cast caster_entity spell target_entity+\n"
-			"\tspell must be from library.spells\n"
-			f'\t{symbol["+"]}'
 		),
 		"turn": (
 			"For each entity applies all its effects.\n"

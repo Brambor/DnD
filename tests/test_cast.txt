@@ -1,9 +1,0 @@
-c pes a b c
-
-cast a fireball b
-ctrl t
-cast b heal b
-	5
-ctrl t
-
-cast c ice_lance1 b

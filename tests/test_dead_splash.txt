@@ -1,9 +1,10 @@
-c pes a b
+c MikroElf e
+c pes b
 
 # kill b
 dmg physical {150} | b
 
-cast a splash b
+a e splash b
 
 # info
 set b alive
