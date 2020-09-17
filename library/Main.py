@@ -17,8 +17,12 @@ library = {
 	"skills": skills,
 }
 
-# Check if things in entities.py are defined in respective libraries
 warnings = []
+if (overlap := set(skills).intersection(set(damage_types))):
+	warnings.append(f"These are both, skills and damage_types: {overlap}. It's a problem when attacking.")
+
+
+# Check if things in entities.py are defined in respective libraries
 for e_name in entities:
 	e = entities[e_name]
 	if "skills" in e:
