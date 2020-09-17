@@ -2,6 +2,7 @@ from library.Main import library
 
 from modules.DnDException import DnDException, DnDExit
 from modules.Misc import calculate, get_library
+from modules.Attack import Attack
 from modules.SettingsLoader import settings
 from modules.Strings import strs, separate
 
@@ -112,10 +113,8 @@ class Parser():
 				if len(parts) == 2:
 					attacker.attack_list_print()
 				else:
-					damage_list = attacker.attack(parts[2])
-
-					for target in [self.C.Game.get_entity(p)[1] for p in parts[3:]]:
-						target.damaged(damage_list)
+					targets = [self.C.Game.get_entity(p)[1] for p in parts[3:]]
+					Attack(self.C, attacker, parts[2], targets)
 					self.C.Game.history_add()
 
 			elif parts[0] in ("create", "c"):

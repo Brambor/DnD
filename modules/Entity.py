@@ -174,22 +174,6 @@ class Entity():
 			self.body["alive"] = True
 
 	# ATTACK
-	def attack(self, attack_str):
-		attack = self.get_attack(attack_str)
-		if "dmg" in attack:
-			damage_list, crits = self.C.Dice.parse_damage(attack["dmg"])
-		else:
-			return []
-		for c in crits:
-			if not("on_crit" in attack and c in attack["on_crit"]):
-				raise DnDException(f"{self}'s attack {attack_str} doesn't have 'on_crit' for dice marked '{c}', which just critted.")
-			att = attack["on_crit"][c]
-			if att[0] == "add_attack":
-				damage_list.extend(self.attack(att[1]))
-			elif att[0] == "print":
-				self.C.Print(f"{att[1]} (prints {self}'s attack '{attack_str}' by critting on '{c}').\n")
-		return damage_list
-
 	def attack_list_print(self):
 		if "attacks" in self.body and self.body["attacks"]:
 			s = "\n".join(f" *{k}" if "reaction" in self.body["attacks"][k] else f"  {k}" for k in self.body["attacks"].keys())
@@ -199,13 +183,7 @@ class Entity():
 				note = ""
 			self.C.Print(f"{self}'s attacks:\n{s}\n{note}")
 		else:
-			self.C.Print(f"{self} has no attacks\n")
-
-	def get_attack(self, attack_str):
-		if attack_str in self.body["attacks"]:
-			return self.body["attacks"][attack_str]
-		else:
-			raise DnDException(f"Entity {self} does not know {attack_str}.")
+			self.C.Print(f"{self} nows no attacks.\n")
 
 	# CAST
 	def cast_spell(self, targets, spell):
