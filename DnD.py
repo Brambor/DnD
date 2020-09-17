@@ -97,7 +97,7 @@ else:
 	C.Print("TESTS ARE DONE\n"
 		f"Tests took {round(total, 3)} seconds.\n"
 		f"\tExpected computing {round(total-wait, 2)}s, exp. waiting {round(wait, 2)}s (set in settings).\n"
-		f"\tRan {count_tests} tests with total of {count_cmds} lines.\n")
+		f"\tRan {count_tests} test{'' if count_tests == 1 else 's'} with total of {count_cmds} lines.\n")
 	sys.stdin = f1
 
 	C.test_environment = False
