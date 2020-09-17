@@ -116,7 +116,7 @@ class Parser():
 
 					for target in [self.C.Game.get_entity(p)[1] for p in parts[3:]]:
 						target.damaged(damage_list)
-				self.C.Game.history_add()
+					self.C.Game.history_add()
 
 			elif parts[0] in ("create", "c"):
 				self.check(parts[1], "entity_library")
