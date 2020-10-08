@@ -69,7 +69,7 @@ class DatabaseManager():
 			new_dict = {}
 			for key in d["fields"]:
 				if d["fields"][key] != None:
-					new_dict[translate_skills[str(key)]] = d["fields"][key]
+					new_dict[self.translate_skills[str(key)]] = d["fields"][key]
 			entities[pk]["skills"] = new_dict
 
 		# Resistances
