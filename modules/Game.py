@@ -137,7 +137,7 @@ class Game():
 	def autosave(self):
 		if settings.AUTOSAVE_SLOT_COUNT <= 0:
 			return
-		self.save(f"autosave_{self.autosave_slot}", autosave=True)
+		self.save(f"_autosave_{self.autosave_slot}", autosave=True)
 		self.autosave_slot = (self.autosave_slot+1) % settings.AUTOSAVE_SLOT_COUNT
 
 	def delete(self, filename):
