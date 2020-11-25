@@ -1,0 +1,8 @@
+# ?!: No save file is yet asscociated with this game.
+ctrl s
+
+file save test_save_A
+ctrl s
+
+file delete test_save_A
+	yes

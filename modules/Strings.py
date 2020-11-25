@@ -119,6 +119,8 @@ strs = {
 			"\tMoves one forward in entity history.\n"
 			"ctrl t\n"
 			"\tToggles automatic dice.\n"
+			"ctrl s\n"
+			"\tSave to associated file (see command save).\n"
 		),
 		"compare": (
 			"compare/cmp entity1 skill1 val1 entity2 skill2 val2\n"

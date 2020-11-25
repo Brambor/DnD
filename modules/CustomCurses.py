@@ -249,6 +249,8 @@ class CustomCurses():
 				self.press_ctrl("y", add_to_log=True)
 			if x == 20:  # ctrl+t
 				self.press_ctrl("t", add_to_log=True)
+			if x == 19:  # ctrl+s
+				self.press_ctrl("s", add_to_log=True)
 			return x
 		return terminate
 
@@ -259,6 +261,11 @@ class CustomCurses():
 			self.C.Game.history_move(+1)
 		elif X == "t":
 			self.C.Game.toggle_manual_dice()
+		elif X == "s":
+			try:
+				self.C.Game.save()
+			except DnDException as exception:
+				self.C.Print(f"?!: {exception}\n")
 		else:
 			raise NameError(f"'ctrl+{X}' is not defined.")
 		if add_to_log:

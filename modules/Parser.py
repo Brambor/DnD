@@ -164,7 +164,7 @@ class Parser():
 			elif parts[0] == "ctrl":
 				if len(parts) != 2:
 					self.argument_wrong_ammount("ctrl", (2,), len(parts))
-				if parts[1] in {"t", "y", "z"}:
+				if parts[1] in {"s", "t", "y", "z"}:
 					self.C.Curses.press_ctrl(parts[1])
 				else:
 					raise DnDException(f"'ctrl+{parts[1]}' is not defined.")
