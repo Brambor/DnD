@@ -1,0 +1,8 @@
+ctrl t
+c MikroElf m
+set m obratnost
+a m ice_lance1 m
+	6
+	4
+	3
+set m obratnost

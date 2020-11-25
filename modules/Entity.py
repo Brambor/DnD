@@ -123,17 +123,20 @@ class Entity():
 	def get_stat(self, stat, return_as_integer=True, for_printing=False):
 		"return_as_integer False: returns string in form '7 (5 + 4 - 2)' base + bonus - penalty"
 		"for_printing True: wraps type==str with '' eg. \"v\" -> \"'v'\""
+		value_defined = True
 		if stat in self.body:
 			value = self.body[stat]
 		elif stat in library["skills"] and "skills" in self.body and stat in self.body["skills"]:
 			value = self.body["skills"][stat]
+		elif for_printing and not return_as_integer:
+			self.C.Print(f"Entity {self} does not have stat '{stat}'.\n")
+			value = 0
+			value_defined = False
 		else:
 			raise DnDException(f"Entity {self} does not have stat '{stat}'.")
 
-		if for_printing and type(value) == str:
-			return f"'{value}'"
-		if type(value) != int:
-			return value
+		if for_printing and type(value) != int:
+			return repr(value)
 		else:
 			base = value
 			bp = {
@@ -153,9 +156,12 @@ class Entity():
 					bonus_str = f' + {bp["stat_bonus"]}' if bp["stat_bonus"] else ""
 					penalty_str = f' - {bp["stat_penalty"]}' if bp["stat_penalty"] else ""
 					# 7 (5 + 4 - 2)
-					return f'{base + bp["stat_bonus"] - bp["stat_penalty"]} ({base}{bonus_str}{penalty_str})'
+					if value_defined:
+						return f'{base + bp["stat_bonus"] - bp["stat_penalty"]} ({base}{bonus_str}{penalty_str})'
+					else: return f'?{bonus_str}{penalty_str}'
 				else:
-					return str(base)
+					if value_defined: return str(base)
+					else: return "?"
 
 	# ALIVE / DEATH
 	def alive(self):
