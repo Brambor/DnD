@@ -20,7 +20,7 @@ class CustomCurses():
 		self.keys = {
 			10: 7,  # regular enter -> enter
 			459: 7,  # enter on notepad -> enter
-			127: 263,  # backspace on android & wireless keyboard -> backspace
+			127: 8,  # backspace on android & wireless keyboard -> backspace
 			#NumePad / * - +
 			458: "/",
 			463: "*",
@@ -189,32 +189,53 @@ class CustomCurses():
 		else:
 			raise DnDException(f"Window '{window_name}' doesn't exist. These do: {', '.join(self.windows)}.")
 
-	def enter_is_terminate(self, x):
-		if x == curses.KEY_RESIZE:
-			self.resized_terminal()
-			self.msg_interrupted = True
-			return 7
-		if x in self.keys:
-			x = self.keys[x]
-		#up right down left: 259 261 258 260
-		if x == 259:
-			self.move_in_history = -1
-			return 7
-		if x == 258:
-			self.move_in_history = +1
-			return 7
-		if x == 304:  # alt + f4
-			raise DnDExit("alt + f4")
-		if x == 7:
-			self.cmd_history_pointer = len(self.cmd_history) - 1
-			self.cmd_history_pointer_at_end = True
-		if x == 26:  # ctrl+z -> move back in history
-			self.press_ctrl("z", add_to_log=True)
-		if x == 25:  # ctrl+y
-			self.press_ctrl("y", add_to_log=True)
-		if x == 20:  # ctrl+t
-			self.press_ctrl("t", add_to_log=True)
-		return x
+	def enter_is_terminate(self, message_len):
+		def terminate(x):
+			if x == curses.KEY_RESIZE:
+				self.resized_terminal()
+				self.msg_interrupted = True
+				return 7
+			if x in self.keys:
+				x = self.keys[x]
+			if x == 8:  # backspace
+				w = self.windows['console_input']
+				_, max_x = w.getmaxyx()
+				c_y, c_x = w.getyx()
+				if (c_y * max_x + c_x <= message_len + 1):  # backspace at begining
+					return None
+			#up right down left: 259 261 258 260
+			if x in {260, 261}:
+				w = self.windows['console_input']
+				max_y, max_x = w.getmaxyx()
+				c_y, c_x = w.getyx()
+				if (x == 260 and c_y * max_x + c_x <= message_len + 1  # press left at begining
+					or x == 261 and c_y == max_y-1 and c_x == max_x-1  # press right at end
+				):
+					return None
+				c_x += (1 if x == 261 else -1)
+				c_y = max(0, min(max_y-1, c_y + c_x // max_x))
+				c_x = c_x % max_x
+				w.move(c_y, c_x)
+				return None
+			if x == 259:
+				self.move_in_history = -1
+				return 7
+			if x == 258:
+				self.move_in_history = +1
+				return 7
+			if x == 304:  # alt + f4
+				raise DnDExit("alt + f4")
+			if x == 7:
+				self.cmd_history_pointer = len(self.cmd_history) - 1
+				self.cmd_history_pointer_at_end = True
+			if x == 26:  # ctrl+z -> move back in history
+				self.press_ctrl("z", add_to_log=True)
+			if x == 25:  # ctrl+y
+				self.press_ctrl("y", add_to_log=True)
+			if x == 20:  # ctrl+t
+				self.press_ctrl("t", add_to_log=True)
+			return x
+		return terminate
 
 	def press_ctrl(self, X, add_to_log=False):
 		if X == "z":
@@ -250,7 +271,7 @@ class CustomCurses():
 			# INPUT
 			curses.curs_set(2)
 			self.msg_interrupted = False
-			input_command = self.command_textbox.edit(self.enter_is_terminate)
+			input_command = self.command_textbox.edit(self.enter_is_terminate(len(message)))
 			if self.msg_interrupted:
 				continue
 			if self.move_in_history:
