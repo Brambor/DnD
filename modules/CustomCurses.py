@@ -91,6 +91,21 @@ class CustomCurses():
 			do_not_resize = False
 		else:
 			add_history = True
+			# check whether we have to resize in spite of do_not_resize
+			if do_not_resize:
+				stdscr.timeout(0)
+				stack = []
+				# for some reason chars are only read
+				# up to & including KEY_RESIZE
+				# => getch stops after KEY_RESIZE
+				while ((ch := stdscr.getch()) != -1 ):
+					if ch == curses.KEY_RESIZE:
+						do_not_resize = False
+						break
+					stack.append(ch)
+				for ch in stack[::-1]:
+					curses.ungetch(ch)
+				stdscr.timeout(-1)
 
 			self.clear_terminal()
 			stdscr.clear()
