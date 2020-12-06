@@ -92,9 +92,9 @@ class DatabaseManager():
 
 		# OUT
 		with open("library/templates/entities_database.py", "r") as template:
-			with open("library/entities_database.py", "w") as out_file:
-				out_file.write(template.read().replace("%%DATA%%", json.dumps(entities, indent="\t", ensure_ascii=False)))
-		self.C.Print("Output exported.\n")
+			with open("library/entities_database.py", "wb") as out_file:
+				out_file.write(template.read().replace("%%DATA%%", json.dumps(entities, indent="\t", ensure_ascii=False)).encode('utf-8'))
+		self.C.Print("Output exported. You have to restart the DnD to reimport the entities.\n")
 
 	def stopserver(self, silent=False):
 		if silent:
