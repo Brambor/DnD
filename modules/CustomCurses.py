@@ -8,6 +8,63 @@ from modules.Misc import calculate
 from modules.SettingsLoader import settings
 
 
+cz_chars = {
+	324: "ń",
+	253: "ý",
+	314: "ĺ",
+	341: "ŕ",
+	237: "í",
+	225: "á",
+	378: "ź",
+	263: "ć",
+	233: "é",
+	250: "ú",
+	347: "ś",
+	243: "ó",
+
+	318: "ľ",
+	345: "ř",
+	357: "ť",
+	382: "ž",
+	271: "ď",
+	269: "č",
+	283: "ě",
+	328: "ň",
+	353: "š",
+
+	229: "å",
+	367: "ů",
+
+
+	323: "Ń",
+	221: "Ý",
+	313: "Ĺ",
+	340: "Ŕ",
+	205: "Í",
+	193: "Á",
+	377: "Ź",
+	262: "Ć",
+	201: "Ŕ",
+	218: "Ú",
+	346: "Ś",
+	211: "Ó",
+
+	317: "Ľ",
+	344: "Ř",
+	356: "Ť",
+	381: "Ž",
+	270: "Ď",
+	268: "Č",
+	282: "Ě",
+	327: "Ň",
+	352: "Š",
+
+	197: "Å",
+	366: "Ů",
+}
+
+cz_chars_rev = {v:k for k,v in cz_chars.items()}
+
 class CustomCurses():
 	def __init__(self, Connector):
 		self.C = Connector
@@ -206,6 +263,24 @@ class CustomCurses():
 
 	def enter_is_terminate(self, message_len):
 		def terminate(x):
+			"""
+			if not(65+32 <= x <= 90+32):
+				print(f'"{x}": ', end="")
+			else:
+				print("abcdefghijklmnopqrstuvwxyz"[x-65-32], end=",\n")
+			self.addstr("fight", f"{x} ")
+			"""
+			if x in cz_chars:
+				w = self.windows["console_input"]
+				c_y, c_x = w.getyx()
+				_, max_x = w.getmaxyx()
+#				self.addstr("fight", f'{cz_chars[x]} @ [{c_y * max_x + c_x - message_len - 2}]')
+				self.ch_replace[c_y * max_x + c_x] = cz_chars[x]  # doesn't work on multiline
+#				self.ch_replace = 
+				self.addstr("console_input", f"{cz_chars[x]}")
+
+			self.windows["fight"].refresh()
+
 			if x == curses.KEY_RESIZE:
 				self.resized_terminal()
 				self.msg_interrupted = True
@@ -277,6 +352,7 @@ class CustomCurses():
 	def send(self, message):
 		self.msg_interrupted = False
 		self.move_in_history = 0
+		self.RESTART_REPLACE = True
 		while True:
 			if self.msg_interrupted:
 				input_command = input_command.strip()
@@ -293,7 +369,17 @@ class CustomCurses():
 			# INPUT
 			curses.curs_set(2)
 			self.msg_interrupted = False
+
+			if self.RESTART_REPLACE:
+				self.ch_replace = {}
 			input_command = self.command_textbox.edit(self.enter_is_terminate(len(message)))
+
+#			self.addstr("fight", "")
+#			self.addstr("fight", repr(self.ch_replace))
+#			self.addstr("fight", repr(input_command))
+			self.RESTART_REPLACE = True
+
+
 			if self.msg_interrupted:
 				continue
 			if self.move_in_history:
@@ -309,23 +395,41 @@ class CustomCurses():
 						input_command = f"{message} "
 					else:
 						input_command = f"{message} {self.cmd_history[self.cmd_history_pointer]}"
+#						TODO
 				self.windows["console_input"].clear()
 				self.C.Print.refresh_history_window()
 				self.move_in_history = 0
 				self.msg_interrupted = True
+
+				self.ch_replace = {i: ch for i, ch in enumerate(input_command) if ch in cz_chars_rev}
+#				self.addstr("fight", f"hist replace: {repr(self.ch_replace)}")
+				self.RESTART_REPLACE = False
+#				print(f"in cmd: {repr(input_command)}")
 				continue
 			break
 
 		curses.curs_set(False)  # so that it doesn't blink in top left corner. >>> ocasionally blinks thought...
+		print("pre:", repr(input_command))
 		return self.serialization(input_command, message)
 
 	def send_test(self, message):
+		self.ch_replace = {}
 		return self.serialization(f"{message} {input()}\n", message)
 
 	def serialization(self, input_command, message):
 		"common parts of self.send and self.send_test"
 		# fixing multiline inputs
 		input_command = input_command.replace("\n", "") + "\n"
+
+
+		# replacing special chars from cz_chars
+		input_command = "".join(self.ch_replace[i] if i in self.ch_replace else ch for i, ch in enumerate(input_command))
+		self.addstr("fight", "\n")
+		self.addstr("fight", repr(input_command)+"\n")
+		self.addstr("fight", repr(self.ch_replace)+"\n")
+		self.addstr("fight", "\n")
+		self.addstr("fight", "\n")
+
 		# removing >>>
 		input_command_stripped = input_command[len(message):].strip()
 		# if only >>>, then print only \n
@@ -335,6 +439,8 @@ class CustomCurses():
 		self.windows["console_input"].clear()
 		self.addstr("fight", input_command)
 		self.fight_history.append(input_command)
+
+#		self.addstr("fight", f"adding {input_command_stripped} to hist")
 		self.add_to_history_commands(input_command_stripped)
 
 		self.C.Print.refresh_history_window()
