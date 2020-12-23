@@ -16,6 +16,8 @@ def calculate(string):
 		return eval(string)
 	except SyntaxError:
 		raise DnDException(f"'{string}' is not a valid mathematical expression.")
+	except ZeroDivisionError:
+		raise DnDException("Division by zero.")
 
 def convert_string_to_bool(string):
 	if string == "True":

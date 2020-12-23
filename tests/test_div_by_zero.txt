@@ -1,0 +1,3 @@
+c pes a
+# ?!: Division by zero.
+dmg fire {1/0} | a
