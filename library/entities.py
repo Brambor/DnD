@@ -101,6 +101,12 @@ entities = {
 			},
 		},
 	},
+	"Žřáč": {
+		"group": "",
+		"hp_max": 12,
+		"mana_max": 0,
+		"nickname": "Žřáč"
+	},
 }
 
 #entities["pes"]["weapon"]["dmg"] = 2

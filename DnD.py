@@ -61,8 +61,8 @@ else:
 	for test in tests:
 		C.Input.i = 0
 		path = f'{path_to_DnD}/tests/test_{test}.txt'
-		f = open(path, 'r')
-		f_lines = open(path, 'r').read().split("\n")
+		f = open(path, 'r', encoding="utf-8")
+		f_lines = open(path, 'r', encoding="utf-8").read().split("\n")
 
 		G = Game(C)
 		P = Parser(C)
@@ -88,7 +88,7 @@ else:
 	count_cmds = 0
 	for test in tests:
 		path = f'{path_to_DnD}/tests/test_{test}.txt'
-		file_lines = open(path, 'r').read().split("\n")
+		file_lines = open(path, 'r', encoding="utf-8").read().split("\n")
 		wait += (len(file_lines) - 1) * settings.TEST_WAIT_BETWEEN_COMMANDS
 		count_cmds += (len(file_lines) - 1)
 	wait += len(tests) * settings.TEST_WAIT_BETWEEN_TESTS
