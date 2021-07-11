@@ -39,7 +39,6 @@ class Dice():
 		return d
 
 	def dice_crit(self, dice, threw, print_crit=False):
-		"pass arg. cPrint to print when crit"
 		self.check_dice_exists(dice)
 		if threw >= self.all_dice[dice] and print_crit:
 			self.C.Print(f"Critical on D{dice}!!\n")
@@ -50,37 +49,65 @@ class Dice():
 			raise DnDException(f"Dice {n} doesn't exist. Existing die: {', '.join(str(d) for d in self.all_dice)}.")
 
 	def dice_eval(self, expression):
+		"""
+		evaulate dice in 'expression' by throwing
+
+		return string containing throw results
+		"""
 		if (dice := self.dice_parser(expression)):
-			threw_crit, crits = self.C.Game.throw_dice(dice)
+			threw_crit, crits = self.throw_dice(dice)
 			# put the results back into the expression
 			for n_m, threw in zip(dice, threw_crit):
-				expression = expression.replace(f"d{n_m[0]}{n_m[1]}", str(threw[0]), 1)
+				expression = expression.replace(f"{'V' if n_m[2] else ''}d{n_m[0]}{n_m[1]}", str(threw[0]), 1)
 			return expression, crits
 		return expression, set()
 
 	def dice_parser(self, expression):
+		"""
+		find occurances of "(V)*d{X}{M}" in 'expression', where
+		(V*) is optional, presence indicateadvantage
+		{X} is a natural integer
+		{M} is mark/name of dice
+
+		return (list)((int)dice, (str)mark, (bool)advantage)
+		"""
 		dice = []
-		i = expression.find("d")
-		while i != -1:
-			i = expression.find("d", i) + 1
-			if i == 0:
-				break
+
+		i = 0
+		while i < len(expression):
+			advantage = 0
+			while True:
+				s = expression[i].upper()
+				if s == "V":
+					advantage += 1
+				elif s == "N":
+					advantage -= 1
+				else:
+					break
+				i += 1
+			
+			# not d? skip this word!
+			if expression[i] == "d":
+				i += 1
+			else:
+				skip = True
+			
 			cube = ""
-			for ch in expression[i:]:
-				if ch.isdigit():
-					cube += ch
-					i += 1
-					continue
-				break
+			while expression[i].isdigit():
+				cube += expression[i]
+				i += 1
+			
 			mark = ""
-			for ch in expression[i:]:
-				if ch.isalpha():
-					mark += ch
-					i += 1
-					continue
-				break
-			if cube:
-				dice.append((int(cube), mark))
+			while expression[i].isalpha():
+				mark += expression[i]
+				i += 1
+
+			if cube and not skip:
+				dice.append((int(cube), mark, advantage))
+			# -1 nevyhoda, 0 nothing, 1 vyhoda
+			# (future): VvVd6 vyhoda ze 4
+			#           NNd20 nevyhoda ze 3
+
 		return dice
 
 	def dice_stat(self, n):
@@ -98,8 +125,11 @@ class Dice():
 		raise DnDException(f"'{n_str}' is not an integer nor in format 'dx'.")
 
 	def parse_damage(self, string):
-		"string = 'physical acid {7*d20} acid {7 + d4} acid { d12}'"
-		"returns [{'physical', 'acid'}: 14, {'acid'}: 8, {'acid'}: 5]"
+		# should accept Vd20
+		"""
+		string = 'physical acid {7*d20} acid {7 + d4} acid { d12}'
+		return [{'physical', 'acid'}: 14, {'acid'}: 8, {'acid'}: 5]
+		"""
 		damage_list = []
 		crits = set()
 		for whole in (type_damage.split("{") for type_damage in string.split("}") if type_damage != ""):
@@ -118,3 +148,34 @@ class Dice():
 			# calculate
 			damage_list.append((types, calculate(whole[1])))
 		return damage_list, crits
+
+	def print_dice_table(self, dice_list, threw_crit):
+		# TODO print advantage (also pass that info)
+		# <4 Jsem si vycucal z prstu, pro mark "abcde" nefunguje, pro "abcd" je hnusny
+		if (complete_string := "".join('{0: <4}'.format(mark) for _, mark, _advantage in dice_list) + "\n").isspace():
+			complete_string = ""
+		complete_string += "".join('D{0: <3}'.format(n) for n, _, _advantage in dice_list) + "\n"
+		complete_string += "".join(
+				'{1}{0: <3}'.format(threw, "!" if crit else " ") for threw, crit in threw_crit
+		) + "\n"
+		return complete_string
+
+	def throw_dice(self, dice_list):
+		"""throws die in list, prints results
+		dice_list contains ((int)die, (str)mark), if mark is unimportant, mark should be ""
+		returns tuple of
+		\t0: list of sets (set)((int) threw, (bool)crit)
+		\t1: set of marked die (marks only), that crit"""
+		threw_crit = []
+		crits = set()
+		for n, mark, advantage in dice_list:
+			if advantage:
+				#self.C.Print(f"Threw {a}, {b} for advantage.\n")
+				threw = max(self.D(n), self.D(n))
+			else:
+				threw = self.D(n)
+			if (crit := self.dice_crit(n, threw)) and mark:
+				crits.add(mark)
+			threw_crit.append((threw, crit))
+		self.C.Print(self.print_dice_table(dice_list, threw_crit))
+		return threw_crit, crits

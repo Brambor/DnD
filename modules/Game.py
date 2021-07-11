@@ -78,31 +78,6 @@ class Game():
 			if e.id == i_id:
 				return e
 
-	def print_dice_table(self, dice_list, threw_crit):
-		if (complete_string := "".join('{0: <4}'.format(mark) for _, mark in dice_list) + "\n").isspace():
-			complete_string = ""
-		complete_string += "".join('D{0: <3}'.format(n) for n, _ in dice_list) + "\n"
-		complete_string += "".join(
-				'{1}{0: <3}'.format(threw, "!" if crit else " ") for threw, crit in threw_crit
-		) + "\n"
-		return complete_string
-
-	def throw_dice(self, dice_list):
-		"""throws die in list, prints results
-		dice_list contains ((int)die, (str)mark), if mark is unimportant, mark should be ""
-		returns tuple of
-		\t0: list of sets (set)((int) threw, (bool)crit)
-		\t1: set of marked die (marks only), that crit"""
-		threw_crit = []
-		crits = set()
-		for n, mark in dice_list:
-			threw = self.C.Dice.D(n)
-			if (crit := self.C.Dice.dice_crit(n, threw)) and mark:
-				crits.add(mark)
-			threw_crit.append((threw, crit))
-		self.C.Print(self.print_dice_table(dice_list, threw_crit))
-		return threw_crit, crits
-
 	def toggle_manual_dice(self):
 		self.manual_dice = not self.manual_dice
 		self.C.Print(f'Dice throwing is now {"manual" if self.manual_dice else "automatic"}.\n')

@@ -1,0 +1,3 @@
+c pes a
+
+dmg a {Vd6} a { Vd4} | a
