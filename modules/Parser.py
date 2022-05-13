@@ -11,28 +11,35 @@ class Parser():
 	def __init__(self, Connector):
 		self.C = Connector
 
-	def argument_wrong_ammount(self, cmd, takes, count, separators=False, last_at_least=False):
-		count -= 1
+	def argument_wrong_ammount(self, cmd, takes_options, count_given, separators=False, last_at_least=False):
+		"""
+		cmd - command name
+		takes_options - tuple listing possible counts of arguments
+		count_given - actual number of arguments given
+		separators - True if separators were used
+		last_at_least - if True takes_options[-1] or more are possible
+		"""
+		count_given -= 1
 		if separators:
-			takes = list(t-1 for t in takes)
+			takes_options = list(t-1 for t in takes_options)
 		else:
-			takes = list(t-1 for t in ((1,) + takes))
+			takes_options = list(t-1 for t in ((1,) + takes_options))
 
 		if last_at_least:
-			takes[-1] = f"at least {takes[-1]}"
-		if len(takes) == 1:
-			takes_str = str(takes[0])
+			takes_options[-1] = f"at least {takes_options[-1]}"
+		if len(takes_options) == 1:
+			takes_str = str(takes_options[0])
 		else:
-			takes_str = f'{", ".join((str(t) for t in takes[:-1]))} or {takes[-1]}'
+			takes_str = f'{", ".join((str(t) for t in takes_options[:-1]))} or {takes_options[-1]}'
 
 		if separators:
 			raise DnDException((
 				f"Command '{cmd}' (with arguments!) takes {takes_str} "
-				f"separator{'' if takes[-1] == 1 else 's'}, {count} given."))
+				f"separator{'' if takes_options[-1] == 1 else 's'}, {count_given} given."))
 		else:
 			raise DnDException((
 				f"Command '{cmd}' takes {takes_str} "
-				f"argument{'' if takes[-1] == 1 else 's'}, {count} given."))
+				f"argument{'' if takes_options[-1] == 1 else 's'}, {count_given} given."))
 
 	def check(self, values, types):
 		for v, t in zip(values.split(), types.split()):
